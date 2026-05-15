@@ -1,0 +1,9 @@
+[
+  {
+    "pregunta": "Pregunta inválida sin fuente",
+    "opciones": ["A", "B", "C", "D"],
+    "respuesta_correcta": 0,
+    "explicacion": "Debe fallar por falta de campo 'fuente' y 'modulo'",
+    "tags": ["error"]
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "pregunta": "¿Qué protocolo de seguridad utiliza ABDQuiz para la integridad del corpus?",
+    "opciones": ["SHA-256", "MD5", "Base64", "Ninguno"],
+    "respuesta_correcta": 0,
+    "explicacion": "Utilizamos SHA-256 para generar el contentHash determinista.",
+    "modulo": "Seguridad",
+    "fuente": "Manual v1.1",
+    "tags": ["seguridad", "hash"]
+  },
+  {
+    "pregunta": "En el sistema Tech-Noir, ¿cuál es el color de acento para señales de precisión?",
+    "opciones": ["Rojo neón", "Electric Cyan", "Verde bosque", "Blanco puro"],
+    "respuesta_correcta": 1,
+    "explicacion": "El Electric Cyan (#00f0ff) es el acento principal para indicadores técnicos.",
+    "modulo": "Diseño",
+    "fuente": "Style Guide v1.1",
+    "tags": ["ui", "tech-noir"]
+  }
+]

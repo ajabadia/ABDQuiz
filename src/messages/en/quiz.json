@@ -1,0 +1,17 @@
+{
+  "title": "Exam Setup",
+  "timer": {
+    "global": "Global Time",
+    "question": "Question Time"
+  },
+  "navigation": {
+    "skip": "Skip",
+    "next": "Next",
+    "finish": "Finish"
+  },
+  "results": {
+    "score": "Score",
+    "percentage": "Percentage",
+    "explanation": "Explanation"
+  }
+}

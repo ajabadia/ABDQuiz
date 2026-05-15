@@ -1,40 +1,71 @@
-# ABDQuiz SYSTEM AUDIT
-# Executes full system check: arch-guard, tsc, lint.
+# ABDQuiz SYSTEM AUDIT - INDUSTRIAL HIGH-FIDELITY EDITION
+# Sequential execution with clear status reporting on new lines.
 
+CLS
 $LogFile = "abd-audit-results.log"
-$Separator = "`n" + ("=" * 80) + "`n"
 $GlobalStatus = $true
+$SpinnerChars = @('|', '/', '-', '\')
 
 if (Test-Path $LogFile) { Remove-Item $LogFile }
-
-Write-Host "`n[ABDQuiz AUDIT] Starting full system check..." -ForegroundColor Cyan
 "ABDQuiz SYSTEM AUDIT REPORT - $(Get-Date)" | Out-File -FilePath $LogFile -Encoding utf8
 
-# 1. ARCHITECTURAL GUARD
-Write-Host "[1/3] Running Architectural Audit (Fire Rules)..." -ForegroundColor Yellow
-$Separator | Out-File -FilePath $LogFile -Append -Encoding utf8
-"SECTION 1: ARCHITECTURAL INTEGRITY" | Out-File -FilePath $LogFile -Append -Encoding utf8
-node scripts/arch-guard.mjs | Out-File -FilePath $LogFile -Append -Encoding utf8
-if ($LASTEXITCODE -ne 0) { $GlobalStatus = $false; Write-Host "  -> [FAILED]" -ForegroundColor Red } else { Write-Host "  -> [PASSED]" -ForegroundColor Green }
-
-# 2. TYPESCRIPT
-Write-Host "[2/3] Running Type Safety Check..." -ForegroundColor Yellow
-$Separator | Out-File -FilePath $LogFile -Append -Encoding utf8
-"SECTION 2: TYPE SAFETY CHECK" | Out-File -FilePath $LogFile -Append -Encoding utf8
-npx tsc --noEmit | Out-File -FilePath $LogFile -Append -Encoding utf8
-if ($LASTEXITCODE -ne 0) { $GlobalStatus = $false; Write-Host "  -> [FAILED]" -ForegroundColor Red } else { Write-Host "  -> [PASSED]" -ForegroundColor Green }
-
-# 3. LINTING
-Write-Host "[3/3] Running Code Linting..." -ForegroundColor Yellow
-$Separator | Out-File -FilePath $LogFile -Append -Encoding utf8
-"SECTION 3: CODE LINTING" | Out-File -FilePath $LogFile -Append -Encoding utf8
-npm run lint --quiet | Out-File -FilePath $LogFile -Append -Encoding utf8
-if ($LASTEXITCODE -ne 0) { $GlobalStatus = $false; Write-Host "  -> [FAILED]" -ForegroundColor Red } else { Write-Host "  -> [PASSED]" -ForegroundColor Green }
-
-if ($GlobalStatus) {
-    Write-Host "`n[AUDIT] SYSTEM READY ✅" -ForegroundColor Green
-} else {
-    Write-Host "`n[AUDIT] ERRORS DETECTED ❌" -ForegroundColor Red
+function Run-AuditStep {
+    param(
+        [string]$Name,
+        [string]$Command,
+        [string[]]$StepArgs
+    )
+    
+    Write-Host "`n[$Name] " -ForegroundColor Cyan
+    Write-Host "  > In progress... " -NoNewline -ForegroundColor Gray
+    
+    $fullCmd = ""
+    if ($Command -eq "npm" -or $Command -eq "npx") {
+        $fullCmd = "cmd /c $Command $($StepArgs -join ' ')"
+    } else {
+        $fullCmd = "$Command $($StepArgs -join ' ')"
+    }
+    
+    # Execute and capture everything
+    $errorsCount = 0
+    $warningsCount = 0
+    $out = Invoke-Expression $fullCmd 2>&1
+    $out | Out-File -FilePath $LogFile -Append -Encoding utf8
+    
+    $exitCode = $LASTEXITCODE
+    
+    # Parse results from output
+    $progressLine = $out | Where-Object { $_ -like "PROGRESS:*" } | Select-Object -Last 1
+    if ($progressLine) {
+        $parts = $progressLine.Split(':')
+        if ($parts.Count -ge 4) { $errorsCount = $parts[3] }
+        if ($parts.Count -ge 5) { $warningsCount = $parts[4] }
+    }
+    
+    if ($exitCode -eq 0) {
+        Write-Host "`r  -> PASSED [OK] ($errorsCount errors, $warningsCount warnings)".PadRight(60) -ForegroundColor Green
+    } else {
+        $errDisplay = $errorsCount
+        if ($errorsCount -eq 0) { $errDisplay = "Technical" }
+        Write-Host "`r  -> FAILED [!!] ($errDisplay errors detected, $warningsCount warnings)".PadRight(60) -ForegroundColor Red
+        $script:GlobalStatus = $false
+    }
 }
 
-exit ($GlobalStatus ? 0 : 1)
+Write-Host "`n[ABDQuiz AUDIT] Starting 6-Phase Industrial Certification..." -ForegroundColor White -BackgroundColor DarkCyan
+
+Run-AuditStep -Name "1/6 Structural Audit" -Command "node" -StepArgs @("scripts/arch-guard.mjs", "structural")
+Run-AuditStep -Name "2/6 i18n Coverage   " -Command "node" -StepArgs @("scripts/arch-guard.mjs", "i18n")
+Run-AuditStep -Name "3/6 a11y Compliance " -Command "node" -StepArgs @("scripts/arch-guard.mjs", "a11y")
+Run-AuditStep -Name "4/6 Purity & Types  " -Command "node" -StepArgs @("scripts/arch-guard.mjs", "purity")
+Run-AuditStep -Name "5/6 Type Safety (TSC)" -Command "npx"  -StepArgs @("tsc", "--noEmit")
+Run-AuditStep -Name "6/6 Code Quality    " -Command "npm"  -StepArgs @("run", "lint", "--", "--quiet")
+
+if ($GlobalStatus) {
+    Write-Host "`n[AUDIT] SYSTEM CERTIFIED - ERA 11 COMPLIANT [OK]" -ForegroundColor Green -BackgroundColor Black
+    exit 0
+} else {
+    Write-Host "`n[AUDIT] BREACHES DETECTED - SYSTEM NOT READY [!!]" -ForegroundColor Red -BackgroundColor Black
+    Write-Host "Detailed diagnostics available in: $LogFile" -ForegroundColor Gray
+    exit 1
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "pregunta": "En el contexto de la base de datos industrial, ¿cuál es la función principal de un índice SHA-256 en la ingesta de corpus?",
+    "opciones": [
+      "Aumentar la velocidad de búsqueda de texto completo",
+      "Garantizar la deduplicación semántica mediante hashing de contenido",
+      "Encriptar los datos personales de los alumnos",
+      "Comprimir el tamaño del archivo JSON original"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "El hash SHA-256 permite generar un identificador único basado en el contenido semántico, evitando duplicados independientemente del formato original.",
+    "modulo": "INGESTA_CORPUS",
+    "fuente": "ESPEC_TECNICA_V1",
+    "tags": ["industrial", "dedupe", "sha256"]
+  }
+]

@@ -43,3 +43,10 @@ next-env.d.ts
 # local logs and audit reports
 *.log
 abd-audit-results.log
+
+# 🛡️ LOCAL OFFLINE FILES (Ignored by Git, preserved locally)
+.agent/
+docs/
+PROGRESS.md
+ROADMAP.md
+scratch/

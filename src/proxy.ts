@@ -31,7 +31,48 @@ export async function proxy(request: NextRequest) {
 
   // 2. Verification check against local federated cookie
   const sessionCookie = request.cookies.get('abd_session');
-  const isAuthenticated = !!sessionCookie;
+  let isAuthenticated = !!sessionCookie;
+  let didVerifyThisRequest = false;
+
+  // 🛡️ Session Expiry Desync Check: If authenticated but verified cookie is missing
+  if (isAuthenticated && sessionCookie) {
+    const verifiedCookie = request.cookies.get('abd_session_verified');
+    
+    if (!verifiedCookie) {
+      try {
+        const userProfile = JSON.parse(sessionCookie.value);
+        const email = userProfile.email;
+        
+        if (email) {
+          const providerUrl = process.env.AUTH_PROVIDER_URL || 'https://abd-auth.vercel.app';
+          const clientSecret = process.env.AUTH_CLIENT_SECRET || 'abdquiz-industrial-client-secret';
+          
+          const verifyUrl = new URL(`${providerUrl}/api/auth/session/verify`, request.url);
+          verifyUrl.searchParams.set('email', email);
+          
+          const response = await fetch(verifyUrl.toString(), {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${clientSecret}`,
+              'Content-Type': 'application/json'
+            },
+            next: { revalidate: 0 } as any // Avoid Next.js fetch caching
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.active) {
+              didVerifyThisRequest = true;
+            } else {
+              isAuthenticated = false; // Account deactivated or locked!
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[PROXY_SESSION_VERIFICATION_ERROR]', err);
+      }
+    }
+  }
 
   // 3. Unauthorized redirect to central IdP (Federated Authorization Flow)
   if (!isAuthenticated) {
@@ -44,13 +85,33 @@ export async function proxy(request: NextRequest) {
     authorizeUrl.searchParams.set('redirect_uri', `${appUrl}/api/auth/federated/callback`);
     authorizeUrl.searchParams.set('state', pathname); 
     
-    return NextResponse.redirect(authorizeUrl);
+    const response = NextResponse.redirect(authorizeUrl);
+    
+    // 🧹 Purge session cookies to prevent loops
+    response.cookies.set('abd_session', '', { path: '/', maxAge: 0, expires: new Date(0) });
+    response.cookies.set('abd_session_verified', '', { path: '/', maxAge: 0, expires: new Date(0) });
+    
+    return response;
   }
 
   // 4. Pass through to intl middleware if authenticated
-  return intlMiddleware(request);
+  const response = await intlMiddleware(request);
+
+  // If verified successfully on this request, set the verified immunity cookie for 60 seconds
+  if (didVerifyThisRequest) {
+    response.cookies.set('abd_session_verified', '1', {
+      path: '/',
+      maxAge: 60, // 60 seconds of network immunity
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.svg$).*)'],
 };
+

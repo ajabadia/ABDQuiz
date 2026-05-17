@@ -64,4 +64,39 @@ El componente `<Link>` intercepta los eventos de clic y pre-carga la ruta median
 * Gracias a esta abstracción semántica en `ABDQuiz`, habilitar un soporte completo de **Tema Claro** impecable y refinado en toda la aplicación se logró modificando exclusivamente **10 líneas de código en un archivo CSS global**, permitiendo que todos los sub-componentes (sidebar, tarjetas, KPI dashboards, modales) mutasen de color de forma natural y automática.
 
 ---
+
+## 5. Arquitectura Inmutable y Versionado Histórico (Copy-On-Write) en MongoDB
+
+> [!CRITICAL]
+> **El síntoma**: 
+> 1. Al intentar guardar la edición de una pregunta que requiere duplicación histórica (Copy-On-Write), MongoDB lanza una excepción por colisión de índice único (`Duplicate Key Error`).
+> 2. El compilador de TypeScript (TSC) aborta la compilación de la fase 5 arrojando el error `TS2345: Argument of type 'IQuestion[]' is not assignable to type 'QuestionItem[]' due to property '_id' incompatible (ObjectId vs string)`.
+
+### La Causa Raíz
+1. **Índices Únicos Rígidos**: Un índice compound unique tradicional `{ tenantId, contentHash }` bloquea la base de datos si intentamos conservar versiones antiguas inactivas (`active: false`) con el mismo contenido hash. MongoDB requiere que la unicidad del hash se verifique de forma condicionada al ciclo de vida del reactivo.
+2. **Incompatibilidad de ObjectId**: Mongoose expone la propiedad `_id` como un objeto `ObjectId` de BSON en NodeJS. Sin embargo, los componentes de interfaz en React esperan strings planos para manejar el renderizado de listas (`key={q._id}`), comparaciones de formularios, y enrutamiento dinámico en cliente.
+
+### Lecciones Aprendidas y Solución
+1. **Partial Compound Index (Índices Compuestos Parciales)**: La solución idónea en modelos de inmutabilidad y versionado histórico es limitar el índice único compuesto exclusivamente a los registros que se encuentren activos mediante un filtro condicional de MongoDB:
+   ```typescript
+   QuestionSchema.index(
+     { tenantId: 1, contentHash: 1 },
+     { unique: true, partialFilterExpression: { active: true } }
+   );
+   ```
+   Esto garantiza la consistencia deduplicada en producción pero habilita un histórico de auditoría ilimitado de copias inactivas pasadas con el mismo contenido exacto.
+2. **Tipado Específico por Capa (Type Mapping)**: En lugar de usar coerciones inseguras (`as any`), la Server Action debe transferir tipos limpios y el componente cliente debe mapear explícitamente los campos deserializados del backend para unificar la firma de datos:
+   ```typescript
+   const mapped: QuestionItem[] = res.data.questions.map(q => ({
+     ...q,
+     _id: String(q._id),
+     difficulty: q.difficulty as 'easy' | 'medium' | 'hard',
+     explanation: q.explanation || '',
+     tags: q.tags || []
+   }));
+   ```
+   Este mapeo encapsula fallos por valores nulos imprevistos y asegura la compatibilidad estricta con las firmas tipadas del lado cliente.
+
+---
 *Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*
+

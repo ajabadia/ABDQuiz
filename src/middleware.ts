@@ -5,11 +5,11 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 /**
- * 🛰️ ABDQuiz Proxy Guard
+ * 🛰️ ABDQuiz Middleware Guard
  * Standardized interceptor for Federated Identity.
- * Decouples security logic from standard Next.js middleware.
+ * Decouples security logic from standard page loads.
  */
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Skip auth for assets and internal APIs
@@ -28,7 +28,7 @@ export async function proxy(request: NextRequest) {
 
   // 3. Unauthorized redirect to central IdP (Federated Authorization Flow)
   if (!isAuthenticated) {
-    const authorizeUrl = new URL(`${process.env.AUTH_PROVIDER_URL}/api/auth/federated/authorize`, request.url);
+    const authorizeUrl = new URL(`${process.env.AUTH_PROVIDER_URL || 'https://abd-auth.vercel.app'}/api/auth/federated/authorize`, request.url);
     authorizeUrl.searchParams.set('client_id', process.env.AUTH_CLIENT_ID || '');
     authorizeUrl.searchParams.set('redirect_uri', `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/federated/callback`);
     authorizeUrl.searchParams.set('state', pathname); 

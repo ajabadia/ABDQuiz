@@ -2,7 +2,7 @@
 SET PORT=3300
 echo.
 echo ==========================================
-echo    ABDQuiz - INICIO LOCAL
+echo    ABDQuiz - INICIO LOCAL (ROOT)
 echo ==========================================
 echo.
 
@@ -12,8 +12,6 @@ FOR /F "tokens=5" %%P IN ('netstat -aon ^| findstr ":%PORT% " ^| findstr "LISTEN
     taskkill /F /PID %%P >nul 2>&1
 )
 echo [0/3] Puerto %PORT% disponible.
-
-cd web
 
 IF NOT EXIST node_modules (
     echo [1/3] Instalando dependencias necesarias con pnpm...
@@ -30,7 +28,7 @@ timeout /t 5 /nobreak >nul
 start http://localhost:%PORT%
 
 echo.
-echo ABDQuiz listo y corriendo en segundo plano.
+echo ABDQuiz listo y corriendo en la raiz.
 echo Presiona Ctrl+C en esta ventana para detener el servidor.
 echo.
 pause

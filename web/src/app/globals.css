@@ -5,8 +5,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ABDQuiz Industrial Instrumentation System (Refined Tech-Noir) */
-:root {
+/* ABDQuiz Industrial Instrumentation System (Refined Tech-Noir - Dark Theme default) */
+:root, .dark {
   --background: 0 0% 4%;
   --foreground: 0 0% 96%;
   --card: 0 0% 8%;
@@ -14,11 +14,9 @@
   --popover: 0 0% 8%;
   --popover-foreground: 0 0% 96%;
   
-  /* Primary Cyan: Signal only */
   --primary: 188 85% 48%; 
   --primary-foreground: 0 0% 100%;
   
-  /* Skip Amber: Functional visibility */
   --warning: 38 92% 52%; 
   --saltar: 38 92% 52%;
   --saltar-foreground: 0 0% 98%;
@@ -37,12 +35,35 @@
   --radius: 0.15rem;
 }
 
-.dark {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 96%;
-  --card: 0 0% 8%;
-  --card-foreground: 0 0% 96%;
-  --border: 0 0% 16%;
+/* Light Theme (Clean Technical Canvas) */
+.light {
+  --background: 0 0% 98%;
+  --foreground: 0 0% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+  
+  /* Primary Cyan: Tonalized for white readability */
+  --primary: 188 85% 38%; 
+  --primary-foreground: 0 0% 100%;
+  
+  /* Skip Amber: Functional visibility */
+  --warning: 38 92% 45%; 
+  --saltar: 38 92% 45%;
+  --saltar-foreground: 0 0% 98%;
+
+  --secondary: 0 0% 90%;
+  --secondary-foreground: 0 0% 10%;
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 188 80% 90%;
+  --accent-foreground: 188 85% 20%;
+  --destructive: 0 72% 40%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 86%;
+  --input: 0 0% 86%;
+  --ring: 188 85% 38%;
 }
 
 @theme inline {

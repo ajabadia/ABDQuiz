@@ -2,12 +2,15 @@ import { NextResponse } from 'next/server';
 
 /**
  * 🚿 Secure Logout Handler
- * Clears the industrial session cookie and redirects to the identity provider.
+ * Clears the local session cookie and redirects to the central Identity Provider's logout endpoint.
  */
 export async function GET() {
-  const response = NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3300'));
+  const providerLogoutUrl = `${process.env.AUTH_PROVIDER_URL || 'https://abd-auth.vercel.app'}/api/auth/logout`;
+  const redirectUri = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3300';
   
-  // 🧹 Wipe the session cookie
+  const response = NextResponse.redirect(new URL(`${providerLogoutUrl}?redirect_uri=${redirectUri}`));
+  
+  // 🧹 Wipe the local session cookie
   response.cookies.set('abd_session', '', {
     path: '/',
     maxAge: 0,

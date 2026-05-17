@@ -32,7 +32,10 @@
     "brandPart2": "QUIZ",
     "close": "Close",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "menuTitle": "Control Panel",
+    "homeMenu": "Exams",
+    "adminMenu": "Administration"
   },
   "home": {
     "status": "System Status: Operational",
@@ -239,7 +242,17 @@
     "labelSource": "Source of Origin",
     "labelDifficulty": "Difficulty Level (Dropdown)",
     "btnSaving": "SAVING...",
-    "btnApplyBank": "APPLY & INGEST BANK",
     "btnNextQuestion": "NEXT QUESTION"
+  },
+  "settings": {
+    "title": "System Settings",
+    "close": "Close",
+    "language": "Language",
+    "theme": "Theme",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_system": "System",
+    "logout": "Logout",
+    "login": "Login"
   }
 }

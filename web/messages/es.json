@@ -32,7 +32,10 @@
     "brandPart2": "QUIZ",
     "close": "Cerrar",
     "settings": "Configuración",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "menuTitle": "Panel de Control",
+    "homeMenu": "Examinar",
+    "adminMenu": "Administración"
   },
   "home": {
     "status": "Estado del Sistema: Operativo",
@@ -239,7 +242,17 @@
     "labelSource": "Fuente de Origen",
     "labelDifficulty": "Nivel de Dificultad (Desplegable)",
     "btnSaving": "GUARDANDO...",
-    "btnApplyBank": "APLICAR Y INGESTAR BANCO",
     "btnNextQuestion": "SIGUIENTE PREGUNTA"
+  },
+  "settings": {
+    "title": "Ajustes de Sistema",
+    "close": "Cerrar",
+    "language": "Idioma",
+    "theme": "Tema",
+    "theme_light": "Claro",
+    "theme_dark": "Oscuro",
+    "theme_system": "Sistema",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión"
   }
 }

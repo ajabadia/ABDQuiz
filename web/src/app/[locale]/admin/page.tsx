@@ -47,13 +47,6 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
               {ap('subTitle')}<span className="text-primary">{user.tenantId}</span>
             </p>
           </div>
-
-          <Button variant="outline" className="rounded-none font-mono text-[10px] tracking-widest uppercase h-10 border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground" asChild>
-            <Link href={`/${locale}`}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {c('close')}
-            </Link>
-          </Button>
         </header>
 
         {/* Dashboard Grid */}

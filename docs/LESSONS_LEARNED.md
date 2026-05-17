@@ -98,5 +98,41 @@ El componente `<Link>` intercepta los eventos de clic y pre-carga la ruta median
    Este mapeo encapsula fallos por valores nulos imprevistos y asegura la compatibilidad estricta con las firmas tipadas del lado cliente.
 
 ---
-*Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*
 
+## 6. Gráficos Vectoriales SVG Nativos (Zero-Bloat) e Inmunidad a Fallos de Hidratación en React 19 / Next.js 16
+
+> [!CRITICAL]
+> **El síntoma**: 
+> 1. El uso de librerías externas de visualización de datos (como Recharts, Chart.js o React-Vis) introduce grandes bloques de javascript en el bundle de cliente e incrementa drásticamente la latencia en las métricas de renderizado inicial (TBT, LCP).
+> 2. Discrepancias de hidratación (`Hydration Mismatch`) severas al intentar renderizar en servidor elementos dinámicos que dependen de dimensiones físicas en el DOM o APIs de cliente, bloqueando el hilo de ejecución principal en React 19.
+
+### La Causa Raíz
+1. **Sobrecarga de JavaScript**: Las librerías de gráficos encapsulan complejas abstracciones de cálculo matemático y manipulación del DOM que añaden peso masivo.
+2. **Ciclo de Vida SSR vs CSR**: Al ejecutarse el Server-Side Rendering (SSR), el código en Node.js calcula el marcado estático sin acceso a APIs de navegador (como `window.innerWidth`). Si el lado cliente intenta recalculas dimensiones de forma inconsistente en el primer render, React detecta una discrepancia en el árbol DOM y aborta con errores críticos de hidratación.
+
+### Lecciones Aprendidas y Solución
+1. **Gráficos SVG puros paramétricos**: La solución óptima y de grado industrial para dashboards de analíticas dinámicas de alto rendimiento es emplear elementos SVG estándar en React. Calculando las proporciones matemáticamente en base a una caja de visualización (`viewBox`) predefinida y aplicando variables semánticas de color CSS (`stroke="var(--primary)"` y `fill="url(#gradient)"`), garantizamos renderizados adaptables ultra-fluidos a 60fps con peso virtualmente nulo en el bundle.
+2. **Patrón Mounted Guard en Componentes Dinámicos**: Para asegurar inmunidad al 100% frente a fallos de hidratación en React 19, todo componente dinámico de cliente que inicie llamadas a Server Actions o manipulación del DOM en el montaje debe encapsularse bajo un estado lógico de control inicial:
+   ```typescript
+   export default function AnalyticsDashboard() {
+     const [mounted, setMounted] = useState(false);
+     
+     useEffect(() => {
+       setMounted(true);
+     }, []);
+
+     if (!mounted) {
+       return <div className="animate-pulse">Cargando telemetría...</div>;
+     }
+
+     return (
+       <div className="flex flex-col">
+         {/* Renderizado seguro y consistente de SVG y métricas */}
+       </div>
+     );
+   }
+   ```
+   Esta práctica bloquea el intento de hidratar elementos dinámicos inconsistentes y sirve un loader sutil mientras el lado cliente se monta limpiamente en el navegador.
+
+---
+*Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*

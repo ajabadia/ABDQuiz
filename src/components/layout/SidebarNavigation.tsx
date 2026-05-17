@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, BookOpen, Terminal, ShieldCheck, LogOut } from 'lucide-react';
+import { Menu, X, BookOpen, Terminal, ShieldCheck, LogOut, BarChart2 } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 
@@ -99,6 +99,16 @@ export function SidebarNavigation({ session }: SidebarNavigationProps) {
             >
               <BookOpen className="w-4 h-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
               {t('homeMenu')}
+            </Link>
+
+            {/* Link A.2: History & Analytics */}
+            <Link
+              href="/history"
+              onClick={toggleSidebar}
+              className="flex items-center gap-4 px-4 py-3 bg-muted/10 border border-border hover:border-primary/20 hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all duration-200 uppercase font-mono text-[10px] font-bold tracking-wider rounded-none"
+            >
+              <BarChart2 className="w-4 h-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
+              {t('historyMenu')}
             </Link>
 
             {/* Link B: Administration (Only for admins) */}

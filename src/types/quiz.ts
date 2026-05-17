@@ -32,3 +32,37 @@ export interface SerializedExamConfig extends Omit<IExamConfig, '_id' | 'created
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ModuleAnalytics {
+  module: string;
+  answered: number;
+  correct: number;
+  percentage: number;
+}
+
+export interface DifficultyAnalytics {
+  easy: { correct: number; total: number; percentage: number };
+  medium: { correct: number; total: number; percentage: number };
+  hard: { correct: number; total: number; percentage: number };
+}
+
+export interface AttemptSummary {
+  _id: string;
+  startedAt: string;
+  percentage: number;
+  score: number;
+  mode: 'training' | 'mock';
+  status: 'in_progress' | 'completed' | 'timeout';
+  totalQuestions: number;
+}
+
+export interface AnalyticsPayload {
+  totalAttempts: number;
+  completedAttempts: number;
+  averageScore: number;
+  avgTimePerQuestion: number;
+  timeline: { startedAt: string; percentage: number; mode: string }[];
+  modulePerformance: ModuleAnalytics[];
+  difficultyPerformance: DifficultyAnalytics;
+  recentAttempts: AttemptSummary[];
+}

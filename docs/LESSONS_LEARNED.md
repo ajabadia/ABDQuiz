@@ -223,10 +223,12 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
 > **El síntoma**: 
 > 1. Al cerrar sesión en el satélite (ABDQuiz), el usuario terminaba de nuevo atrapado en la pantalla de Login central del proveedor de identidad (ABDAuth) en lugar de permanecer en una pantalla neutral de despedida, generando confusión de pertenencia.
 > 2. Si el usuario rellenaba sus credenciales en dicha pantalla de login, era redirigido obligatoriamente al panel central (`/dashboard` de ABDAuth) en lugar de retornar automáticamente a la aplicación satélite original (ABDQuiz).
+> 3. Si un usuario ya logueado en ABDAuth intentaba acceder al satélite (o hacía clic en volver a loguearse), la pasarela de login central le redireccionaba forzadamente a su dashboard central en lugar de completar la redirección federada, rompiendo el SSO de vuelta.
 
 ### La Causa Raíz
 1. **Inexistencia de Rutas Públicas en Satélites**: El middleware perimetral de ABDQuiz (`proxy.ts`) bloqueaba y redirigía cualquier petición entrante no autenticada de vuelta al IdP. Por ende, tras borrar cookies, la redirección de regreso al satélite era interceptada instantáneamente, volviendo a forzar la pantalla de login del IdP.
 2. **Ignorancia del `callbackUrl` en el Cliente del IdP**: La página de Login cliente de ABDAuth (`src/app/[locale]/login/page.tsx`) tenía un comportamiento de enrutamiento estático en su submit handler exitoso: `router.push('/dashboard')`, ignorando por completo el parámetro de consulta `callbackUrl` enviado por el protocolo federado en la URL del navegador.
+3. **Intercepción y Secuestro de Sesión en el Guardián del IdP**: El archivo `proxy.ts` de ABDAuth interceptaba la ruta `/login`. Si detectaba que el usuario ya estaba autenticado (`isLoggedIn: true`), NextAuth realizaba una redirección de seguridad fija a `/${locale}/dashboard`, anulando e ignorando el parámetro query `callbackUrl` presente en el navegador.
 
 ### Lecciones Aprendidas y Solución
 1. **Arquitectura de Despedida Pública**: Implementar pantallas de finalización de ciclo de vida de sesión públicas en el satélite (ej. `/logout-success`), eximiéndolas de la autenticación de Mapeadores del Middleware:
@@ -236,7 +238,23 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
      return intlMiddleware(request); // Bypass Auth Gate
    }
    ```
-2. **Direccionamiento Dinámico Libre de SSR Suspense Warnings**: Extraer el parámetro `callbackUrl` del navegador utilizando `new URLSearchParams(window.location.search)` dentro del submit de la macro-tarea cliente en el IdP. Esto evita tener que envolver todo el componente en un bloque `<Suspense>` de Next.js (obligatorio si se usara el hook `useSearchParams` de Next.js en renderizados estáticos) y permite redirigir de forma segura e instantánea al satélite llamador:
+2. **Whitelisting de la Landing Page Pública del Satélite**: Eximir la raíz del sitio `/` y sus variantes de idioma localizadas (`/es`, `/en`, `/es/`, `/en/`) en el guardián `proxy.ts` de ABDQuiz. Esto permite a los usuarios ver la Landing Page informativa libremente, y solo los desvía al portal de identidad cuando solicitan explícitamente acceder al simulador privado (`/exams` o `/admin`):
+   ```typescript
+   const isPublicPath = 
+     pathname === '/' ||
+     pathname === '/es' ||
+     pathname === '/en' ||
+     pathname === '/es/' ||
+     pathname === '/en/' ||
+     pathname.endsWith('/logout-success') ||
+     pathname.includes('.') || 
+     pathname.startsWith('/_next') || 
+     pathname.startsWith('/api/') ||
+     pathname === '/favicon.ico';
+   
+   if (isPublicPath) return intlMiddleware(request);
+   ```
+3. **Direccionamiento Dinámico Libre de SSR Suspense Warnings**: Extraer el parámetro `callbackUrl` del navegador utilizando `new URLSearchParams(window.location.search)` dentro del submit de la macro-tarea cliente en el IdP. Esto evita tener que envolver todo el componente en un bloque `<Suspense>` de Next.js (obligatorio si se usara el hook `useSearchParams` de Next.js en renderizados estáticos) y permite redirigir de forma segura e instantánea al satélite llamador:
    ```typescript
    const params = new URLSearchParams(window.location.search);
    const callbackUrl = params.get('callbackUrl');
@@ -244,6 +262,20 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
      window.location.href = callbackUrl; // Redirección externa de dominio federado
    } else {
      router.push('/dashboard');
+   }
+   ```
+4. **Bypass del Secuestro en el Guardián del IdP (`proxy.ts`)**: Modificar la regla de ruta pública del middleware de ABDAuth para que si un usuario autenticado entra en `/login` con una `callbackUrl` en sus parámetros de consulta, se le devuelva inmediatamente a dicho flujo de autorización en vez de arrastrarlo a su panel de control:
+   ```typescript
+   if (isPublicRoute) {
+     if (isLoggedIn) {
+       const { searchParams } = new URL(req.url);
+       const callbackUrl = searchParams.get('callbackUrl');
+       if (callbackUrl) {
+         return NextResponse.redirect(new URL(callbackUrl, req.url));
+       }
+       return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
+     }
+     return intlMiddleware(req);
    }
    ```
 

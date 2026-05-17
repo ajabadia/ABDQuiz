@@ -33,8 +33,8 @@ export default function LogoutSuccessPage() {
   }
 
   const handleSignIn = () => {
-    // Redirecting to root `/` triggers proxy.ts to start authorize flow clean
-    router.push('/');
+    // Redirecting to the protected /exams path triggers proxy.ts to launch the federated login flow immediately
+    router.push('/exams');
   };
 
   return (

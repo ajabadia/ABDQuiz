@@ -12,14 +12,20 @@ const intlMiddleware = createMiddleware(routing);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Skip auth for assets and internal APIs
-  if (
+  // 1. Skip auth for assets, public landing pages, and internal APIs
+  const isPublicPath = 
+    pathname === '/' ||
+    pathname === '/es' ||
+    pathname === '/en' ||
+    pathname === '/es/' ||
+    pathname === '/en/' ||
+    pathname.endsWith('/logout-success') ||
     pathname.includes('.') || 
     pathname.startsWith('/_next') || 
     pathname.startsWith('/api/') ||
-    pathname === '/favicon.ico' ||
-    pathname.endsWith('/logout-success')
-  ) {
+    pathname === '/favicon.ico';
+
+  if (isPublicPath) {
     return intlMiddleware(request);
   }
 

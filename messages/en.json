@@ -329,6 +329,7 @@
     "subtitle": "You have been successfully signed out of ABDQuiz.",
     "message": "Your session has been securely revoked at both the satellite and the central Identity Provider.",
     "button": "Sign In Again",
+    "home_button": "Return to Welcome Screen",
     "shield_badge": "Session Revoked"
   }
 }

@@ -87,13 +87,13 @@ export default function LogoutSuccessPage() {
           {t('button')}
         </button>
 
-        {/* 🏁 Return Link */}
+        {/* 🏁 Return Link to Public Welcome Page */}
         <button
-          onClick={() => window.location.href = 'https://abd-auth.vercel.app'}
+          onClick={() => router.push('/')}
           className="mt-5 text-[9px] font-black text-muted-foreground hover:text-foreground tracking-widest uppercase transition-colors flex items-center gap-1.5 cursor-pointer outline-none"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Portal ABDAuth
+          {t('home_button')}
         </button>
       </div>
 

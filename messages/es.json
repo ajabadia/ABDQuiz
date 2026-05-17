@@ -329,6 +329,7 @@
     "subtitle": "Has cerrado sesión correctamente de la plataforma ABDQuiz.",
     "message": "Tu sesión ha sido revocada de forma segura tanto en el simulador como en la pasarela central.",
     "button": "Volver a Iniciar Sesión",
+    "home_button": "Volver a la Bienvenida",
     "shield_badge": "Sesión Revocada"
   }
 }

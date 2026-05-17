@@ -80,6 +80,7 @@ export default function LogoutSuccessPage() {
 
         {/* 🚀 Interactive Trigger Button */}
         <button
+          aria-label={t('button')}
           onClick={handleSignIn}
           className="w-full h-11 bg-primary hover:bg-primary/95 text-primary-foreground text-[10px] font-black uppercase tracking-widest transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border-b-2 border-primary-foreground/10 active:border-b-0 active:translate-y-[1px] outline-none"
         >
@@ -89,6 +90,7 @@ export default function LogoutSuccessPage() {
 
         {/* 🏁 Return Link to Public Welcome Page */}
         <button
+          aria-label={t('home_button')}
           onClick={() => router.push('/')}
           className="mt-5 text-[9px] font-black text-muted-foreground hover:text-foreground tracking-widest uppercase transition-colors flex items-center gap-1.5 cursor-pointer outline-none"
         >
@@ -99,7 +101,7 @@ export default function LogoutSuccessPage() {
 
       {/* 🏁 Footer Spec */}
       <footer className="absolute bottom-6 opacity-25 text-[8px] font-mono tracking-widest uppercase text-muted-foreground">
-        {common('appTitle')} // SEC_REVOKED_LOGOUT_OK
+        {common('appTitle')} | SEC_REVOKED_LOGOUT_OK
       </footer>
     </div>
   );

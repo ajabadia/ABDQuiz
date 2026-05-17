@@ -1,0 +1,142 @@
+[
+  {
+    "pregunta": "¿Qué tipo de sistemas de IA caracterizan la evolución del software empresarial en el periodo 2022-2024?",
+    "opciones": [
+      "Bots basados en reglas fijas",
+      "IA colaborativa tipo copiloto",
+      "Asistentes virtuales sin decisión compleja",
+      "Agentes autónomos orientados a objetivos"
+    ],
+    "respuesta_correcta": 3,
+    "explicacion": "Entre 2022 y 2024, la evolución marca el paso a agentes agénticos (autónomos) que reciben una meta, toman decisiones y ejecutan secuencias de acciones sin intervención humana constante.",
+    "modulo": "Módulo 1",
+    "fuente": "M1 - 2.1 Detectar oportunidades reales de IA en una empresa.pdf",
+    "tags": ["evolucion", "agentes", "tecnologia"]
+  },
+  {
+    "pregunta": "Dentro de las resistencias organizacionales ante la IA, ¿qué implica el 'miedo a perder valor profesional'?",
+    "opciones": [
+      "Inseguridad al tener que delegar decisiones a sistemas informáticos opacos",
+      "Temor a ser reemplazados o perder relevancia ante la narrativa de que 'la IA hará mi trabajo'",
+      "Desconfianza histórica derivada de proyectos de transformación digital fallidos en el pasado",
+      "Rechazo de los empleados a tener que aprender nuevos lenguajes de programación"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "El miedo a perder valor profesional surge del temor de los empleados a ser reemplazados o perder su relevancia y singularidad en la empresa, a causa de la narrativa dominante en la sociedad.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes Clase 2.5_Barreras comunes. cultura, talento, datos y tecnología.pdf",
+    "tags": ["cultura", "barreras", "recursos humanos"]
+  },
+  {
+    "pregunta": "¿Qué significa el acrónimo GEO en el contexto del impacto de la IA en los modelos de negocio y captación de clientes?",
+    "opciones": [
+      "Global Enterprise Operations",
+      "General Execution Optimization",
+      "Generative Engine Optimization",
+      "Guaranteed Error Output"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "GEO (Generative Engine Optimization) representa la evolución del SEO tradicional para optimizar la visibilidad en interfaces de búsqueda conversacionales basadas en IA generativa.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 1.6_2.1.pdf",
+    "tags": ["estrategia", "marketing", "tendencias"]
+  },
+  {
+    "pregunta": "Según la distribución de la adopción de IA por departamentos en las empresas, ¿cuáles son las dos áreas que lideran su uso actualmente?",
+    "opciones": [
+      "Finanzas y Manufactura",
+      "Recursos Humanos y Gestión del conocimiento",
+      "IT y Marketing",
+      "Desarrollo de productos y Riesgos"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "Según los datos aportados, los departamentos de IT y Marketing lideran de forma conjunta con un 36% cada uno en el uso integrado de IA, siendo una adopción extremadamente irregular comparada con otros departamentos.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes Clase 2.3_Niveles de madurez en adopción de IA.pdf",
+    "tags": ["adopcion", "estadisticas", "madurez"]
+  },
+  {
+    "pregunta": "¿Qué problema técnico describe el término 'sobreajuste' (overfitting) en un modelo de IA?",
+    "opciones": [
+      "El modelo funciona perfectamente con los datos de entrenamiento pero no es capaz de generalizar para predecir con datos nuevos",
+      "El modelo se ha entrenado con una base de datos desactualizada que incumple las normativas de privacidad",
+      "El modelo muestra un sesgo cultural evidente al desplegarse en un mercado internacional diferente",
+      "El modelo consume demasiados recursos de computación y dispara los costes de infraestructura cloud"
+    ],
+    "respuesta_correcta": 0,
+    "explicacion": "El sobreajuste ocurre cuando el algoritmo aprende demasiado bien los datos de entrenamiento (incluso el ruido), perdiendo la capacidad de generalizar y haciéndolo inútil frente a datos nuevos en producción.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes clase 3.3_Identificacion de riesgosç.pdf",
+    "tags": ["riesgos", "tecnico", "modelos"]
+  },
+  {
+    "pregunta": "En un plan de mitigación de riesgos de IA, ¿cuál es el impacto económico relativo de tener que remediar un problema que ya ha llegado a producción, comparado con prevenirlo?",
+    "opciones": [
+      "Cuesta exactamente lo mismo que la prevención",
+      "El coste se multiplica aproximadamente por dos",
+      "El coste se multiplica aproximadamente por cinco",
+      "El coste se multiplica por diez"
+    ],
+    "respuesta_correcta": 3,
+    "explicacion": "Basado en la regla financiera de la calidad del software, la prevención tiene un coste base (1x), detectarlo en fases de prueba lo multiplica por 5x, y la remediación en producción lo multiplica por 10x.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes clase 3.4_Plan de mitigacion.pdf",
+    "tags": ["riesgos", "costes", "mitigacion"]
+  },
+  {
+    "pregunta": "En la fase de optimización de procesos antes de adoptar IA, ¿es estrictamente necesario aplicar manualmente metodologías como Kaizen para simplificar primero los procesos?",
+    "opciones": [
+      "Sí, la IA no puede operar de ninguna manera en procesos complejos o desordenados",
+      "No, las herramientas modernas (como RPA + IA) pueden detectar y sugerir automáticamente cómo simplificar redundancias y cuellos de botella",
+      "Sí, pero esta regla aplica exclusivamente al sector industrial y de manufactura",
+      "No, la IA funciona mucho mejor cuanta mayor complejidad y desorden exista en el proceso actual"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "Aunque limpiar el proceso (Kaizen) es válido, las herramientas modernas tienen la capacidad de detectar automáticamente ineficiencias durante su operación, permitiendo un enfoque más ágil donde la IA ayuda en la propia simplificación.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes Clase 2.2 _Evaluación del impacto y priorización de proyectos.pdf",
+    "tags": ["procesos", "optimizacion", "rpa"]
+  },
+  {
+    "pregunta": "Dentro del modelo de KPIs para la adopción de proyectos de IA, ¿qué miden específicamente los 'KPIs de adopción y uso'?",
+    "opciones": [
+      "Si la solución tecnológica es estable y mantiene una baja tasa de error en el tiempo",
+      "Si el proyecto cumple de manera estricta con todas las normativas y políticas de seguridad",
+      "La cantidad de usuarios activos, el porcentaje respecto al objetivo y la frecuencia o recurrencia con la que utilizan la herramienta",
+      "El impacto financiero directo, como la reducción drástica de costos operativos o el aumento de ingresos"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "Los KPIs de adopción responden a la pregunta '¿la gente usa la solución?'. Se separan de los KPIs de valor (financiero) y de los operativos (calidad técnica), enfocándose estrictamente en el engagement del usuario.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes Clase 2.4_Cómo avanzar en el roadmap de adopción.pdf",
+    "tags": ["kpis", "adopcion", "medicion"]
+  },
+  {
+    "pregunta": "¿Cuál es la barrera principal y más frecuente (presente en el 80% de los casos) a la hora de medir el valor y el retorno real de los proyectos de IA?",
+    "opciones": [
+      "La resistencia cultural de los empleados a ser medidos",
+      "Los datos insuficientes o la falta de infraestructura para trazar el uso de la herramienta",
+      "Los silos departamentales que impiden compartir la información",
+      "El establecimiento de métricas técnicas demasiado vagas"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "Según los datos, los 'datos insuficientes' (80%) son la barrera organizativa más grande para la atribución de valor, por encima de los silos departamentales (75%) y la resistencia cultural (72%).",
+    "modulo": "Módulo 1",
+    "fuente": "Metricas_Clave_IA.pptx.pdf",
+    "tags": ["barreras", "medicion", "datos"]
+  },
+  {
+    "pregunta": "¿Qué arquitectura o técnica de IA permite a un asistente recuperar documentación corporativa precisa antes de generar una respuesta para evitar alucinaciones?",
+    "opciones": [
+      "PCA (Principal Component Analysis)",
+      "RPA (Robotic Process Automation)",
+      "RAG (Retrieval-Augmented Generation)",
+      "ETL (Extract, Transform, Load)"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "El RAG (Generación Aumentada por Recuperación) combina la búsqueda de documentos internos de la empresa con las capacidades generativas del LLM, garantizando respuestas precisas y basadas en el contexto real del negocio.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 2.2_2.3.pdf",
+    "tags": ["tecnologia", "rag", "arquitectura"]
+  }
+]

@@ -1,0 +1,132 @@
+[
+  {
+    "pregunta": "¿Cuál es el método de atribución de valor más fiable para medir el impacto de la IA?",
+    "opciones": [
+      "A) Expert Estimation",
+      "B) A/B Testing",
+      "C) Before/After",
+      "D) Principal Component Analysis (PCA)"
+    ],
+    "respuesta_correcta": "B) A/B Testing",
+    "explicacion": "El A/B Testing tiene una fiabilidad del 92% y es considerado el 'gold standard' porque asigna aleatoriamente grupos de control y tratamiento, aislando perfectamente el efecto de la IA frente a otras variables. Opciones como Expert Estimation solo tienen un 50% de fiabilidad y deben usarse solo como complemento [1, 2].",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes clase 3.1_Identificacion de metricas clave.pdf"
+  },
+  {
+    "pregunta": "En un modelo de scoring bancario, ¿qué indica un valor de PSI (Population Stability Index) superior a 0.25?",
+    "opciones": [
+      "A) Que el modelo es perfectamente estable",
+      "B) Drift significativo; el modelo debe reentrenarse",
+      "C) Inestabilidad leve que no requiere acción",
+      "D) Que hay un sesgo de género en los datos"
+    ],
+    "respuesta_correcta": "B) Drift significativo; el modelo debe reentrenarse",
+    "explicacion": "Un valor de PSI superior a 0.25 indica que existe un 'drift' o desviación significativa en los datos poblacionales en producción comparados con los de entrenamiento. Por tanto, el modelo ha perdido estabilidad y requiere ser reentrenado obligatoriamente. Valores menores (0.10 a 0.25) indicarían solo una inestabilidad leve [1, 2].",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes clase 3.1_Identificacion de metricas clave.pdf"
+  },
+  {
+    "pregunta": "¿Cuál es el error más común al definir métricas para proyectos de IA?",
+    "opciones": [
+      "A) Usar demasiadas métricas de negocio",
+      "B) Utilizar solo métricas técnicas sin conexión con negocio",
+      "C) Medir la satisfacción del usuario con demasiada frecuencia",
+      "D) Establecer baselines demasiado ambiciosos"
+    ],
+    "respuesta_correcta": "B) Utilizar solo métricas técnicas sin conexión con negocio",
+    "explicacion": "El error más frecuente, cometido por el 82% de los equipos, es definir métricas puramente técnicas (como accuracy o F1) y no vincularlas a un KPI de negocio. Las métricas técnicas por sí solas no justifican la inversión del proyecto ante los directivos o el C-Suite [3-5].",
+    "modulo": "Módulo 1",
+    "fuente": "Metricas_Clave_IA.pptx.pdf"
+  },
+  {
+    "pregunta": "¿Cuál es el STP Rate (Straight Through Processing) objetivo ideal para formularios regulatorios automatizados con IA?",
+    "opciones": [
+      "A) > 30%",
+      "B) > 50%",
+      "C) > 80%",
+      "D) 100%"
+    ],
+    "respuesta_correcta": "C) > 80%",
+    "explicacion": "El objetivo principal en la automatización de formularios regulatorios es alcanzar un STP Rate superior al 80%. Esto significa que la gran mayoría de los formularios se procesan de principio a fin sin intervención humana, que es el umbral necesario para que la inversión en IA esté justificada [6, 7].",
+    "modulo": "Módulo 1",
+    "fuente": "Cuadros_de_Mando_IA.pptx.pdf"
+  },
+  {
+    "pregunta": "¿Por qué es importante la 'alarm rationalization' (racionalización de alarmas) en sistemas de asistencia o mantenimiento con IA?",
+    "opciones": [
+      "A) Para aumentar el número total de alarmas generadas",
+      "B) Para reducir falsos positivos y prevenir la fatiga de alarmas",
+      "C) Para eliminar la necesidad de operadores humanos",
+      "D) Para reducir el coste de los sensores IoT"
+    ],
+    "respuesta_correcta": "B) Para reducir falsos positivos y prevenir la fatiga de alarmas",
+    "explicacion": "Su función principal es calibrar el sistema para evitar el exceso de falsos positivos. Si hay demasiadas alertas innecesarias, los operadores humanos sufren 'fatiga de alarmas' (carga cognitiva o desensibilización) y podrían ignorar las verdaderas emergencias [8-10].",
+    "modulo": "Módulo 1",
+    "fuente": "Metricas_Clave_IA.pptx.pdf"
+  },
+  {
+    "pregunta": "En el relleno de formularios regulatorios con IA, ¿qué tasa de error crítico es la máxima aceptable?",
+    "opciones": [
+      "A) < 5%",
+      "B) < 1%",
+      "C) < 0.1%",
+      "D) 0%"
+    ],
+    "respuesta_correcta": "C) < 0.1%",
+    "explicacion": "En los procesos que tienen impacto regulatorio estricto, la tolerancia al error es extremadamente baja debido a las posibles repercusiones legales o multas asociadas. Por ello, la tasa de error crítico admisible debe ser inferior al 0.1% [9].",
+    "modulo": "Módulo 1",
+    "fuente": "Metricas_Clave_IA.pptx.pdf"
+  },
+  {
+    "pregunta": "¿Qué mide la 'Amplitud de Perspectivas' dentro del Radar de 5 Dimensiones para evaluar la calidad del razonamiento de una IA?",
+    "opciones": [
+      "A) La precisión matemática del algoritmo",
+      "B) Cuántos ángulos y enfoques se han considerado en el análisis",
+      "C) La cantidad de parámetros del modelo multimodal",
+      "D) El tiempo que tarda el modelo en generar una respuesta"
+    ],
+    "respuesta_correcta": "B) Cuántos ángulos y enfoques se han considerado en el análisis",
+    "explicacion": "Dentro de las 5 dimensiones propuestas por David Hurtado para evaluar si la IA realmente mejora la calidad del trabajo, la 'Amplitud de perspectivas' evalúa si el análisis explora sistemáticamente diferentes ángulos o enfoques para resolver el problema de negocio [11, 12].",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 3.5_1.1.pdf"
+  },
+  {
+    "pregunta": "¿Cuál es la principal barrera organizacional para implementar planes de mitigación de riesgos en IA?",
+    "opciones": [
+      "A) Falta de tecnología adecuada",
+      "B) Resistencia cultural y priorización de velocidad sobre seguridad",
+      "C) Exceso de regulaciones",
+      "D) Falta de datos de calidad"
+    ],
+    "respuesta_correcta": "B) Resistencia cultural y priorización de velocidad sobre seguridad",
+    "explicacion": "Los datos indican que la resistencia cultural (presente en un 85% de los casos), combinada con una cultura empresarial que prima salir rápido al mercado ('velocidad sobre seguridad'), es el obstáculo más fuerte, por encima incluso de la falta de presupuesto o de talento especializado [10, 13].",
+    "modulo": "Módulo 1",
+    "fuente": "Plan_Mitigacion_Riesgos_IA_V2.pptx.pdf"
+  },
+  {
+    "pregunta": "¿Qué busca lograr la 'Matriz Impacto/Esfuerzo' a la hora de priorizar el portfolio de proyectos de IA?",
+    "opciones": [
+      "A) Identificar el modelo de Deep Learning más económico",
+      "B) Priorizar los 'Quick Wins' (alto impacto, bajo esfuerzo) y aplazar tareas complejas",
+      "C) Clasificar proyectos según urgencia e importancia",
+      "D) Validar la arquitectura tecnológica local"
+    ],
+    "respuesta_correcta": "B) Priorizar los 'Quick Wins' (alto impacto, bajo esfuerzo) y aplazar tareas complejas",
+    "explicacion": "Esta matriz es un marco visual que cruza el valor de negocio esperado con la viabilidad técnica. Se utiliza específicamente para identificar y priorizar los 'Quick Wins' o victorias rápidas, dejando para más adelante las iniciativas de bajo retorno o que exigen un esfuerzo desproporcionado [14, 15].",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 2.2_2.3.pdf"
+  },
+  {
+    "pregunta": "Según el Roadmap de los 3 Horizontes, ¿en qué debe enfocarse una organización que se encuentra en el Horizonte 1 (Corto Plazo)?",
+    "opciones": [
+      "A) Transformación de modelos de negocio nativos en IA",
+      "B) Escalado masivo con agentes autónomos",
+      "C) Eficiencia, 'victorias rápidas' y automatización de tareas repetitivas",
+      "D) Modernización completa de todos los sistemas legacy"
+    ],
+    "respuesta_correcta": "C) Eficiencia, 'victorias rápidas' y automatización de tareas repetitivas",
+    "explicacion": "El Horizonte 1 (entre los primeros 30-90 días o primeros meses) se centra en la eficiencia a corto plazo. Su objetivo principal es validar el ROI mediante la automatización de procesos secundarios o tareas repetitivas de bajo riesgo y la creación de copilotos internos [15].",
+    "modulo": "Módulo 1",
+    "fuente": "M1 - 2.4 Cómo avanzar en el roadmap de adopción.pdf"
+  }
+]

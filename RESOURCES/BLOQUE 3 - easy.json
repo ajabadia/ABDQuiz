@@ -1,0 +1,142 @@
+[
+  {
+    "pregunta": "¿Qué empresa tecnológica ha desarrollado la familia de modelos de lenguaje de código abierto llamada Llama?",
+    "opciones": [
+      "Google",
+      "OpenAI",
+      "Meta",
+      "Microsoft"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "Llama es una familia de modelos de lenguaje de código abierto desarrollada por Meta, que se utiliza habitualmente como alternativa a modelos cerrados como GPT-4 o Claude.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 1.4_1.5.pdf",
+    "tags": ["llama", "meta", "modelos"]
+  },
+  {
+    "pregunta": "¿Cómo se llama el fenómeno en el que un modelo de IA genera información que parece real pero es completamente inventada o incorrecta?",
+    "opciones": [
+      "Sobreajuste",
+      "Alucinación",
+      "Orquestación",
+      "Tokenización"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "La alucinación ocurre cuando los modelos de lenguaje generan información factualmente incorrecta o inventada al no tener acceso a fuentes verificables o no procesar bien la consulta.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 1.4_1.5.pdf",
+    "tags": ["alucinacion", "errores", "conceptos"]
+  },
+  {
+    "pregunta": "¿Cuál es la unidad mínima de información que un modelo de lenguaje de IA puede procesar y por la que habitualmente se factura?",
+    "opciones": [
+      "Byte",
+      "Píxel",
+      "Prompt",
+      "Token"
+    ],
+    "respuesta_correcta": 3,
+    "explicacion": "Un token es la unidad mínima procesable por el modelo. Puede equivaler a una palabra completa, un fragmento de ella o incluso un simple signo de puntuación.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 3.5_1.1.pdf",
+    "tags": ["tecnico", "token", "procesamiento"]
+  },
+  {
+    "pregunta": "¿Qué asistente de Inteligencia Artificial está integrado de forma nativa en todo el ecosistema de productos de Microsoft (Office 365, Windows, etc.)?",
+    "opciones": [
+      "Gemini",
+      "Microsoft Copilot",
+      "Claude Cowork",
+      "ChatGPT"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "Microsoft Copilot es el asistente de IA integrado en los productos de Microsoft que proporciona capacidades de IA generativa de forma directa en el entorno de trabajo empresarial.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 1.4_1.5.pdf",
+    "tags": ["herramientas", "microsoft", "copilot"]
+  },
+  {
+    "pregunta": "¿Qué término se utiliza habitualmente para describir la instrucción o pregunta inicial que un usuario escribe para interactuar con un modelo de IA?",
+    "opciones": [
+      "Script",
+      "Query",
+      "Prompt",
+      "Vector"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "El prompt es la instrucción o pregunta formulada a un modelo de IA para indicarle el contexto y qué acción debe ejecutar.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 3.5_1.1.pdf",
+    "tags": ["conceptos", "prompt", "interaccion"]
+  },
+  {
+    "pregunta": "A nivel internacional, ¿qué país lidera actualmente la adopción y despliegue real de IA en las empresas con un 59%?",
+    "opciones": [
+      "Estados Unidos",
+      "China",
+      "India",
+      "España"
+    ],
+    "respuesta_correcta": 2,
+    "explicacion": "Según los datos globales de Statista aportados en el temario, India lidera el despliegue mundial de IA con un 59%, situándose por encima de Emiratos Árabes Unidos (58%) y Singapur.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes Clase 2.3_Niveles de madurez en adopción de IA.pdf",
+    "tags": ["adopcion", "estadisticas", "global"]
+  },
+  {
+    "pregunta": "¿Cómo se llama el protocolo que permite a dos sistemas o aplicaciones informáticas comunicarse e intercambiar datos automáticamente sin intervención humana?",
+    "opciones": [
+      "API (Application Programming Interface)",
+      "LLM (Large Language Model)",
+      "RPA (Robotic Process Automation)",
+      "VPN (Virtual Private Network)"
+    ],
+    "respuesta_correcta": 0,
+    "explicacion": "La API es un protocolo tecnológico fundamental para que los agentes de Inteligencia Artificial puedan acceder a sistemas y herramientas externas para ejecutar acciones automáticamente.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 1.4_1.5.pdf",
+    "tags": ["tecnologia", "api", "integracion"]
+  },
+  {
+    "pregunta": "¿Qué indican las siglas ROI cuando se evalúa el éxito de un proyecto de Inteligencia Artificial?",
+    "opciones": [
+      "Risk Of Implementation",
+      "Return On Investment (Retorno de Inversión)",
+      "Rate Of Intelligence",
+      "Rules Of Integration"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "El ROI es la métrica financiera de Retorno sobre la Inversión. En IA es crucial medirlo, aunque a veces sea un reto cuantificar métricas intangibles como la mejora del razonamiento.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 3.5_1.1.pdf",
+    "tags": ["negocio", "roi", "metricas"]
+  },
+  {
+    "pregunta": "¿Qué es un MVP (Minimum Viable Product) en la adopción de proyectos de IA?",
+    "opciones": [
+      "El modelo de lenguaje más potente y costoso",
+      "La versión mínima de una solución que permite validar si funciona con usuarios reales",
+      "Un protocolo de seguridad obligatorio contra ciberataques",
+      "El perfil profesional del ingeniero de datos principal"
+    ],
+    "respuesta_correcta": 1,
+    "explicacion": "Un Producto Mínimo Viable (MVP) es el primer nivel de implementación de una solución con las características justas para ser probado por usuarios reales, permitiendo aprender rápido y a bajo coste antes de escalar.",
+    "modulo": "Módulo 1",
+    "fuente": "Glosario 2.2_2.3.pdf",
+    "tags": ["desarrollo", "mvp", "proyectos"]
+  },
+  {
+    "pregunta": "Según la pirámide del EU AI Act, ¿qué nivel de riesgo tiene un modelo de IA que se utiliza exclusivamente a nivel interno sin ningún contacto con clientes?",
+    "opciones": [
+      "Riesgo inasumible",
+      "Riesgo alto",
+      "Riesgo limitado",
+      "Riesgo mínimo o nulo"
+    ],
+    "respuesta_correcta": 3,
+    "explicacion": "Un sistema que no sale de la organización, no entra en contacto con clientes ni intenta influenciarlos se clasifica legalmente en la base de la pirámide como riesgo nulo o mínimo.",
+    "modulo": "Módulo 1",
+    "fuente": "Apuntes clase 3.3_Identificacion de riesgosç.pdf",
+    "tags": ["regulacion", "riesgos", "legal"]
+  }
+]

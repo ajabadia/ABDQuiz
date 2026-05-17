@@ -1,0 +1,17 @@
+{
+  "_id": "6a06ebd727b692e89b1e7db5",
+  "name": "ABDQuiz Federated",
+  "description": "Official industrial audit and quiz satellite.",
+  "clientId": "abdquiz-industrial-client-id",
+  "clientSecret": "abdquiz-industrial-super-secret-key-2026",
+  "redirectUris": [
+    "http://localhost:3300/api/auth/federated/callback",
+    "https://quiz.abd.vercel.app/api/auth/federated/callback",
+    "https://abd-quiz.vercel.app/api/auth/federated/callback",
+    "http://localhost:3300",
+    "https://abd-quiz.vercel.app"
+  ],
+  "active": true,
+  "updatedAt": "2026-05-15T09:48:07.552Z",
+  "createdAt": "2026-05-15T09:48:07.552Z"
+}

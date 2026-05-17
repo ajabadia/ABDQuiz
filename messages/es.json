@@ -323,5 +323,12 @@
     "cognitiveStrength": "Fortalezas",
     "cognitiveWeakness": "Debilidades",
     "generalGroup": "Módulo General"
+  },
+  "logoutSuccess": {
+    "title": "Desconexión Exitosa",
+    "subtitle": "Has cerrado sesión correctamente de la plataforma ABDQuiz.",
+    "message": "Tu sesión ha sido revocada de forma segura tanto en el simulador como en la pasarela central.",
+    "button": "Volver a Iniciar Sesión",
+    "shield_badge": "Sesión Revocada"
   }
 }

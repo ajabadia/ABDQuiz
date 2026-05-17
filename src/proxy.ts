@@ -17,7 +17,8 @@ export async function proxy(request: NextRequest) {
     pathname.includes('.') || 
     pathname.startsWith('/_next') || 
     pathname.startsWith('/api/') ||
-    pathname === '/favicon.ico'
+    pathname === '/favicon.ico' ||
+    pathname.endsWith('/logout-success')
   ) {
     return intlMiddleware(request);
   }

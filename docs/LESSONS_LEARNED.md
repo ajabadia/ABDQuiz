@@ -135,4 +135,117 @@ El componente `<Link>` intercepta los eventos de clic y pre-carga la ruta median
    Esta práctica bloquea el intento de hidratar elementos dinámicos inconsistentes y sirve un loader sutil mientras el lado cliente se monta limpiamente en el navegador.
 
 ---
+
+## 7. Integración de Identidad Federada y Whitelists en Producción (SSO Logout Mismatch)
+
+> [!CRITICAL]
+> **El síntoma**: 
+> 1. Al intentar loguearse online en producción, el proveedor de identidad federado (ABDAuth) abortaba mostrando un error JSON: `{"error":"Redirect URI mismatch"}`.
+> 2. Al realizar la acción de cierre de sesión (logout), el servidor central devolvía un error HTTP `400 Bad Request` plano: `"Bad request."` en el navegador.
+
+### La Causa Raíz
+1. **Redirecciones no Homologadas**: Para evitar ataques de Phishing o secuestro de tokens (Open Redirect), el proveedor federado valida de forma estricta que la `redirect_uri` solicitada pertenezca al array exacto de `redirectUris` de la base de datos de registro del cliente (`Applications`). El entorno local (`http://localhost:3300`) estaba autorizado, pero no el dominio de producción (`https://abd-quiz.vercel.app`).
+2. **Caída en Rutas Dynamic Catch-All (`[...nextauth]`)**: El endpoint de logout central `/api/auth/logout` fue desarrollado localmente en `ABDAuth`, pero los cambios no se habían confirmado ni subido en Git. En producción, Vercel, al no disponer de la ruta estática, derivaba la petición a la ruta dynamic catch-all comodín `/api/auth/[...nextauth]/route.ts`. Auth.js (NextAuth), al recibir una petición no estándar `/logout`, abortaba con error de protocolo `400 Bad Request` ("Bad request.").
+3. **Open Redirect en Logout sin Whitelist**: La redirección del logout del SSO a su vez requería registrar en la base de datos del cliente no solo los endpoints de callback exactos, sino la raíz de los dominios origen (`https://abd-quiz.vercel.app` y `http://localhost:3300`) para ser aceptados en el parámetro query `?redirect_uri=...`.
+
+### Lecciones Aprendidas y Solución
+1. **Sincronización y Configuración de Wildcards**: Asegurar la inclusión de todas las combinaciones y raíces de dominios válidos en la lista blanca de redirecciones del cliente:
+   ```json
+   {
+     "clientId": "abdquiz-industrial-client-id",
+     "redirectUris": [
+       "http://localhost:3300/api/auth/federated/callback",
+       "https://abd-quiz.vercel.app/api/auth/federated/callback",
+       "http://localhost:3300",
+       "https://abd-quiz.vercel.app"
+     ]
+   }
+   ```
+2. **Priorización de Despliegue en Cambios de Enrutamiento API**: Garantizar que todo nuevo endpoint que colisione o conviva con rutas catch-all (`[...nextauth]`) sea confirmado e implementado en el pipeline del repositorio remoto antes de certificar integraciones ecosistémicas online.
+3. **Percent-Encoding Seguro en Querys**: Codificar siempre los componentes de URL en redirecciones asíncronas para evitar fallos de parseo en firewalls o proxies reversos:
+   ```typescript
+   const response = NextResponse.redirect(
+     new URL(`${providerLogoutUrl}?redirect_uri=${encodeURIComponent(redirectUri)}`)
+   );
+   ```
+
+---
+
+## 8. Gobernanza de Lockfiles en Despliegues Automatizados (Vercel `--frozen-lockfile`)
+
+> [!CRITICAL]
+> **El síntoma**: La build del despliegue en Vercel aborta repentinamente con un código de error de instalación de paquetes, reportando discrepancias en las dependencias y requiriendo la bandera `--frozen-lockfile`.
+
+### La Causa Raíz
+Las plataformas modernas de Integración Continua (CI/CD) como Vercel aplican de forma predeterminada la política de instalación `--frozen-lockfile` o `--immutable` al compilar la aplicación. Si el archivo `package.json` es editado para agregar o actualizar dependencias en local, pero no se ejecuta el gestor de paquetes correspondiente (`pnpm install` o `npm install`) para sincronizar el archivo de bloqueo de dependencias (`pnpm-lock.yaml` o `package-lock.json`), el servidor remoto detecta que el archivo de bloqueo no coincide con las dependencias especificadas y aborta el despliegue de forma preventiva.
+
+### Lecciones Aprendidas y Solución
+1. **Sincronización de Lockfile Post-Edición**: Nunca realices un `git push` tras añadir una dependencia directamente en `package.json` sin antes haber ejecutado la instalación en tu máquina local para consolidar la actualización de hashes e integridades del lockfile:
+   ```powershell
+   # Regenera el lockfile exacto en base a package.json
+   pnpm install
+   
+   # Agrega ambos archivos de forma atómica en el mismo commit
+   git add package.json pnpm-lock.yaml
+   git commit -m "chore: synchronize lockfile dependencies"
+   git push
+   ```
+2. **Práctica Automática en Cambios Ecosistémicos**: Mantener sincronizada la integridad de los paquetes compartidos asegura builds deterministas y evita cuellos de botella críticos en el despliegue del software.
+
+---
+
+## 9. Optimización de Mutaciones de Estado Asíncronas en Efectos de React 19 (`react-hooks/set-state-in-effect`)
+
+> [!CRITICAL]
+> **El síntoma**: El compilador o el linter del pipeline de auditoría industrial aborta en Fase 6 con el error: `Calling setState synchronously within an effect can trigger cascading renders` (react-hooks/set-state-in-effect) al intentar inicializar cargadores o estados de montaje de componentes.
+
+### La Causa Raíz
+Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncrona en el hilo principal de ejecución de un hook `useEffect` obliga a React a detener el ciclo de renderizado en curso para agendar y resolver una actualización de estado de forma inmediata. Esto puede desencadenar renders en cascada y penalizar drásticamente el rendimiento del hilo principal. El linter prohíbe estas llamadas directas para asegurar una arquitectura pura basada en flujo de datos unidireccional y predictivo.
+
+### Lecciones Aprendidas y Solución
+1. **Asincronismo por Macro-tareas (Event Loop)**: Envolver las llamadas síncronas que inicializan estados en una macro-tarea asíncrona mediante `setTimeout` con `0ms`. Esto desplaza la mutación fuera del ciclo de reconciliación primario de React, colocándola en el bucle de eventos del navegador, resolviendo el render en cascada:
+   ```typescript
+   useEffect(() => {
+     const timer = setTimeout(() => {
+       setMounted(true);
+       fetchAnalytics().catch(console.error);
+     }, 0);
+     return () => clearTimeout(timer);
+   }, [fetchAnalytics]);
+   ```
+2. **Inicialización por Defectos Lógicos**: Inicializar los estados de carga con valores lógicos predeterminados (por ejemplo, `isLoading: true` por defecto si el componente cargará datos de inmediato al montarse), eliminando la necesidad de mutar el estado en el primer ciclo del efecto de forma redundante.
+
+---
+
+## 10. Gobernanza de Flujos de Retorno tras Logout y Redirección SSO (SSO Redirect Loop & callbackUrl Ignored)
+
+> [!CRITICAL]
+> **El síntoma**: 
+> 1. Al cerrar sesión en el satélite (ABDQuiz), el usuario terminaba de nuevo atrapado en la pantalla de Login central del proveedor de identidad (ABDAuth) en lugar de permanecer en una pantalla neutral de despedida, generando confusión de pertenencia.
+> 2. Si el usuario rellenaba sus credenciales en dicha pantalla de login, era redirigido obligatoriamente al panel central (`/dashboard` de ABDAuth) en lugar de retornar automáticamente a la aplicación satélite original (ABDQuiz).
+
+### La Causa Raíz
+1. **Inexistencia de Rutas Públicas en Satélites**: El middleware perimetral de ABDQuiz (`proxy.ts`) bloqueaba y redirigía cualquier petición entrante no autenticada de vuelta al IdP. Por ende, tras borrar cookies, la redirección de regreso al satélite era interceptada instantáneamente, volviendo a forzar la pantalla de login del IdP.
+2. **Ignorancia del `callbackUrl` en el Cliente del IdP**: La página de Login cliente de ABDAuth (`src/app/[locale]/login/page.tsx`) tenía un comportamiento de enrutamiento estático en su submit handler exitoso: `router.push('/dashboard')`, ignorando por completo el parámetro de consulta `callbackUrl` enviado por el protocolo federado en la URL del navegador.
+
+### Lecciones Aprendidas y Solución
+1. **Arquitectura de Despedida Pública**: Implementar pantallas de finalización de ciclo de vida de sesión públicas en el satélite (ej. `/logout-success`), eximiéndolas de la autenticación de Mapeadores del Middleware:
+   ```typescript
+   // proxy.ts
+   if (pathname.endsWith('/logout-success')) {
+     return intlMiddleware(request); // Bypass Auth Gate
+   }
+   ```
+2. **Direccionamiento Dinámico Libre de SSR Suspense Warnings**: Extraer el parámetro `callbackUrl` del navegador utilizando `new URLSearchParams(window.location.search)` dentro del submit de la macro-tarea cliente en el IdP. Esto evita tener que envolver todo el componente en un bloque `<Suspense>` de Next.js (obligatorio si se usara el hook `useSearchParams` de Next.js en renderizados estáticos) y permite redirigir de forma segura e instantánea al satélite llamador:
+   ```typescript
+   const params = new URLSearchParams(window.location.search);
+   const callbackUrl = params.get('callbackUrl');
+   if (callbackUrl) {
+     window.location.href = callbackUrl; // Redirección externa de dominio federado
+   } else {
+     router.push('/dashboard');
+   }
+   ```
+
+---
 *Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*

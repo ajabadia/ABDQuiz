@@ -323,5 +323,12 @@
     "cognitiveStrength": "Strengths",
     "cognitiveWeakness": "Weaknesses",
     "generalGroup": "General Module"
+  },
+  "logoutSuccess": {
+    "title": "Logged Out Successfully",
+    "subtitle": "You have been successfully signed out of ABDQuiz.",
+    "message": "Your session has been securely revoked at both the satellite and the central Identity Provider.",
+    "button": "Sign In Again",
+    "shield_badge": "Session Revoked"
   }
 }

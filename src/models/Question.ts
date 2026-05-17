@@ -36,8 +36,11 @@ const QuestionSchema = new Schema<IQuestion>({
   timestamps: true
 });
 
-// Índice compuesto para evitar duplicados por tenant
-QuestionSchema.index({ tenantId: 1, contentHash: 1 }, { unique: true });
+// Índice compuesto para evitar duplicados por tenant (exclusivamente para preguntas activas)
+QuestionSchema.index(
+  { tenantId: 1, contentHash: 1 },
+  { unique: true, partialFilterExpression: { active: true } }
+);
 
 const Question: Model<IQuestion> = mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
 

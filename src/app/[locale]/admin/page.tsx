@@ -126,6 +126,41 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 </div>
               </Card>
 
+              {/* Card 3: Question Repository */}
+              <Card className="p-8 bg-card/30 border-white/5 rounded-none flex flex-col justify-between min-h-[320px] transition-all hover:border-primary/20 hover:bg-card/40 group md:col-span-2">
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 bg-white/[0.02] border border-white/5 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
+                      <Settings className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground bg-white/5 px-2.5 py-1">{ap('repositorio')}</span>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <h2 className="text-xl font-bold uppercase tracking-tight italic text-foreground group-hover:text-primary transition-colors">
+                      {ap('questionsTitle')}
+                    </h2>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {ap('questionsDesc')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex flex-col gap-4">
+                  <Separator className="bg-white/5" />
+                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                    <span>{ap('trazabilidad')}</span>
+                    <span className="text-primary font-bold">{ap('activo')}</span>
+                  </div>
+                  <Button className="rounded-none font-mono text-[10px] tracking-widest uppercase h-12 w-full mt-2" asChild>
+                    <Link href={`/${locale}/admin/questions`}>
+                      {ap('ingresarRepo')}
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </div>
+              </Card>
+
             </div>
           </div>
 

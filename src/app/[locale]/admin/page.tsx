@@ -1,20 +1,16 @@
 import { getTranslations } from 'next-intl/server';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ensureIndustrialAccess } from '@/lib/session';
 import { 
-  Settings, 
   Database, 
   Sliders, 
+  Settings, 
   ShieldCheck, 
-  ArrowRight, 
-  LogOut, 
   LayoutDashboard,
-  Terminal,
-  FileSpreadsheet
+  Terminal
 } from 'lucide-react';
-import Link from 'next/link';
+import { DashboardCard } from '@/components/admin/DashboardCard';
 
 /**
  * 🛰️ Central Admin Governance Portal Page (Federated Server Component)
@@ -29,24 +25,26 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
   // 🛡️ Ecosystem Identity Guard
   // Only users authenticated via ABDAuth with ADMIN privileges can enter.
   const user = await ensureIndustrialAccess('ADMIN');
+  const governanceUrl = process.env.NEXT_PUBLIC_GOVERNANCE_URL || 'https://abd-tenant-gobernance.vercel.app';
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
         
-        {/* Header */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-              <LayoutDashboard className="w-8 h-8 text-primary" aria-hidden="true" />
-              <h1 className="text-4xl font-black tracking-tighter uppercase italic">
-                {t('title').split(' ')[0]} <span className="text-primary/80">{ap('gobernanza')}</span>
-              </h1>
+        {/* Header: Variante A */}
+        <header className="flex flex-col gap-2 relative">
+          <div className="flex flex-col gap-0.5 border-b border-border pb-4">
+            <div className="flex items-center gap-1.5 font-mono text-[9px] text-primary/80 uppercase tracking-widest">
+              <LayoutDashboard className="w-3.5 h-3.5 text-primary animate-pulse" />
+              {c('appTitle')} • {ap('gobernanza')}
             </div>
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono ml-12">
-              {ap('subTitle')}<span className="text-primary">{user.tenantId}</span>
-            </p>
+            <h1 className="text-3xl font-black uppercase tracking-tight italic text-foreground leading-none">
+              {t('title')}
+            </h1>
           </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {ap('subTitle')}<span className="text-primary font-bold">{user.tenantId}</span>
+          </p>
         </header>
 
         {/* Dashboard Grid */}
@@ -57,144 +55,100 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
               {/* Card 1: Question Ingestor */}
-              <Card className="p-8 bg-card/30 border-white/5 rounded-none flex flex-col justify-between min-h-[320px] transition-all hover:border-primary/20 hover:bg-card/40 group">
-                <div className="flex flex-col gap-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 bg-white/[0.02] border border-white/5 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
-                      <Database className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground bg-white/5 px-2.5 py-1">{ap('bancoDatos')}</span>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold uppercase tracking-tight italic text-foreground group-hover:text-primary transition-colors">
-                      {t('title')}
-                    </h2>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {t('subtitle')} {ap('ingestorDesc')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex flex-col gap-4">
-                  <Separator className="bg-white/5" />
-                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                    <span>{ap('deduplicacion')}</span>
-                    <span className="text-primary font-bold">{ap('activo')}</span>
-                  </div>
-                  <Button className="rounded-none font-mono text-[10px] tracking-widest uppercase h-12 w-full mt-2" asChild>
-                    <Link href={`/${locale}/admin/corpus`}>
-                      {ap('ingresarIngestador')}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
-              </Card>
+              <DashboardCard
+                icon={Database}
+                category={ap('bancoDatos')}
+                title={t('title')}
+                description={`${t('subtitle')} ${ap('ingestorDesc')}`}
+                badgeLabel={ap('deduplicacion')}
+                badgeValue={ap('activo')}
+                actionUrl={`/${locale}/admin/corpus`}
+                actionText={ap('ingresarIngestador')}
+              />
 
               {/* Card 2: Exam Parametrization */}
-              <Card className="p-8 bg-card/30 border-white/5 rounded-none flex flex-col justify-between min-h-[320px] transition-all hover:border-primary/20 hover:bg-card/40 group">
-                <div className="flex flex-col gap-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 bg-white/[0.02] border border-white/5 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
-                      <Sliders className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground bg-white/5 px-2.5 py-1">{ap('algoritmos')}</span>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold uppercase tracking-tight italic text-foreground group-hover:text-primary transition-colors">
-                      {t('examsTitle')}
-                    </h2>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {t('examsSubtitle')} {ap('examsDesc')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex flex-col gap-4">
-                  <Separator className="bg-white/5" />
-                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                    <span>{ap('evaluacionPond')}</span>
-                    <span className="text-primary font-bold">{ap('soportado')}</span>
-                  </div>
-                  <Button className="rounded-none font-mono text-[10px] tracking-widest uppercase h-12 w-full mt-2" asChild>
-                    <Link href={`/${locale}/admin/exams`}>
-                      {ap('ingresarParametrizar')}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
-              </Card>
+              <DashboardCard
+                icon={Sliders}
+                category={ap('algoritmos')}
+                title={t('examsTitle')}
+                description={`${t('examsSubtitle')} ${ap('examsDesc')}`}
+                badgeLabel={ap('evaluacionPond')}
+                badgeValue={ap('soportado')}
+                actionUrl={`/${locale}/admin/exams`}
+                actionText={ap('ingresarParametrizar')}
+              />
 
               {/* Card 3: Question Repository */}
-              <Card className="p-8 bg-card/30 border-white/5 rounded-none flex flex-col justify-between min-h-[320px] transition-all hover:border-primary/20 hover:bg-card/40 group md:col-span-2">
-                <div className="flex flex-col gap-6">
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 bg-white/[0.02] border border-white/5 group-hover:border-primary/30 group-hover:bg-primary/5 transition-all">
-                      <Settings className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                    <span className="font-mono text-[9px] uppercase tracking-widest text-muted-foreground bg-white/5 px-2.5 py-1">{ap('repositorio')}</span>
-                  </div>
+              <DashboardCard
+                icon={Settings}
+                category={ap('repositorio')}
+                title={ap('questionsTitle')}
+                description={ap('questionsDesc')}
+                badgeLabel={ap('trazabilidad')}
+                badgeValue={ap('activo')}
+                actionUrl={`/${locale}/admin/questions`}
+                actionText={ap('ingresarRepo')}
+              />
 
-                  <div className="flex flex-col gap-2">
-                    <h2 className="text-xl font-bold uppercase tracking-tight italic text-foreground group-hover:text-primary transition-colors">
-                      {ap('questionsTitle')}
-                    </h2>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {ap('questionsDesc')}
-                    </p>
-                  </div>
-                </div>
+              {/* Card 4: Technical Claims & Allegations */}
+              <DashboardCard
+                icon={Settings}
+                category="Arbitraje"
+                title="Impugnaciones"
+                description="Gestión de reclamaciones técnicas de alumnos, anulación de preguntas y motor de recálculo retroactivo."
+                badgeLabel="Recálculo"
+                badgeValue="Activo"
+                actionUrl={`/${locale}/admin/allegations`}
+                actionText="Gestionar Impugnaciones"
+              />
 
-                <div className="mt-8 flex flex-col gap-4">
-                  <Separator className="bg-white/5" />
-                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
-                    <span>{ap('trazabilidad')}</span>
-                    <span className="text-primary font-bold">{ap('activo')}</span>
-                  </div>
-                  <Button className="rounded-none font-mono text-[10px] tracking-widest uppercase h-12 w-full mt-2" asChild>
-                    <Link href={`/${locale}/admin/questions`}>
-                      {ap('ingresarRepo')}
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Link>
-                  </Button>
-                </div>
-              </Card>
+              {/* Card 5: Exam Attempt Resets */}
+              <DashboardCard
+                icon={Sliders}
+                category="Gobernanza"
+                title="Control de Intentos"
+                description="Auditoría e invalidación lógica de intentos de simulacros. Concede reintentos extraordinarios de forma instantánea y segura."
+                badgeLabel="Reintentos Extraordinarios"
+                badgeValue="Soportado"
+                actionUrl={`/${locale}/admin/attempts`}
+                actionText="Gestionar Intentos y Reintentos"
+                colSpan="col-span-1 md:col-span-2"
+              />
 
             </div>
           </div>
 
           {/* System Telemetry Sidebar (1/3 width) */}
-          <Card className="p-8 bg-card/10 border-white/5 rounded-none flex flex-col gap-6 h-fit">
+          <Card className="p-8 bg-card/10 border-border rounded-none flex flex-col gap-6 h-fit">
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-primary" aria-hidden="true" />
               <h2 className="text-sm font-bold uppercase tracking-widest font-mono text-foreground">{ap('seguridadNucleo')}</h2>
             </div>
             
-            <Separator className="bg-white/5" aria-hidden="true" />
+            <Separator className="bg-border" aria-hidden="true" />
 
             <div className="flex flex-col gap-4 font-mono text-[10px] uppercase">
               <div className="flex justify-between items-center py-1">
                 <span className="text-muted-foreground tracking-wider">{ap('autoridad')}</span>
                 <span className="text-foreground font-bold">{t('superuser')}</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-t border-white/5">
+              <div className="flex justify-between items-center py-1 border-t border-border">
                 <span className="text-muted-foreground tracking-wider">{ap('protocolo')}</span>
                 <span className="text-foreground font-bold">{t('protocol')}</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-t border-white/5">
+              <div className="flex justify-between items-center py-1 border-t border-border">
                 <span className="text-muted-foreground tracking-wider">{ap('modoRegional')}</span>
                 <span className="text-foreground font-bold">{locale.toUpperCase()}</span>
               </div>
-              <div className="flex justify-between items-center py-1 border-t border-white/5">
+              <div className="flex justify-between items-center py-1 border-t border-border">
                 <span className="text-foreground tracking-wider font-bold">{ap('estadoAuditoria')}</span>
                 <span className="text-primary font-black animate-pulse">{ap('certificadoOk')}</span>
               </div>
             </div>
 
-            <Separator className="bg-white/5" aria-hidden="true" />
+            <Separator className="bg-border" aria-hidden="true" />
             
-            <div className="p-4 bg-white/[0.02] border border-white/5 flex flex-col gap-2 rounded-none">
+            <div className="p-4 bg-white/[0.02] border border-border flex flex-col gap-3 rounded-none">
               <div className="flex items-center gap-2 text-[9px] font-mono font-bold tracking-widest text-primary uppercase">
                 <Terminal className="w-3.5 h-3.5" />
                 {ap('conexionCentral')}
@@ -202,6 +156,14 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
               <p className="text-[9px] text-muted-foreground uppercase leading-relaxed font-mono">
                 {ap('conexionCentralDesc')}
               </p>
+              <a 
+                href={governanceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full text-center py-2 px-3 bg-primary/10 border border-primary/20 hover:bg-primary/20 hover:border-primary/40 text-[9px] font-mono font-bold uppercase tracking-widest text-primary transition-all duration-200"
+              >
+                {ap('gobernanzaPortalBtn')}
+              </a>
             </div>
           </Card>
 
@@ -209,7 +171,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
 
         {/* Footer */}
         <footer className="mt-auto pt-12 flex flex-col items-center gap-6 text-muted-foreground/20 font-mono text-[9px] uppercase tracking-[0.3em]" role="contentinfo">
-          <Separator className="bg-white/5" aria-hidden="true" />
+          <Separator className="bg-border" aria-hidden="true" />
           <span>{t('brandPart1')}{t('brandPart2')} {h('version')}</span>
         </footer>
 

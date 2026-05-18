@@ -280,4 +280,169 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
    ```
 
 ---
+
+## 11. Gobernanza de Marca Blanca Dinámica (`@abd/styles`) y Conflictos de Gestores de Paquetes (NPM vs PNPM)
+
+> [!CRITICAL]
+> **El síntoma**: 
+> 1. Al intentar instalar una dependencia de Git directa utilizando `npm install`, el motor de NPM aborta lanzando un error interno e incomprensible: `npm error Cannot read properties of null (reading 'matches')`.
+> 2. Durante el primer renderizado de la página, el satélite experimenta un parpadeo visual molesto (FOUC - Flash of Unstyled Content) donde la interfaz aparece con los estilos genéricos durante décimas de segundo antes de vestirse con los colores corporativos del Tenant.
+
+### La Causa Raíz
+1. **Incompatibilidad de Estructuras en Monorepos**: Si un proyecto se ha inicializado o contiene un archivo de bloqueo de pnpm (`pnpm-lock.yaml`) y un archivo de espacio de trabajo (`pnpm-workspace.yaml`), el uso del comando nativo `npm install` genera un conflicto severo al intentar reconciliar los enlaces simbólicos de node_modules del almacén global de pnpm, crasheando el parser interno de NPM.
+2. **Sintaxis de Git en NPM**: Ciertas versiones de NPM fallan al parsear strings de Git explícitos como `git+https://github.com/ajabadia/ABDStyles.git#main` en campos de dependencias secundarias.
+3. **Flujos de Carga Client-Side en Estilos**: Intentar inyectar hojas de estilo dinámicas basándose en llamadas asíncronas de cliente tras el montaje (`useEffect`) provoca que el navegador renderice primero el HTML puro con la hoja de estilos estática por defecto y luego re-estile el DOM al completarse el renderizado asíncrono, produciendo el molesto parpadeo.
+
+### Lecciones Aprendidas y Solución
+1. **Gobernanza Monolítica con PNPM**: En todo repositorio que declare lógicas multitenant o contenga un archivo `pnpm-lock.yaml`, queda terminantemente **prohibido** el uso de comandos de NPM. Se debe emplear exclusivamente `pnpm` para asegurar resoluciones deterministas y rápidas:
+   ```powershell
+   # Limpieza e instalación limpia de pnpm
+   Remove-Item package-lock.json -ErrorAction SilentlyContinue
+   pnpm install
+   ```
+2. **Uso de Shorthand de GitHub**: Para evitar bugs de parseo en múltiples motores de CI/CD (incluido Vercel), la mejor práctica de producción al enlazar repositorios hermanos públicos o privados es usar la sintaxis de atajo nativa de GitHub:
+   ```json
+   "@abd/styles": "github:ajabadia/ABDStyles#main"
+   ```
+3. **Inyección SSR Síncrona en el Layout Raíz (Prevención de FOUC)**: La única forma de erradicar por completo el FOUC en Next.js App Router es procesar la hoja de estilos de forma síncrona en servidor antes de servir el DOM. Importando el generador CSS en el Server Component del `RootLayout` e inyectándolo directamente en la etiqueta estática `<style>` del `<head>`, el navegador recibe el HTML con las variables del Tenant ya resueltas en su primer frame:
+   ```tsx
+   // layout.tsx (Server Component)
+   import { generateTenantCss } from "@abd/styles";
+   import { getIndustrialSession } from "@/lib/session";
+
+   export default async function RootLayout({ children }) {
+     const session = await getIndustrialSession();
+     const branding = session.user?.branding;
+     const customCss = branding?.theme ? generateTenantCss(branding.theme) : "";
+
+     return (
+       <html>
+         <head>
+           {customCss && (
+             <style id="tenant-branding-gateway" dangerouslySetInnerHTML={{ __html: customCss }} />
+           )}
+         </head>
+         <body>{children}</body>
+       </html>
+     );
+   }
+   ```
+4. **Fallback Inteligente de Marca en Interfaces**: Al renderizar logotipos cargados dinámicamente de URLs externas de CDN, se debe prever siempre un evento de error de red (`onError`) que oculte la imagen corrupta y muestre de forma instantánea el logo corporativo de fallback en formato SVG o texto enriquecido:
+   ```tsx
+   <Link href="/" className="flex items-center">
+     {user?.branding?.logoUrl ? (
+       <img
+         src={user.branding.logoUrl}
+         alt="Logo"
+         className="max-h-8 w-auto"
+         onError={(e) => {
+           e.currentTarget.style.display = 'none';
+           const sib = e.currentTarget.nextElementSibling as HTMLElement;
+           if (sib) sib.style.display = 'inline';
+         }}
+       />
+     ) : null}
+     <span style={{ display: user?.branding?.logoUrl ? 'none' : 'inline' }}>
+       Fallback Logo
+     </span>
+   </Link>
+   ```
+
+## 🌌 Era 11.2: Detección, Aislamiento por Subdominios y Desinfección de Linter (Purity standard)
+
+1. **Aislamiento Cross-Tenant en Proxies del Lado del Servidor**:
+   - **El Síntoma**: Los usuarios autenticados en una academia podían saltar horizontalmente a otras academias si visitaban sus subdominios específicos sin que el sistema forzara la re-autenticación inmediata.
+   - **La Causa Raíz**: Las cookies de sesión se cargaban en un único dominio base, y el proxy carecía de una validación cruzada entre la identidad contenida en el JWT/cookie (`session.user.tenantId`) y el subdominio activo actual.
+   - **La Solución Industrial**: Implementar una validación estricta en [src/proxy.ts](file:///d:/desarrollos/ABDQuiz/src/proxy.ts) que compare el `tenantId` de la sesión con los metadatos obtenidos desde el IdP para el subdominio visitado. Si hay un desajuste, se invalida la autenticación, se purgan las cookies y se redirige con el parámetro `tenant` correcto.
+   
+2. **Eliminación Absoluta de `any` en Next.js Fetch Extensions**:
+   - **El Síntoma**: El linter de TypeScript (`@typescript-eslint/no-explicit-any`) fallaba al compilar el proyecto al usar `fetch(url, { next: { revalidate: 60 } } as any)`.
+   - **La Causa Raíz**: El tipo nativo `RequestInit` del navegador no contempla la propiedad `next` inyectada de forma propietaria por Next.js para caché incremental.
+   - **La Solución Industrial**: En lugar de degradar la pureza del código a través de `as any`, utilizar una intersección de tipos limpia de TypeScript que respete el estándar y el compilador:
+     ```typescript
+     fetch(url, { 
+       next: { revalidate: 60 } 
+     } as RequestInit & { next?: { revalidate: number } });
+     ```
+
+3. **Cero Estilos Inline en Reglas de Auditoría Estructural (`INLINE_STYLE`)**:
+   - **El Síntoma**: Las herramientas de auditoría estructural rechazaban archivos de componentes con advertencias severas de seguridad por el uso de propiedades `style={{ display: ... }}` en componentes React reactivos.
+   - **La Causa Raíz**: Las arquitecturas militares y sistemas blindados de alta fidelidad vetan el uso de atributos CSS inline para evitar inyecciones maliciosas y garantizar que toda la presentación visual pase únicamente por hojas de estilos sanitizadas y tokens de Tailwind CSS.
+   - **La Solución Industrial**: Migrar el comportamiento reactivo directamente al árbol de clases utilizando strings formateados y clases condicionales nativas de Tailwind CSS:
+     ```tsx
+     <span className={`text-xl font-black ${user?.branding?.logoUrl ? 'hidden' : 'inline'}`}>
+       {brandText}
+     </span>
+     ```
+
+---
+
+## 🌌 Era 11.3: Control de Recálculo de Calificaciones Retroactivo e Impugnaciones (Phase 4.2)
+
+1. **Rastreo de Cambios en Esquemas Mixtos de Mongoose (`markModified`)**:
+   - **El Síntoma**: Al guardar un intento de examen tras anular o recalcular una pregunta en el snapshot histórico (`attempt.questions`), las modificaciones en base de datos no se persistían y los intentos conservaban los valores antiguos.
+   - **La Causa Raíz**: Mongoose no detecta automáticamente modificaciones profundas en propiedades nested declaradas de tipo `Schema.Types.Mixed` o arrays sin un esquema estricto, ya que no realiza comparaciones profundas por motivos de rendimiento.
+   - **La Solución Industrial**: Tras mutar el objeto en el servidor, llamar explícitamente a `markModified()` especificando la clave afectada antes de persistir con `save()`:
+     ```typescript
+     attempt.questions[qIndex].isCancelled = true;
+     attempt.markModified('questions');
+     await attempt.save();
+     ```
+
+2. **Exclusión Dinámica del Denominador en Preguntas Anuladas (`CANCEL_QUESTION`)**:
+   - **El Síntoma**: Las notas resultantes superaban el 100% o causaban fallos de división por cero al anular preguntas de un examen.
+   - **La Causa Raíz**: Exclusión incompleta de las preguntas anuladas (`isCancelled = true`) en los denominadores de los tres modos de evaluación (simple, penalizada, ponderada).
+   - **La Solución Industrial**: Validar el estado `isCancelled` de cada reactivo y excluirlo del total posible:
+     - *Modo Simple/Penalizado*: El total de preguntas válidas posibles del examen se reduce a `totalQuestions - cancelledCount`.
+     - *Modo Ponderado*: El peso total posible del examen se reduce excluyendo el peso de la dificultad asignada a la pregunta anulada.
+     Esto mantiene el porcentaje del alumno a escala matemática perfecta.
+
+---
+
+## 🌌 Era 11.4: Parametrización Avanzada y Control de Flujo del Simulador (Phase 3.6 & 3.7)
+
+1. **Garantía Atómica en la Navegación y Transición de Estados**:
+   - **El Síntoma**: Al transicionar entre preguntas en el bucle de revisión de omitidas o al volver atrás con navegación libre, la interfaz mostraba temporalmente la respuesta de la pregunta anterior antes de cargarse la correcta.
+   - **La Causa Raíz**: Desfase de estados asíncronos en componentes funcionales cuando cambian `currentIndex` y `selectedOption` de manera secuencial pero no atómica.
+   - **La Solución Industrial**: En lugar de esperar a que el estado local `answers` se propague de forma asíncrona, calcular y inyectar el nuevo estado de forma atómica y síncrona en las funciones de transición, asegurando que `setCurrentIndex` y `setSelectedOption` se actualicen con los valores correctos en el mismo ciclo de render de la UI:
+     ```typescript
+     const updatedAnswers = [...answers];
+     updatedAnswers[currentIndex] = selectedOption;
+     setAnswers(updatedAnswers);
+     
+     // Transición atómica al siguiente índice omitido
+     setCurrentIndex(nextOmittedIndex);
+     setSelectedOption(updatedAnswers[nextOmittedIndex]);
+     ```
+
+2. **Anulación Lógica no Destructiva frente a Borrados Físicos en Base de Datos**:
+   - **El Síntoma**: Eliminar intentos físicamente de la base de datos para restablecer las cuotas de intentos de los estudiantes corrompía el histórico y las métricas en los dashboards del profesor.
+   - **La Causa Raíz**: Pérdida irrecuperable de registros para auditoría de gobernanza al realizar borrados físicos destructivos.
+   - **La Solución Industrial**: Implementar un patrón de anulación lógica agregando el flag `isInvalidated: true` y campos de auditoría (`invalidatedBy`, `invalidatedAt`). El motor de validación de cuotas (`QuizService`) descuenta estos intentos del total acumulado del alumno, mientras que los paneles de analíticas pueden conservar los registros para auditoría.
+
+3. **Aislamiento Multitenant Dinámico en Acciones y Vistas de Edición (404 Error Remediation)**:
+   - **El Síntoma**: Los administradores que intentaban editar plantillas de examen recibían un error 404 (`notFound()`) en la ruta `/admin/exams/[id]/edit`.
+   - **La Causa Raíz**: El listado de exámenes y el seeding inicial de plantillas por defecto estaban hardcodeados a un `DEFAULT_TENANT` global (`"abd_global"`), mientras que la vista de edición ejecutaba un chequeo de seguridad estricto comparando `config.tenantId !== user.tenantId` (donde `user.tenantId` correspondía al tenant real federado del administrador, p. ej. `"ajabadia"`). Al haber este desajuste de inquilinos, Next.js abortaba la renderización y lanzaba el error de no encontrado.
+   - **La Solución Industrial**: Dinamizar todas las acciones del ciclo de vida de configuración (`getExamConfigsAction`, `createExamConfigAction`, `updateExamConfigAction`, `deleteExamConfigAction`, `cloneExamConfigAction`) utilizando la sesión federada activa (`getIndustrialSession()`). Si el inquilino cambia, el sistema autogenera semillas del simulador bajo el nuevo `tenantId` correspondiente, garantizando consistencia absoluta en visualización, mutación y edición en todo el ecosistema.
+
+---
+
+## 🌌 Era 11.5: Diagnóstico, Accesibilidad Heurística y Reglas de Calidad ESLint en Componentes React (Phase 4.2 Remediation)
+
+1. **Elusión del Analizador de Accesibilidad Heurístico (a11y regex parser bypass)**:
+   - **El Síntoma**: El script de auditoría de arquitectura `arch-guard.mjs` reportaba que el botón de pestañas (`<button`) no disponía de una etiqueta accesible (`aria-label`) a pesar de tener declarada una propiedad `aria-label={\`...\`}`.
+   - **La Causa Raíz**: El analizador estático busca la etiqueta `<button` y recorre recursivamente las líneas siguientes para hallar `aria-label`. No obstante, aborta la búsqueda prematuramente si encuentra el carácter `>` de cierre. Dado que la propiedad `onClick={() => setActiveTab(tab.key)}` contenía el operador de función flecha (`=>`), que a su vez contiene el carácter `>`, el bucle del analizador finalizaba en esta línea y nunca llegaba a leer el `aria-label` declarado tres líneas más abajo.
+   - **La Solución Industrial**: Posicionar la etiqueta `aria-label` directamente en la misma línea de apertura del botón `<button aria-label={...} ...>` para asegurar la detección síncrona inmediata por parte de analizadores estáticos basados en expresiones regulares simples.
+
+2. **Resolución de Tipado Incompatible en Inicializadores de Subdocumentos MongoDB (TSC Compilation Error)**:
+   - **El Síntoma**: El compilador de TypeScript (TSC) abortaba en la Fase 5 reportando: `error TS2739: Type '{}' is missing the following properties from type '{ questionText: string; correctOptionIndex: number; }'`.
+   - **La Causa Raíz**: Al asignar un valor por defecto a un subdocumento fuertemente tipado de Mongoose en la capa de servicios (`qBlock.questionSnapshot = {}`), omitíamos propiedades declaradas como obligatorias en la interfaz (`questionText` y `correctOptionIndex`), provocando un fallo estricto de compilación.
+   - **La Solución Industrial**: Inicializar siempre los fallbacks de subdocumentos con todas las claves obligatorias asignándoles valores por defecto semánticos vacíos compatibles, evitando la degradación mediante conversiones `as any`.
+
+3. **Restricción de Renderizado JSX dentro de Exception Boundaries (ESLint try/catch rule)**:
+   - **El Síntoma**: El linter en Fase 6 fallaba con el error: `Avoid constructing JSX within try/catch`.
+   - **La Causa Raíz**: React no evalúa ni renderiza inmediatamente el marcado JSX retornado dentro del bloque `try/catch`. Por tanto, los fallos de renderizado tardíos en cliente no pueden ser interceptados de manera síncrona por este capturador, violando el diseño de arquitectura modular y flujos de render reactivos.
+   - **La Solución Industrial**: Aislar los procesos computacionales complejos que puedan lanzar excepciones (como la generación del CSS dinámico mediante `@abd/styles`) dentro del bloque `try/catch` para asignar una variable de control, y ubicar el retorno estructurado del nodo JSX fuera de los límites de la excepción.
+
+---
 *Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*

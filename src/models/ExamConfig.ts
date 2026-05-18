@@ -35,6 +35,9 @@ export interface IExamConfig extends Document {
   showFeedbackDuringExam: boolean;
   allowSkip: boolean;
   allowReviewPrevious: boolean;
+  autoAdvanceOnSelect: boolean;
+  reviewOmittedQuestions: boolean;
+  maxAttempts: number;
   
   // --- Metadata ---
   isDefault: boolean;
@@ -84,6 +87,9 @@ const ExamConfigSchema: Schema = new Schema(
     showFeedbackDuringExam: { type: Boolean, default: false },
     allowSkip: { type: Boolean, default: true },
     allowReviewPrevious: { type: Boolean, default: false },
+    autoAdvanceOnSelect: { type: Boolean, default: false },
+    reviewOmittedQuestions: { type: Boolean, default: false },
+    maxAttempts: { type: Number, default: 0 },
     
     // --- Metadata ---
     isDefault: { type: Boolean, default: false },

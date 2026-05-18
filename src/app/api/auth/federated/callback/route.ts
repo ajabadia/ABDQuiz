@@ -16,6 +16,9 @@ export async function GET(request: NextRequest) {
   try {
     // 1. Exchange code for token & profile
     const tokenUrl = process.env.AUTH_VERIFY_URL || 'https://abd-auth.vercel.app/api/auth/federated/token';
+    const currentUrl = new URL(request.url);
+    const dynamicRedirectUri = `${currentUrl.protocol}//${currentUrl.host}/api/auth/federated/callback`;
+
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -23,7 +26,7 @@ export async function GET(request: NextRequest) {
         code,
         client_id: process.env.AUTH_CLIENT_ID,
         client_secret: process.env.AUTH_CLIENT_SECRET,
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/federated/callback`,
+        redirect_uri: dynamicRedirectUri,
       }),
     });
 

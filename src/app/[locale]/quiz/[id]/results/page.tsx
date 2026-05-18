@@ -18,6 +18,7 @@ interface ResultsPageProps {
 export default async function ResultsPage({ params }: ResultsPageProps) {
   const { id, locale } = await params;
   const t = await getTranslations('results');
+  const ta = await getTranslations('allegations');
   
   await connectDB();
   const attempt = await ExamAttempt.findById(id).populate('examConfigId').lean();
@@ -44,8 +45,8 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-background p-6 md:p-24 flex flex-col items-center" role="main">
-      <div className="w-full max-w-4xl flex flex-col gap-12">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
+      <div className="max-w-7xl mx-auto flex flex-col gap-10">
         
         <header className="flex flex-col items-center text-center gap-6" role="banner">
           <div className="relative">
@@ -90,12 +91,19 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
 
         <AuditDetail 
           questions={questions}
+          attemptId={serializedAttempt._id}
           translations={{
             auditDetail: t('auditDetail'),
             viewExplanation: t('viewExplanation'),
             explanation: t('explanation'),
             module: t('module'),
-            source: t('source')
+            source: t('source'),
+            btnCreateAllegation: ta('btnCreateAllegation'),
+            reasonPlaceholder: ta('reasonPlaceholder'),
+            btnCancel: ta('btnCancel'),
+            btnSubmit: ta('btnSubmit'),
+            toastSuccess: ta('toastSuccess'),
+            toastError: ta('toastError')
           }}
         />
 

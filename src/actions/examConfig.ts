@@ -4,6 +4,7 @@ import connectDB from '@/lib/database/mongodb';
 import ExamConfig from '@/models/ExamConfig';
 import { revalidatePath } from 'next/cache';
 import { type IExamConfig } from '@/models/ExamConfig';
+import { getIndustrialSession } from '@/lib/session';
 
 const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
 const FAKE_USER_ID = "admin_001";
@@ -14,17 +15,20 @@ const FAKE_USER_ID = "admin_001";
 export async function getExamConfigsAction() {
   try {
     await connectDB();
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+
     let configs = await ExamConfig.find({ 
-      tenantId: DEFAULT_TENANT,
+      tenantId: activeTenantId,
       active: true 
     }).sort({ createdAt: -1 }).lean();
     
     // Seed default configurations if none exist
     if (configs.length === 0) {
-      console.log('🌱 Seeding default exam configurations...');
+      console.log(`🌱 Seeding default exam configurations for tenant: ${activeTenantId}...`);
       const defaultConfigs = [
         {
-          tenantId: DEFAULT_TENANT,
+          tenantId: activeTenantId,
           name: 'Entrenamiento Libre',
           description: 'Feedback inmediato, explicaciones detalladas y sin presión de tiempo global. Ideal para asentar conceptos.',
           questionCount: 10,
@@ -36,12 +40,15 @@ export async function getExamConfigsAction() {
           showFeedbackDuringExam: true,
           allowSkip: true,
           allowReviewPrevious: true,
+          autoAdvanceOnSelect: false,
+          reviewOmittedQuestions: false,
+          maxAttempts: 0,
           isDefault: true,
           createdBy: FAKE_USER_ID,
           active: true
         },
         {
-          tenantId: DEFAULT_TENANT,
+          tenantId: activeTenantId,
           name: 'Simulacro Estándar',
           description: 'Condiciones reales. 10 minutos, 30s por tarea, sin vuelta atrás. La prueba definitiva.',
           questionCount: 30,
@@ -53,6 +60,9 @@ export async function getExamConfigsAction() {
           showFeedbackDuringExam: false,
           allowSkip: true,
           allowReviewPrevious: false,
+          autoAdvanceOnSelect: false,
+          reviewOmittedQuestions: false,
+          maxAttempts: 0,
           isDefault: true,
           createdBy: FAKE_USER_ID,
           active: true
@@ -60,7 +70,7 @@ export async function getExamConfigsAction() {
       ];
       await ExamConfig.insertMany(defaultConfigs);
       configs = await ExamConfig.find({ 
-        tenantId: DEFAULT_TENANT,
+        tenantId: activeTenantId,
         active: true 
       }).sort({ createdAt: -1 }).lean();
     }
@@ -78,10 +88,12 @@ export async function getExamConfigsAction() {
 export async function createExamConfigAction(data: Partial<IExamConfig>) {
   try {
     await connectDB();
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const newConfig = await ExamConfig.create({
       ...data,
-      tenantId: DEFAULT_TENANT,
+      tenantId: activeTenantId,
       createdBy: FAKE_USER_ID,
     });
     
@@ -101,6 +113,13 @@ export async function createExamConfigAction(data: Partial<IExamConfig>) {
 export async function updateExamConfigAction(id: string, data: Partial<IExamConfig>) {
   try {
     await connectDB();
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    
+    const config = await ExamConfig.findById(id);
+    if (!config || (config.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
     
     await ExamConfig.findByIdAndUpdate(id, data);
     
@@ -120,6 +139,13 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
 export async function deleteExamConfigAction(id: string) {
   try {
     await connectDB();
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    
+    const config = await ExamConfig.findById(id);
+    if (!config || (config.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
     
     await ExamConfig.findByIdAndUpdate(id, { active: false });
     
@@ -139,14 +165,19 @@ export async function deleteExamConfigAction(id: string) {
 export async function cloneExamConfigAction(id: string) {
   try {
     await connectDB();
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const source = await ExamConfig.findById(id).lean();
-    if (!source) return { success: false, error: 'Configuración origen no encontrada' };
+    if (!source || (source.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+      return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
+    }
     
     const { _id, createdAt, updatedAt, ...rest } = source as unknown as Record<string, unknown>;
     
     const cloned = await ExamConfig.create({
       ...rest,
+      tenantId: activeTenantId,
       name: `${source.name} (Copia)`,
       isDefault: false
     });

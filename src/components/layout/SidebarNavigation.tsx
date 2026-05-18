@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, BookOpen, Terminal, ShieldCheck, LogOut, BarChart2, LogIn, Home } from 'lucide-react';
+import { Menu, X, BookOpen, Terminal, ShieldCheck, LogOut, BarChart2, LogIn, Home, AlertTriangle } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
@@ -12,6 +12,9 @@ interface UserSession {
     surname: string;
     email: string;
     role: string;
+    branding?: {
+      logoUrl?: string | null;
+    } | null;
   };
 }
 
@@ -71,9 +74,29 @@ export function SidebarNavigation({ session }: SidebarNavigationProps) {
             <Link
               href="/"
               onClick={toggleSidebar}
-              className="text-xl font-black tracking-tighter text-foreground italic uppercase hover:text-primary transition-colors duration-200 cursor-pointer focus:outline-none"
+              className="hover:opacity-90 transition-opacity duration-200 cursor-pointer focus:outline-none flex items-center"
             >
-              {t('brandPart1')}<span className="text-primary">{t('brandPart2')}</span>
+              {user?.branding?.logoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={user.branding.logoUrl}
+                  alt="Logo"
+                  className="max-h-8 w-auto object-contain"
+                  onError={(e) => {
+                    // Fallback to text logo if image fails to load
+                    e.currentTarget.style.display = 'none';
+                    const sib = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (sib) sib.style.display = 'inline';
+                  }}
+                />
+              ) : null}
+              <span 
+                className={`text-xl font-black tracking-tighter text-foreground italic uppercase hover:text-primary transition-colors duration-200 ${
+                  user?.branding?.logoUrl ? 'hidden' : 'inline'
+                }`}
+              >
+                {t('brandPart1')}<span className="text-primary">{t('brandPart2')}</span>
+              </span>
             </Link>
             <button
               onClick={toggleSidebar}
@@ -95,7 +118,7 @@ export function SidebarNavigation({ session }: SidebarNavigationProps) {
               className="flex items-center gap-4 px-4 py-3 bg-muted/10 border border-border hover:border-primary/20 hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all duration-200 uppercase font-mono text-[10px] font-bold tracking-wider rounded-none"
             >
               <Home className="w-4 h-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
-              {locale === 'es' ? 'Bienvenida' : 'Welcome'}
+              {t('welcomeMenu')}
             </Link>
             
             {/* Link A: Launch Exams (Simulador) */}
@@ -129,6 +152,18 @@ export function SidebarNavigation({ session }: SidebarNavigationProps) {
               >
                 <Terminal className="w-4 h-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
                 {t('adminMenu')}
+              </Link>
+            )}
+
+            {/* Link B.2: Allegations (Only for admins) */}
+            {isLoggedIn && isAdmin && (
+              <Link
+                href="/admin/allegations"
+                onClick={toggleSidebar}
+                className="flex items-center gap-4 px-4 py-3 bg-muted/10 border border-border hover:border-primary/20 hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all duration-200 uppercase font-mono text-[10px] font-bold tracking-wider rounded-none"
+              >
+                <AlertTriangle className="w-4 h-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" />
+                {t('claimsMenu')}
               </Link>
             )}
 
@@ -175,7 +210,7 @@ export function SidebarNavigation({ session }: SidebarNavigationProps) {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
                 <span className="font-mono text-[9px] text-muted-foreground/80 uppercase tracking-widest">
-                  {locale === 'es' ? 'Sesión Desconectada' : 'Session Disconnected'}
+                  {t('disconnectedSession')}
                 </span>
               </div>
               <Link

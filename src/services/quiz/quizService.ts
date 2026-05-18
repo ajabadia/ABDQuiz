@@ -20,6 +20,18 @@ export class QuizService {
       throw new Error('Configuración de examen no válida o inactiva');
     }
 
+    // 1.5 Validar límite de intentos
+    if (config.maxAttempts && config.maxAttempts > 0) {
+      const attemptsCount = await ExamAttempt.countDocuments({
+        userId,
+        examConfigId,
+        isInvalidated: { $ne: true }
+      });
+      if (attemptsCount >= config.maxAttempts) {
+        throw new Error('Has alcanzado el límite máximo de intentos permitidos para este examen.');
+      }
+    }
+
     // 2. Construir query de preguntas
     const query: Record<string, unknown> = { tenantId, active: true };
     if (config.moduleFilter.length > 0) {

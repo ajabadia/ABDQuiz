@@ -14,6 +14,9 @@ export interface IExamAttempt extends Document {
   startedAt: Date;
   endedAt?: Date;
   status: 'in_progress' | 'completed' | 'timeout';
+  isInvalidated?: boolean;
+  invalidatedBy?: string;
+  invalidatedAt?: Date;
   questions: {
     questionId: string;
     questionSnapshot: QuizQuestionSnapshot;
@@ -42,6 +45,9 @@ const ExamAttemptSchema: Schema = new Schema(
       enum: ['in_progress', 'completed', 'timeout'],
       default: 'in_progress',
     },
+    isInvalidated: { type: Boolean, default: false },
+    invalidatedBy: String,
+    invalidatedAt: Date,
     questions: [
       {
         questionId: { type: Schema.Types.ObjectId, ref: 'Question' },

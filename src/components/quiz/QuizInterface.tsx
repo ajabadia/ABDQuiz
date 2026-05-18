@@ -10,16 +10,11 @@ import QuizQuestion from './QuizQuestion';
 import QuizFooter from './QuizFooter';
 import { type SerializedExamAttempt } from '@/types/quiz';
 import { useTranslations } from 'next-intl';
-import { cn } from '@/lib/utils';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+
+// Import modular subcomponents
+import { QuizNavigationMap } from './QuizNavigationMap';
+import { FinishConfirmDialog } from './FinishConfirmDialog';
+import { OmittedDialog } from './OmittedDialog';
 
 interface QuizInterfaceProps {
   initialAttempt: SerializedExamAttempt;
@@ -42,6 +37,8 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showFinishConfirm, setShowFinishConfirm] = useState(false);
+  const [showOmittedConfirm, setShowOmittedConfirm] = useState(false);
+  const [isReviewingOmitted, setIsReviewingOmitted] = useState(false);
 
   const currentQuestion = initialAttempt.questions[currentIndex];
 
@@ -107,28 +104,127 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         status
       });
 
-      setAnswers(prev => {
-        const updated = [...prev];
-        updated[currentIndex] = selectedOption;
-        return updated;
-      });
+      const updatedAnswers = [...answers];
+      updatedAnswers[currentIndex] = selectedOption;
+      setAnswers(updatedAnswers);
 
-      if (currentIndex < initialAttempt.questions.length - 1) {
-        const nextIdx = currentIndex + 1;
-        setCurrentIndex(nextIdx);
-        setSelectedOption(answers[nextIdx]);
-        setShowFeedback(false);
-        resetTimerRef.current();
+      if (isReviewingOmitted) {
+        const remainingOmitted = updatedAnswers
+          .map((ans, idx) => ans === null ? idx : null)
+          .filter((idx): idx is number => idx !== null);
+
+        if (remainingOmitted.length > 0) {
+          const nextOmitted = remainingOmitted.find(idx => idx > currentIndex) ?? remainingOmitted[0];
+          setCurrentIndex(nextOmitted);
+          setSelectedOption(updatedAnswers[nextOmitted]);
+          setShowFeedback(false);
+          resetTimerRef.current();
+        } else {
+          setIsReviewingOmitted(false);
+          setShowFinishConfirm(true);
+        }
       } else {
-        // Mostrar confirmación antes de finalizar
-        setShowFinishConfirm(true);
+        if (currentIndex < initialAttempt.questions.length - 1) {
+          const nextIdx = currentIndex + 1;
+          setCurrentIndex(nextIdx);
+          setSelectedOption(updatedAnswers[nextIdx]);
+          setShowFeedback(false);
+          resetTimerRef.current();
+        } else {
+          const hasOmitted = updatedAnswers.some(ans => ans === null);
+          if (initialAttempt.examConfigId?.reviewOmittedQuestions && hasOmitted) {
+            setShowOmittedConfirm(true);
+          } else {
+            setShowFinishConfirm(true);
+          }
+        }
       }
     } catch {
       toast.error(t('errorProcess'));
     } finally {
       setIsSubmitting(false);
     }
-  }, [currentIndex, selectedOption, initialAttempt, currentQuestion, answers, t]);
+  }, [currentIndex, selectedOption, initialAttempt, currentQuestion, answers, isReviewingOmitted, t]);
+
+  const handleOptionSelect = useCallback(async (optionIndex: number) => {
+    setSelectedOption(optionIndex);
+    
+    if (initialAttempt.examConfigId?.autoAdvanceOnSelect) {
+      setIsSubmitting(true);
+      const status = optionIndex === currentQuestion.questionSnapshot.correctOptionIndex
+        ? 'correcta'
+        : 'incorrecta';
+
+      try {
+        await submitAnswerAction({
+          attemptId: initialAttempt._id,
+          questionIndex: currentIndex,
+          selectedOptionIndex: optionIndex,
+          timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
+          status
+        });
+
+        const updatedAnswers = [...answers];
+        updatedAnswers[currentIndex] = optionIndex;
+        setAnswers(updatedAnswers);
+
+        if (isReviewingOmitted) {
+          const remainingOmitted = updatedAnswers
+            .map((ans, idx) => ans === null ? idx : null)
+            .filter((idx): idx is number => idx !== null);
+
+          if (remainingOmitted.length > 0) {
+            const nextOmitted = remainingOmitted.find(idx => idx > currentIndex) ?? remainingOmitted[0];
+            setCurrentIndex(nextOmitted);
+            setSelectedOption(updatedAnswers[nextOmitted]);
+            setShowFeedback(false);
+            resetTimerRef.current();
+          } else {
+            setIsReviewingOmitted(false);
+            setShowFinishConfirm(true);
+          }
+        } else {
+          if (currentIndex < initialAttempt.questions.length - 1) {
+            const nextIdx = currentIndex + 1;
+            setCurrentIndex(nextIdx);
+            setSelectedOption(updatedAnswers[nextIdx]);
+            setShowFeedback(false);
+            resetTimerRef.current();
+          } else {
+            const hasOmitted = updatedAnswers.some(ans => ans === null);
+            if (initialAttempt.examConfigId?.reviewOmittedQuestions && hasOmitted) {
+              setShowOmittedConfirm(true);
+            } else {
+              setShowFinishConfirm(true);
+            }
+          }
+        }
+      } catch {
+        toast.error(t('errorProcess'));
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  }, [currentIndex, initialAttempt, currentQuestion, answers, isReviewingOmitted, t]);
+
+  const handlePrevious = useCallback(async () => {
+    if (currentIndex > 0) {
+      await jumpToQuestion(currentIndex - 1);
+    }
+  }, [currentIndex, jumpToQuestion]);
+
+  const startOmittedReview = () => {
+    setShowOmittedConfirm(false);
+    setIsReviewingOmitted(true);
+    
+    const firstOmittedIdx = answers.findIndex(ans => ans === null);
+    if (firstOmittedIdx !== -1) {
+      setCurrentIndex(firstOmittedIdx);
+      setSelectedOption(null);
+      setShowFeedback(false);
+      resetTimerRef.current();
+    }
+  };
 
   const handleGlobalTimeout = useCallback(() => {
     toast.error(t('globalTimeout'));
@@ -192,30 +288,13 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
 
       {/* 🧭 Non-linear Navigation Map */}
       {initialAttempt.examConfigId?.allowReviewPrevious && (
-        <nav className="flex flex-wrap gap-2 justify-center border-b border-white/5 pb-4 font-mono select-none" aria-label="Navegación de Preguntas">
-          {initialAttempt.questions.map((q, idx) => {
-            const isCurrent = idx === currentIndex;
-            const isAnswered = answers[idx] !== null;
-            return (
-              <button aria-label={`Pregunta ${idx + 1}`}
-                key={q.questionId}
-                type="button"
-                onClick={() => jumpToQuestion(idx)}
-                disabled={isSubmitting}
-                className={cn(
-                  "w-8 h-8 flex items-center justify-center text-[10px] border transition-all cursor-pointer rounded-none font-bold",
-                  isCurrent 
-                    ? "bg-primary border-primary text-black font-black animate-pulse" 
-                    : isAnswered 
-                      ? "bg-primary/10 border-primary/30 text-primary" 
-                      : "bg-white/[0.02] border-white/10 text-muted-foreground hover:bg-white/5 hover:text-foreground"
-                )}
-              >
-                {idx + 1}
-              </button>
-            );
-          })}
-        </nav>
+        <QuizNavigationMap
+          questions={initialAttempt.questions}
+          currentIndex={currentIndex}
+          answers={answers}
+          isSubmitting={isSubmitting}
+          onJump={jumpToQuestion}
+        />
       )}
 
       <main className="flex-1 overflow-y-auto">
@@ -224,7 +303,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
           selectedOption={selectedOption}
           showFeedback={showFeedback}
           isSubmitting={isSubmitting}
-          onSelect={setSelectedOption}
+          onSelect={handleOptionSelect}
         />
       </main>
 
@@ -232,33 +311,34 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         onNext={() => handleNext(false)}
         onSkip={() => handleNext(true)}
         onShowFeedback={() => setShowFeedback(true)}
+        onPrevious={handlePrevious}
         isSubmitting={isSubmitting}
         showFeedback={showFeedback}
         selectedOption={selectedOption}
         mode={initialAttempt.mode === 'mock' ? 'exam' : 'training'}
         isLast={currentIndex === initialAttempt.questions.length - 1}
+        allowReviewPrevious={initialAttempt.examConfigId?.allowReviewPrevious}
+        hasPrevious={currentIndex > 0}
       />
 
-      <Dialog open={showFinishConfirm} onOpenChange={setShowFinishConfirm}>
-        <DialogContent className="bg-card/95 backdrop-blur-2xl border-white/10 rounded-none shadow-2xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold tracking-tight uppercase italic text-foreground">
-              {t('finishTitle')}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground mt-4 leading-relaxed antialiased">
-              {t('finishDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex gap-4 mt-8">
-            <Button variant="outline" className="rounded-none font-mono text-[10px] tracking-widest uppercase flex-1 h-12" onClick={() => setShowFinishConfirm(false)}>
-              {t('cancelAction')}
-            </Button>
-            <Button className="rounded-none font-mono text-[10px] tracking-widest uppercase flex-1 h-12 bg-primary hover:bg-primary/90" onClick={confirmFinish}>
-              {t('confirmFinish')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <FinishConfirmDialog
+        open={showFinishConfirm}
+        onOpenChange={setShowFinishConfirm}
+        onConfirm={confirmFinish}
+        translations={{
+          finishTitle: t('finishTitle'),
+          finishDescription: t('finishDescription'),
+          cancelAction: t('cancelAction'),
+          confirmFinish: t('confirmFinish'),
+        }}
+      />
+
+      <OmittedDialog
+        open={showOmittedConfirm}
+        onOpenChange={setShowOmittedConfirm}
+        onFinalize={() => { setShowOmittedConfirm(false); setShowFinishConfirm(true); }}
+        onReview={startOmittedReview}
+      />
     </div>
   );
 }

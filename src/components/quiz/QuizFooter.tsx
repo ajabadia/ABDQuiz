@@ -1,6 +1,6 @@
 'use client';
 
-import { SkipForward, Activity, ChevronRight } from 'lucide-react';
+import { SkipForward, Activity, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 
@@ -8,32 +8,52 @@ interface QuizFooterProps {
   onNext: (isDraft?: boolean) => void;
   onSkip: () => void;
   onShowFeedback: () => void;
+  onPrevious?: () => void;
   isSubmitting: boolean;
   showFeedback: boolean;
   selectedOption: number | null;
   mode: 'exam' | 'training';
   isLast: boolean;
+  allowReviewPrevious?: boolean;
+  hasPrevious?: boolean;
 }
 
 export default function QuizFooter({
   onNext,
   onSkip,
   onShowFeedback,
+  onPrevious,
   isSubmitting,
   showFeedback,
   selectedOption,
   mode,
-  isLast
+  isLast,
+  allowReviewPrevious,
+  hasPrevious
 }: QuizFooterProps) {
   const t = useTranslations('quiz');
   // Refresh comment to trigger Turbopack re-sync
 
   return (
     <footer className="border-t border-white/10 pt-8 pb-12 flex justify-between items-center bg-background/95 backdrop-blur-xl sticky bottom-0 z-50 px-2" role="contentinfo">
-      <button aria-label={t('bypassTask')} className="btn-skip-console" onClick={onSkip} disabled={isSubmitting}>
-        <SkipForward className="w-3.5 h-3.5 mr-2" aria-hidden="true" />
-        {t('skip')}
-      </button>
+      <div className="flex gap-4">
+        {allowReviewPrevious && hasPrevious && onPrevious && (
+          <button 
+            type="button"
+            aria-label="Volver a la pregunta anterior" 
+            className="btn-skip-console border-white/10 hover:border-white/20 text-muted-foreground hover:text-foreground mr-2" 
+            onClick={onPrevious} 
+            disabled={isSubmitting}
+          >
+            <ChevronLeft className="w-4 h-4 mr-2" aria-hidden="true" />
+            Anterior
+          </button>
+        )}
+        <button aria-label={t('bypassTask')} className="btn-skip-console" onClick={onSkip} disabled={isSubmitting}>
+          <SkipForward className="w-3.5 h-3.5 mr-2" aria-hidden="true" />
+          {t('skip')}
+        </button>
+      </div>
 
       <div className="flex gap-6">
         {mode === 'training' && !showFeedback && (

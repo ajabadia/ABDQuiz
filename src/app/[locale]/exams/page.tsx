@@ -4,36 +4,49 @@ import { startQuizAction } from '@/actions/quiz';
 import { Separator } from '@/components/ui/separator';
 import { getExamConfigsAction } from '@/actions/examConfig';
 import { type SerializedExamConfig } from '@/types/quiz';
+import { ArrowLeft, FolderOpen } from 'lucide-react';
+import { Link } from '@/i18n/routing';
 
 export default async function ExamsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations('common');
   const h = await getTranslations('home');
+  const results = await getTranslations('results');
   
   // Fetch active configurations from database
   const configs: SerializedExamConfig[] = await getExamConfigsAction();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24 bg-background selection:bg-primary/30 overflow-hidden" role="main">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
       {/* Tactical grid background layer */}
       <div className="absolute inset-0 bg-industrial-grid mask-industrial-fade pointer-events-none opacity-50" aria-hidden="true" />
 
-      <div className="z-10 w-full max-w-5xl flex flex-col gap-12 animate-in fade-in duration-500">
+      <div className="max-w-7xl mx-auto flex flex-col gap-10 z-10 relative">
         
-        {/* Streamlined Launch Header */}
-        <header className="flex flex-col gap-3 items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-mono">
-            {locale === 'es' ? 'CONSOLA DE LANZAMIENTO' : 'LAUNCH CONSOLE'}
+        {/* Header: Variante B */}
+        <header className="flex flex-col gap-2 relative">
+          <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex items-center gap-4">
+              <Link
+                href="/"
+                className="p-2 border border-border bg-card/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer rounded-none"
+                aria-label={results('backHome')}
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-1.5 font-mono text-[9px] text-primary/80 uppercase tracking-widest">
+                  <FolderOpen className="w-3.5 h-3.5 text-primary animate-pulse" />
+                  {t('appTitle')} • {h('launchConsole')}
+                </div>
+                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight italic text-foreground leading-none">
+                  {h('simulationTemplates')}
+                </h1>
+              </div>
+            </div>
           </div>
-          
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground italic uppercase antialiased">
-            {locale === 'es' ? 'PLANTILLAS DE SIMULACIÓN' : 'SIMULATION TEMPLATES'}
-          </h1>
-          
-          <p className="text-sm text-muted-foreground max-w-[600px] leading-relaxed font-sans font-light">
-            {locale === 'es'
-              ? 'Selecciona una plantilla de simulación para iniciar la evaluación técnica. Las condiciones temporales y de puntuación se aplicarán automáticamente.'
-              : 'Select a simulation template to begin your technical evaluation. All timing and scoring parameters will be enforced automatically.'}
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {h('examsDescription')}
           </p>
         </header>
 

@@ -3,6 +3,9 @@
 import { QuizService } from '@/services/quiz/quizService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import connectDB from '@/lib/database/mongodb';
+import ExamAttempt from '@/models/ExamAttempt';
+import { ensureIndustrialAccess } from '@/lib/session';
 
 const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
 const FAKE_USER_ID = "user_001"; // MVP: Usuario único
@@ -77,5 +80,55 @@ export async function finishQuizAction(attemptId: string) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Failed to finish quiz:', message);
     throw new Error('Finalization failed');
+  }
+}
+
+/**
+ * Anula un intento de examen de forma lógica para permitir un reintento
+ */
+export async function invalidateAttemptAction(attemptId: string) {
+  try {
+    const admin = await ensureIndustrialAccess('ADMIN');
+    await connectDB();
+    
+    const attempt = await ExamAttempt.findById(attemptId);
+    if (!attempt) {
+      return { success: false, error: 'Intento de examen no encontrado' };
+    }
+    
+    attempt.isInvalidated = true;
+    attempt.invalidatedBy = admin.email || admin.id;
+    attempt.invalidatedAt = new Date();
+    
+    await attempt.save();
+    
+    revalidatePath('/admin/attempts');
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ [INVALIDATE_ATTEMPT_ACTION_ERROR]:', message);
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Recupera todos los intentos de examen para el tenant actual
+ */
+export async function getAttemptsAction() {
+  try {
+    const admin = await ensureIndustrialAccess('ADMIN');
+    await connectDB();
+    
+    const attempts = await ExamAttempt.find({
+      tenantId: admin.tenantId
+    })
+    .populate('examConfigId')
+    .sort({ createdAt: -1 })
+    .lean();
+    
+    return JSON.parse(JSON.stringify(attempts));
+  } catch (error: unknown) {
+    console.error('❌ Error fetching attempts:', error);
+    return [];
   }
 }

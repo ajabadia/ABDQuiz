@@ -38,12 +38,12 @@ export default function LogoutSuccessPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground font-sans relative overflow-hidden p-6">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground font-sans relative overflow-hidden p-6" role="main">
       {/* 🌌 Background Elements */}
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
       <div className="absolute -top-[40%] -left-[20%] w-[80%] h-[80%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-[40%] -right-[20%] w-[80%] h-[80%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-
+ 
       {/* 🛡️ Content Card */}
       <div className="w-full max-w-[420px] bg-card/40 backdrop-blur-xl border border-border/80 p-8 md:p-10 shadow-2xl relative z-10 flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-6 duration-500">
         
@@ -57,12 +57,12 @@ export default function LogoutSuccessPage() {
             <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
           </span>
         </div>
-
+ 
         {/* 🏷️ Badge */}
         <div className="px-3 py-1 bg-secondary border border-border text-[9px] font-black tracking-[0.2em] uppercase text-muted-foreground mb-6">
           {t('shield_badge')}
         </div>
-
+ 
         {/* 🏁 Typography */}
         <h1 className="text-2xl font-black tracking-tighter uppercase mb-3 text-foreground">
           {t('title')}
@@ -71,13 +71,13 @@ export default function LogoutSuccessPage() {
         <p className="text-xs text-muted-foreground font-medium leading-relaxed mb-8 max-w-[320px]">
           {t('subtitle')}
         </p>
-
+ 
         {/* 🔌 Secure Farewell Text */}
         <div className="w-full bg-secondary/20 border border-border/40 p-4 mb-8 text-[10px] font-mono leading-relaxed text-left text-muted-foreground/80 flex items-start gap-3">
           <span className="text-primary font-bold">{`>`}</span>
           <span>{t('message')}</span>
         </div>
-
+ 
         {/* 🚀 Interactive Trigger Button */}
         <button
           aria-label={t('button')}
@@ -87,7 +87,7 @@ export default function LogoutSuccessPage() {
           <LogIn className="w-4 h-4" />
           {t('button')}
         </button>
-
+ 
         {/* 🏁 Return Link to Public Welcome Page */}
         <button
           aria-label={t('home_button')}
@@ -98,11 +98,11 @@ export default function LogoutSuccessPage() {
           {t('home_button')}
         </button>
       </div>
-
-      {/* 🏁 Footer Spec */}
+ 
+      {/* 🏁 Return Link to Public Welcome Page */}
       <footer className="absolute bottom-6 opacity-25 text-[8px] font-mono tracking-widest uppercase text-muted-foreground">
         {common('appTitle')} | SEC_REVOKED_LOGOUT_OK
       </footer>
-    </div>
+    </main>
   );
 }

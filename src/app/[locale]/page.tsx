@@ -9,7 +9,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const h = await getTranslations('home');
   
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24 bg-background selection:bg-primary/30 overflow-hidden" role="main">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24 bg-background text-foreground selection:bg-primary/30 overflow-hidden" role="main">
       {/* Tactical grid background layer */}
       <div className="absolute inset-0 bg-industrial-grid mask-industrial-fade pointer-events-none opacity-50" aria-hidden="true" />
 
@@ -17,7 +17,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         
         {/* Core Brand Header */}
         <header className="flex flex-col gap-6 items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-mono">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-mono rounded-sm">
             <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -38,15 +38,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="flex flex-col items-center justify-center gap-4">
           <Link
             href={`/${locale}/exams`}
-            className="inline-flex items-center justify-center px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-widest hover:bg-primary/95 transition-all duration-300 font-black cursor-pointer shadow-lg active:scale-95 border border-primary/30"
+            className="inline-flex items-center justify-center px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-widest hover:bg-primary/95 transition-all duration-300 font-black cursor-pointer shadow-lg active:scale-95 border border-primary/30 rounded-none"
           >
-            {locale === 'es' ? 'ACCEDER AL SIMULADOR' : 'ACCESS SIMULATOR'}
+            {h('accessSimulator')}
             <ArrowRight className="w-4 h-4 ml-3 animate-pulse" />
           </Link>
           <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/60">
-            {locale === 'es' 
-              ? 'O utiliza el panel de control lateral izquierdo' 
-              : 'Or utilize the left control sidebar panel'}
+            {h('sidebarNotice')}
           </span>
         </div>
 
@@ -54,47 +52,41 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6" role="region" aria-label="System Capabilities">
           
           {/* Feature 1: Execution Engine */}
-          <div className="p-6 bg-card border border-border rounded-none flex flex-col gap-4">
-            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit">
+          <div className="p-6 bg-card border border-border rounded-sm flex flex-col gap-4">
+            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit rounded-sm">
               <Cpu className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
-              {locale === 'es' ? 'Motores de Simulación' : 'Simulation Engines'}
+              {h('feature1Title')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {locale === 'es'
-                ? 'Simulación táctica en tiempo real con lógicas integradas de cronómetro global y temporización específica por pregunta.'
-                : 'Real-time tactical simulation with integrated global stopwatch and question-specific countdown logical loops.'}
+              {h('feature1Desc')}
             </p>
           </div>
 
           {/* Feature 2: Scoring Systems */}
-          <div className="p-6 bg-card border border-border rounded-none flex flex-col gap-4">
-            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit">
+          <div className="p-6 bg-card border border-border rounded-sm flex flex-col gap-4">
+            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit rounded-sm">
               <Sliders className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
-              {locale === 'es' ? 'Lógicas de Evaluación' : 'Evaluation Logic'}
+              {h('feature2Title')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {locale === 'es'
-                ? 'Soporte total para esquemas evaluativos simples, penalizados por fallos y con coeficientes de peso por nivel de dificultad.'
-                : 'Complete enforcement of simple, incorrect-penalty, and weighted difficulty coefficient evaluation schemes.'}
+              {h('feature2Desc')}
             </p>
           </div>
 
           {/* Feature 3: Security & Deduplication */}
-          <div className="p-6 bg-card border border-border rounded-none flex flex-col gap-4">
-            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit">
+          <div className="p-6 bg-card border border-border rounded-sm flex flex-col gap-4">
+            <div className="p-2.5 bg-primary/5 border border-primary/20 text-primary w-fit rounded-sm">
               <Database className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
-              {locale === 'es' ? 'Integridad del Corpus' : 'Corpus Integrity'}
+              {h('feature3Title')}
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {locale === 'es'
-                ? 'Validación Zod estricta de esquemas de datos y deduplicación por hashes SHA-256 para preservar la pureza del banco.'
-                : 'Strict Zod validation of content schemas and batch deduplication via SHA-256 hashes to preserve corpus purity.'}
+              {h('feature3Desc')}
             </p>
           </div>
 

@@ -1,0 +1,41 @@
+import mongoose, { Schema, Document, Model } from 'mongoose';
+
+export interface IAllegation extends Document {
+  tenantId: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  examAttemptId: mongoose.Types.ObjectId;
+  questionId: mongoose.Types.ObjectId;
+  questionText: string;
+  reason: string;
+  status: 'pending' | 'approved' | 'rejected';
+  resolution?: 'CORRECTION_SHIFT' | 'CANCEL_QUESTION' | 'GIVE_POINTS_TO_ALL';
+  resolvedBy?: string;
+  resolvedAt?: Date;
+  feedback?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const AllegationSchema = new Schema<IAllegation>({
+  tenantId: { type: String, required: true, index: true },
+  userId: { type: String, required: true, index: true },
+  userEmail: { type: String, required: true },
+  userName: { type: String, required: true },
+  examAttemptId: { type: Schema.Types.ObjectId, ref: 'ExamAttempt', required: true, index: true },
+  questionId: { type: Schema.Types.ObjectId, ref: 'Question', required: true, index: true },
+  questionText: { type: String, required: true },
+  reason: { type: String, required: true },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
+  resolution: { type: String, enum: ['CORRECTION_SHIFT', 'CANCEL_QUESTION', 'GIVE_POINTS_TO_ALL'] },
+  resolvedBy: { type: String },
+  resolvedAt: { type: Date },
+  feedback: { type: String, default: "" }
+}, {
+  timestamps: true
+});
+
+const Allegation: Model<IAllegation> = mongoose.models.Allegation || mongoose.model<IAllegation>('Allegation', AllegationSchema);
+
+export default Allegation;

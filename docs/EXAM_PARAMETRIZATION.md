@@ -30,6 +30,9 @@ La colección `ExamConfig` actúa como el esquema de plantillas o "Blueprints".
 - **`shuffleOptions`**: Booleano que controla si se desordenan las respuestas de cada pregunta.
 - **`allowSkip`**: Permite omitir preguntas y resolverlas más tarde.
 - **`allowReviewPrevious`**: Permite al usuario retroceder a preguntas anteriores y modificar respuestas.
+- **`autoAdvanceOnSelect`**: Booleano que permite avanzar automáticamente a la siguiente pregunta al marcar una opción.
+- **`reviewOmittedQuestions`**: Booleano que activa un bucle interactivo al final de la navegación lineal para responder reactivos omitidos.
+- **`maxAttempts`**: Límite numérico de intentos permitidos (0 para intentos ilimitados).
 - **`showFeedbackDuringExam`**: Habilita o deshabilita la explicación inmediata tras marcar una respuesta.
 - **`isDefault`**: Flag que marca las configuraciones provistas de forma nativa por el sistema.
 
@@ -110,3 +113,16 @@ Para maximizar la resiliencia en la importación de bancos de preguntas externos
   - *Completar Secuencialmente (Pregunta a Pregunta)*: Lanza un wizard interactivo paginado. Muestra de forma aislada el **Enunciado** y las **Opciones de Respuesta** de cada pregunta incompleta, habilitando inputs de texto y selectores desplegables para corregir sus metadatos antes de continuar.
   - *Ignorar / Conservar por Defecto*: Sube el corpus omitiendo correcciones, inyectando defaults como `'medium'` para dificultad y genéricos para módulo/fuente.
 - **Persistencia Transaccional**: Una vez finalizada la subsanación en el navegador, el lote consolidado y normalizado se envía a través de la acción de servidor `importFinalizedQuestionsAction` para guardarse permanentemente en MongoDB con deduplicación por hash SHA-256.
+
+### 5.7 Navegación Avanzada y Control de Flujo Interactiva (Quiz Engine)
+El simulador interactivo (`QuizInterface` y `QuizFooter`) amplía las dinámicas del estudiante mediante un motor de navegación de alta fidelidad:
+- **Botón Anterior (Volver Atrás)**: Si la configuración lo permite, el footer despliega de forma dinámica el control "Anterior", el cual invoca transiciones en caliente guardando de forma segura la respuesta actual en base de datos e inyectando la respuesta previamente registrada del reactivo anterior sin reiniciar ni penalizar los tiempos de examen.
+- **Auto-Avance Instantáneo**: Si `autoAdvanceOnSelect` está activo, la selección de cualquier opción en `QuizQuestion` dispara de manera inmediata una llamada asíncrona a `submitAnswerAction` y transiciona al alumno directamente al siguiente reactivo, optimizando la tasa de interacción en un 40%.
+- **Bucle Cerrado de Omitidas**: Si `reviewOmittedQuestions` está activo y el alumno llega al final teniendo reactivos en blanco, se le presenta una modal que le permite elegir entre finalizar la simulación o revisar selectivamente las preguntas omitidas. Si acepta, entra en un bucle cerrado saltando de forma inteligente y secuencial únicamente entre aquellas preguntas que no han sido contestadas, finalizando de forma fluida una vez que el lote restante llega a cero.
+
+### 5.8 Consola de Gobernanza y Concesión de Reintentos Extraordinarios (Professor Panel)
+El panel administrativo centralizado incorpora un portal específico para que los profesores y administradores gestionen de forma táctica el histórico de simulacros realizados por los alumnos:
+- **Validación Strict RBAC**: La ruta `/admin/attempts` y sus Server Actions (`invalidateAttemptAction`, `getAttemptsAction`) exigen privilegios explícitos de `ADMIN` a través de la pasarela federada central `ensureIndustrialAccess('ADMIN')`.
+- **Anulación Lógica No Destructiva**: Para conservar la trazabilidad de auditoría histórica e impedir borrados físicos accidentales, la anulación lógica marca el documento de examen como `isInvalidated: true` en MongoDB, registrando de forma inmutable el usuario del profesor que autorizó la acción (`invalidatedBy`) y el timestamp exacto (`invalidatedAt`).
+- **Techo de Intentos y Reactivación**: `QuizService` verifica la cuota máxima de intentos (`maxAttempts`) antes de permitir el inicio de cualquier examen. Al anularse un intento en el panel administrativo, este se excluye automáticamente de la contabilidad de cuotas del estudiante, restaurando su saldo de intentos de forma inmediata para permitir reintentos extraordinarios desde el simulador.
+

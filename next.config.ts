@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin(
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@abd/styles'],
   // Configuración de Next.js 16
   experimental: {
     // Si necesitas features experimentales de 2026 actívalas aquí

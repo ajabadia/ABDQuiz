@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@abd/styles':
+        specifier: github:ajabadia/ABDStyles#main
+        version: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -92,6 +95,10 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9':
+    resolution: {tarball: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9}
+    version: 1.0.0
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -4092,6 +4099,10 @@ packages:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
 snapshots:
+
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9':
+    dependencies:
+      zod: 3.25.76
 
   '@alloc/quick-lru@5.2.0': {}
 

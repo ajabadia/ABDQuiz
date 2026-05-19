@@ -5,7 +5,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import connectDB from '@/lib/database/mongodb';
 import ExamAttempt from '@/models/ExamAttempt';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureIndustrialAccess, getIndustrialSession } from '@/lib/session';
+import { LogsClient } from '@/lib/logs-client';
 
 const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
 const FAKE_USER_ID = "user_001"; // MVP: Usuario único
@@ -17,16 +18,30 @@ export async function startQuizAction(examConfigId: string) {
   let attemptId: string | null = null;
   
   try {
-    console.log(`🚀 Attempting to start quiz with config: ${examConfigId} for tenant: ${DEFAULT_TENANT}`);
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const attempt = await QuizService.createExamAttempt(
-      FAKE_USER_ID,
-      DEFAULT_TENANT,
+      session.user?.id || FAKE_USER_ID,
+      activeTenantId,
       examConfigId
     );
     
     attemptId = attempt._id.toString();
     console.log(`✅ Quiz attempt created: ${attemptId}`);
+    
+    // Log the start attempt
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_ATTEMPT_STARTED',
+      entityType: 'EXAM',
+      entityId: attemptId,
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'student@abd.com',
+      changedFields: {
+        examConfigId
+      }
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('❌ Failed to start quiz:', message);
@@ -72,6 +87,22 @@ export async function submitAnswerAction(formData: {
 export async function finishQuizAction(attemptId: string) {
   try {
     await QuizService.finishExam(attemptId);
+    
+    // Log the finish attempt
+    const session = await getIndustrialSession();
+    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_ATTEMPT_COMPLETED',
+      entityType: 'EXAM',
+      entityId: attemptId,
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'student@abd.com',
+      changedFields: {
+        attemptId
+      }
+    });
+    
     revalidatePath(`/quiz/${attemptId}`);
     revalidatePath(`/quiz/${attemptId}/results`);
     
@@ -96,11 +127,28 @@ export async function invalidateAttemptAction(attemptId: string) {
       return { success: false, error: 'Intento de examen no encontrado' };
     }
     
+    const previousState = JSON.parse(JSON.stringify(attempt));
     attempt.isInvalidated = true;
     attempt.invalidatedBy = admin.email || admin.id;
     attempt.invalidatedAt = new Date();
     
     await attempt.save();
+    
+    // Log the invalidation event
+    await LogsClient.log({
+      tenantId: admin.tenantId,
+      action: 'EXAM_ATTEMPT_INVALIDATED',
+      entityType: 'EXAM',
+      entityId: attemptId,
+      userId: admin.id,
+      userEmail: admin.email,
+      changedFields: {
+        isInvalidated: true,
+        invalidatedBy: attempt.invalidatedBy,
+        invalidatedAt: attempt.invalidatedAt
+      },
+      previousState
+    });
     
     revalidatePath('/admin/attempts');
     return { success: true };

@@ -5,6 +5,7 @@ import ExamConfig from '@/models/ExamConfig';
 import { revalidatePath } from 'next/cache';
 import { type IExamConfig } from '@/models/ExamConfig';
 import { getIndustrialSession } from '@/lib/session';
+import { LogsClient } from '@/lib/logs-client';
 
 const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
 const FAKE_USER_ID = "admin_001";
@@ -97,6 +98,17 @@ export async function createExamConfigAction(data: Partial<IExamConfig>) {
       createdBy: FAKE_USER_ID,
     });
     
+    // Log the creation event
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_CONFIG_CREATED',
+      entityType: 'CONFIG',
+      entityId: newConfig._id.toString(),
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'system@abd.com',
+      changedFields: JSON.parse(JSON.stringify(newConfig)),
+    });
+    
     revalidatePath('/admin/exams');
     revalidatePath('/'); // Para actualizar la home si muestra configs dinámicas
     
@@ -121,7 +133,20 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       return { success: false, error: 'Acceso no autorizado' };
     }
     
+    const previousState = JSON.parse(JSON.stringify(config));
     await ExamConfig.findByIdAndUpdate(id, data);
+    
+    // Log the update event
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_CONFIG_UPDATED',
+      entityType: 'CONFIG',
+      entityId: id,
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'system@abd.com',
+      changedFields: JSON.parse(JSON.stringify(data)),
+      previousState,
+    });
     
     revalidatePath('/admin/exams');
     revalidatePath('/');
@@ -147,7 +172,20 @@ export async function deleteExamConfigAction(id: string) {
       return { success: false, error: 'Acceso no autorizado' };
     }
     
+    const previousState = JSON.parse(JSON.stringify(config));
     await ExamConfig.findByIdAndUpdate(id, { active: false });
+    
+    // Log the deletion event
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_CONFIG_DELETED',
+      entityType: 'CONFIG',
+      entityId: id,
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'system@abd.com',
+      changedFields: { active: false },
+      previousState,
+    });
     
     revalidatePath('/admin/exams');
     revalidatePath('/');
@@ -180,6 +218,20 @@ export async function cloneExamConfigAction(id: string) {
       tenantId: activeTenantId,
       name: `${source.name} (Copia)`,
       isDefault: false
+    });
+    
+    // Log the cloning event
+    await LogsClient.log({
+      tenantId: activeTenantId,
+      action: 'EXAM_CONFIG_CLONED',
+      entityType: 'CONFIG',
+      entityId: cloned._id.toString(),
+      userId: session.user?.id || FAKE_USER_ID,
+      userEmail: session.user?.email || 'system@abd.com',
+      changedFields: {
+        sourceId: id,
+        name: cloned.name,
+      },
     });
     
     revalidatePath('/admin/exams');

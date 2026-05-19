@@ -37,11 +37,10 @@ export async function GET(request: NextRequest) {
 
     const data = await response.json();
 
-    // 2. Create the local session (Cookie)
-    // For now, we store the full industrial profile in a secure cookie
+    // 2. Create the local session storing the cryptographically signed JWT
     const nextResponse = NextResponse.redirect(new URL(state, request.url));
     
-    nextResponse.cookies.set('abd_session', JSON.stringify(data.user), {
+    nextResponse.cookies.set('abd_session', data.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

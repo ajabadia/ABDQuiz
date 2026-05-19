@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { verifyToken } from './lib/token-verifier';
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -24,10 +25,6 @@ interface TenantInfo {
   } | null;
 }
 
-interface UserProfile {
-  email: string;
-  tenantId: string;
-}
 
 /**
  * 🏢 Helper to extract tenant subdomain from host header
@@ -104,16 +101,30 @@ export async function proxy(request: NextRequest) {
     pathname === '/en/' ||
     pathname.endsWith('/logout-success');
 
-  // 4. Session Validation against local federated cookie
+  // 4. Session Validation via cryptographic JWT verification
   const sessionCookie = request.cookies.get('abd_session');
-  let isAuthenticated = !!sessionCookie;
+  let isAuthenticated = false;
   let didVerifyThisRequest = false;
-  let userProfile: UserProfile | null = null;
+  let userProfile: { email: string; tenantId: string } | null = null;
+  let isAppNotAllowed = false;
 
   if (sessionCookie?.value) {
-    try {
-      userProfile = JSON.parse(sessionCookie.value) as UserProfile;
-    } catch {}
+    const payload = await verifyToken(sessionCookie.value);
+    if (payload) {
+      // Check if user is SUPER_ADMIN or has access to 'quiz'
+      const isSuperAdmin = payload.role === 'SUPER_ADMIN';
+      const isAppAllowed = isSuperAdmin || (payload.allowedApps && payload.allowedApps.includes('quiz'));
+
+      if (isAppAllowed) {
+        isAuthenticated = true;
+        userProfile = {
+          email: payload.email,
+          tenantId: payload.tenantId,
+        };
+      } else {
+        isAppNotAllowed = true;
+      }
+    }
   }
 
   // 🛡️ Cross-Tenant Security Check: Force re-auth if session tenant doesn't match active subdomain tenant
@@ -181,6 +192,10 @@ export async function proxy(request: NextRequest) {
     
     if (tenantInfo) {
       authorizeUrl.searchParams.set('tenant', tenantInfo.tenantId);
+    }
+
+    if (isAppNotAllowed) {
+      authorizeUrl.searchParams.set('error', 'app_not_allowed');
     }
     
     const response = NextResponse.redirect(authorizeUrl);

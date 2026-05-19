@@ -125,7 +125,7 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                     <tr
                       key={attempt._id}
                       className={`hover:bg-white/[0.01] transition-colors ${
-                        isInvalidated ? 'opacity-50 line-through bg-red-950/5' : ''
+                        isInvalidated ? 'opacity-50 line-through bg-destructive/5' : ''
                       }`}
                     >
                       <td className="p-4 font-bold text-foreground lowercase tracking-normal">
@@ -141,10 +141,10 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                         <span
                           className={`px-2.5 py-0.5 border font-semibold inline-block ${
                             attempt.status === 'completed'
-                              ? 'bg-emerald-950/20 border-emerald-900/50 text-emerald-400'
+                              ? 'bg-primary/20 border-primary/50 text-primary'
                               : attempt.status === 'timeout'
-                              ? 'bg-amber-950/20 border-amber-900/50 text-amber-400'
-                              : 'bg-blue-950/20 border-blue-900/50 text-blue-400'
+                              ? 'bg-secondary/20 border-secondary/50 text-secondary'
+                              : 'bg-muted/20 border-border text-muted-foreground'
                           }`}
                         >
                           {attempt.status}
@@ -159,7 +159,7 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                             className={`font-black px-2 py-0.5 border ${
                               isPassed
                                 ? 'bg-primary/10 border-primary/30 text-primary'
-                                : 'bg-red-950/20 border-red-900/30 text-red-400'
+                                : 'bg-destructive/20 border-destructive/30 text-destructive'
                             }`}
                           >
                             {attempt.percentage}%
@@ -171,7 +171,7 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                       <td className="p-4 text-right">
                         {isInvalidated ? (
                           <div className="flex flex-col items-end gap-1 select-none">
-                            <span className="bg-red-950/30 border border-red-900/50 text-red-400 px-2.5 py-1 font-bold flex items-center gap-1.5 rounded-none text-[8px]">
+                            <span className="bg-destructive/30 border border-destructive/50 text-destructive px-2.5 py-1 font-bold flex items-center gap-1.5 rounded-none text-[8px]">
                               <ShieldAlert className="w-3 h-3" />
                               ANULADO
                             </span>
@@ -184,7 +184,7 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                             onClick={() => handleInvalidate(attempt._id)}
                             disabled={loadingIds[attempt._id]}
                             variant="outline"
-                            className="h-8 rounded-none border-red-900/30 text-red-400 bg-red-950/10 hover:bg-red-900/20 hover:text-red-300 font-mono text-[9px] tracking-wider"
+                            className="h-8 rounded-none border-destructive/30 text-destructive bg-destructive/10 hover:bg-destructive/20 hover:text-destructive font-mono text-[9px] tracking-wider"
                           >
                             <RotateCcw className="w-3 h-3 mr-2" />
                             {loadingIds[attempt._id] ? 'Anulando...' : 'ANULAR / REINTENTO'}

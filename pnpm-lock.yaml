@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@abd/styles':
         specifier: github:ajabadia/ABDStyles#main
-        version: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9
+        version: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/68f7d5da930ecc06124c301b6c70dad299489d80(lucide-react@1.14.0(react@19.2.4))(react@19.2.4)
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -29,6 +29,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      jose:
+        specifier: ^6.2.3
+        version: 6.2.3
       lucide-react:
         specifier: ^1.14.0
         version: 1.14.0(react@19.2.4)
@@ -96,9 +99,12 @@ importers:
 
 packages:
 
-  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9':
-    resolution: {tarball: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9}
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/68f7d5da930ecc06124c301b6c70dad299489d80':
+    resolution: {tarball: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/68f7d5da930ecc06124c301b6c70dad299489d80}
     version: 1.0.0
+    peerDependencies:
+      lucide-react: ^0.46.0
+      react: ^19.0.0
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -4100,8 +4106,10 @@ packages:
 
 snapshots:
 
-  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/88d315b7d1e759f1da1fa36bb0797bf84ddf77f9':
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/68f7d5da930ecc06124c301b6c70dad299489d80(lucide-react@1.14.0(react@19.2.4))(react@19.2.4)':
     dependencies:
+      lucide-react: 1.14.0(react@19.2.4)
+      react: 19.2.4
       zod: 3.25.76
 
   '@alloc/quick-lru@5.2.0': {}

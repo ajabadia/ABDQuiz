@@ -23,31 +23,33 @@ export default async function ExamsPage({ params }: { params: Promise<{ locale: 
 
       <div className="max-w-7xl mx-auto flex flex-col gap-10 z-10 relative">
         
-        {/* Header: Variante B */}
-        <header className="flex flex-col gap-2 relative">
-          <div className="flex items-center justify-between border-b border-border pb-4">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="p-2 border border-border bg-card/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer rounded-none"
-                aria-label={results('backHome')}
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-              <div className="flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 font-mono text-[9px] text-primary/80 uppercase tracking-widest">
-                  <FolderOpen className="w-3.5 h-3.5 text-primary animate-pulse" />
-                  {t('appTitle')} • {h('launchConsole')}
-                </div>
-                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight italic text-foreground leading-none">
-                  {h('simulationTemplates')}
-                </h1>
-              </div>
+        {/* Header Navigation */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+          <div className="flex flex-col gap-2">
+            <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-primary flex items-center gap-2 mb-2">
+              <FolderOpen size={14} className="text-primary animate-pulse" aria-hidden="true" />
+              {t('appTitle')} • {h('launchConsole')}
             </div>
+            
+            <div className="flex items-center gap-4 mt-1">
+              <Link 
+                href="/"
+                className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                aria-label={results('backHome')}
+                title="Back to Home"
+              >
+                <ArrowLeft size={14} aria-hidden="true" />
+              </Link>
+              
+              <h1 className="text-3xl font-black uppercase italic tracking-tight text-foreground leading-none flex-1 truncate">
+                {h('simulationTemplates')}
+              </h1>
+            </div>
+            
+            <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
+              {h('examsDescription')}
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {h('examsDescription')}
-          </p>
         </header>
 
         {/* Exams Launch Grid */}

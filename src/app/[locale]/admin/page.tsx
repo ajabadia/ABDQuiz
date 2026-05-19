@@ -32,19 +32,21 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
         
         {/* Header: Variante A */}
-        <header className="flex flex-col gap-2 relative">
-          <div className="flex flex-col gap-0.5 border-b border-border pb-4">
-            <div className="flex items-center gap-1.5 font-mono text-[9px] text-primary/80 uppercase tracking-widest">
-              <LayoutDashboard className="w-3.5 h-3.5 text-primary animate-pulse" />
-              {c('appTitle')} • {ap('gobernanza')}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
+          <div className="flex flex-col gap-2">
+            <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-primary flex items-center gap-2 mb-2">
+              <LayoutDashboard size={14} className="text-primary animate-pulse" aria-hidden="true" />
+              {c('appTitle')} • DASHBOARD
             </div>
-            <h1 className="text-3xl font-black uppercase tracking-tight italic text-foreground leading-none">
-              {t('title')}
+            
+            <h1 className="text-3xl font-black uppercase italic tracking-tight text-foreground leading-none">
+              {c('appTitle')} <span className="text-primary">{ap('gobernanza')}</span>
             </h1>
+            
+            <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
+              {ap('subTitle')}<span className="text-primary font-bold">{user.tenantId}</span>
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {ap('subTitle')}<span className="text-primary font-bold">{user.tenantId}</span>
-          </p>
         </header>
 
         {/* Dashboard Grid */}

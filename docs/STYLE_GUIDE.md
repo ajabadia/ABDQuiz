@@ -212,4 +212,124 @@ Para garantizar un portal de bienvenida asombroso en cualquier aplicación de la
 *   Métricas del sistema: Fila flex compacta con espaciado amplio (`flex gap-12 font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground/30`).
 
 ---
+
+## 🗄️ 8. Anatomía del Menú Lateral (The Tactical Sidebar Drawer)
+
+Para la navegación global, el ecosistema utiliza un panel lateral deslizante (Sidebar Drawer) con estética de menú táctico, garantizando homogeneidad entre todas las aplicaciones de la suite.
+
+### A. Botón Disparador (Floating Trigger)
+*   **Posicionamiento:** Fijo en la esquina superior izquierda (`fixed top-6 left-6 z-40`).
+*   **Contenedor:** Cuadrado rígido sin redondear (`p-3 rounded-none`), fondo translúcido (`bg-background/80 backdrop-blur-md`) con sombra técnica (`shadow-lg`).
+*   **Interacción:** Borde inactivo sutil (`border border-border`), hover de atención (`hover:border-primary/40 hover:bg-muted`), y efecto táctil de retroceso (`active:scale-95`).
+*   **Iconografía:** Icono Hamburguesa estándar (`Menu` de Lucide) en tamaño `w-5 h-5`.
+
+### B. Velo de Fondo (Dark Overlay Backdrop)
+*   Debe oscurecer fuertemente el contexto de la aplicación para capturar la atención de manera modal.
+*   **Especificaciones:** `fixed inset-0 z-45 bg-black/70 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in`.
+
+### C. Contenedor del Drawer (Sidebar Panel)
+*   **Posicionamiento y Tamaño:** Fijo al eje vertical izquierdo con ancho definido (`fixed inset-y-0 left-0 z-50 w-80`).
+*   **Superficie:** Fondo abisal principal (`bg-background`), bordes afilados (`rounded-none`), separador limitante (`border-r border-border`) y sombra pesada para profundidad (`shadow-2xl`).
+*   **Animación:** Desplazamiento cinemático en el eje X (`transition-transform duration-300 ease-in-out transform`).
+
+### D. Enlaces de Navegación (Tactical Links)
+Los ítems del menú abandonan la apariencia de "link web" para convertirse en placas de instrumentación de comandos.
+*   **Geometría:** Rectángulos de máxima precisión (`px-4 py-3 rounded-none flex items-center gap-4`).
+*   **Tipografía:** Mandatorio `font-mono text-[10px] font-bold uppercase tracking-wider`.
+*   **Reposo:** Fondo imperceptible (`bg-muted/10`), borde pasivo (`border border-border`) y texto mudo (`text-muted-foreground`).
+*   **Hover (Foco):** El componente "despierta" bañándose en la tonalidad de la señal primaria (`hover:border-primary/20 hover:bg-primary/5 hover:text-primary`).
+
+### E. Tarjeta de Sesión Cyber-Industrial (Bottom Card)
+Ubicada al fondo del panel, separada por una barrera física (`border-t border-border pt-6`).
+*   **Sesión Activa:** Identidad jerarquizada. Nombre en mayúsculas pesadas (`text-xs font-black tracking-wider`), email y metadatos en código de máquina (`font-mono text-[8px] text-muted-foreground/80 uppercase`). Acciones destructivas o salidas con hover de alerta (`hover:text-red-400 hover:bg-red-500/10 border-border border rounded-none p-2`).
+*   **Sesión Latente (Off):** Indicador de telemetría de caída (punto rojo parpadeante `animate-ping bg-red-400 opacity-75`) y bloque macizo de arranque de sistema (botón sólido color primario `bg-primary font-mono`).
+
+---
+
+## ⚙️ 9. Anatomía del Menú de Ajustes (The System Settings Dropdown)
+
+El menú de configuración rápida (icono de engranaje) encapsula acciones de sistema como el idioma, el tema y la desconexión segura. Al igual que el resto de la suite, debe obedecer un patrón visual rígido, jerárquico y de precisión mecánica.
+
+### A. Botón Disparador (Gear Trigger)
+*   **Contenedor:** Botón de dimensiones precisas (`p-2.5 rounded-md` o `rounded-none`), fondo con desenfoque (`bg-background/80 backdrop-blur-md`), borde inactivo (`border border-border`).
+*   **Estado Abierto (Focus):** Debe resaltarse cambiando su fondo e iluminando el contorno (`bg-muted ring-1 ring-primary/20 border-primary/30`).
+*   **Animación del Icono:** El icono (`Settings` de Lucide) debe rotar suavemente al abrirse para dar feedback mecánico (`transition-transform duration-500 rotate-90 text-primary`).
+
+### B. Panel Flotante (Dropdown Surface)
+*   **Posicionamiento:** Relativo a su botón padre, cayendo hacia abajo y anclado a un lado (`absolute mt-3 w-64 z-[100] origin-top-right`).
+*   **Superficie y Contorno:** Efecto de cristal oscuro (`bg-background/95 backdrop-blur-md`), bordes afilados sin redondear (`rounded-none`), borde perimetral sutil (`border border-border`) y sombra pronunciada (`shadow-2xl`).
+*   **Aparición Cinemática:** Debe entrar escalando y deslizando sutilmente desde su origen (`animate-in fade-in slide-in-from-top-2 zoom-in-95 duration-200 ease-out`).
+
+### C. Cabecera del Panel (Panel Header)
+*   Contenedor separado del contenido por una línea física inferior (`mb-4 pb-2 border-b border-border`).
+*   **Título:** Tipografía extremadamente pequeña, espaciada y en cursiva (`text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic`).
+*   **Botón de Descarte:** Control `X` diminuto para cerrar manualmente el menú, atenuado al reposo.
+
+### D. Segmentos de Opciones (Language & Theme Segments)
+Cada bloque de opciones (Idioma, Tema) debe estar encabezado por una etiqueta identificativa.
+*   **Etiqueta de Bloque:** Debe destacar en el color primario indicando la categoría técnica (`flex items-center gap-2 text-[9px] font-bold text-primary uppercase tracking-widest mb-3`).
+*   **Botones de Selección (Toggles):**
+    *   Formato base: `px-3 py-2 text-[10px] font-bold uppercase border rounded-none`.
+    *   **Estado Activo (ON):** Iluminado en el tono primario con un fondo muy diluido (`bg-primary/10 border-primary/30 text-primary`). Debe incluir un icono de confirmación (`Check`) a la derecha.
+    *   **Estado Inactivo (OFF):** Completamente atenuado, simulando un botón apagado (`bg-white/[0.02] border-border hover:bg-white/5 text-muted-foreground`).
+
+### E. Desconexión Segura (Federated Signout)
+*   Aislado del resto de opciones de configuración visual por un separador físico grueso (`mt-6 pt-4 border-t border-border`).
+*   **Estética de Alerta Destructiva:** Se tiñe de tonalidades rojas de advertencia (`bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20`). El radio de borde sigue la ley global de contornos afilados (`rounded-none`).
+
+### F. Sello de Telemetría (Version Footer)
+*   Métrica final centrada en la base del menú que certifica el identificador del sistema.
+*   **Formato:** Extremadamente microscópico (`text-[8px] font-mono uppercase tracking-[0.3em] text-muted-foreground/30`).
+
+---
+
+## 🗃️ 10. Anatomía de las Tarjetas Operativas (Data & Operational Cards)
+
+Para la presentación de cuadrículas de información, entidades de dominio (exámenes, módulos, tenants) o métricas accionables, el ecosistema utiliza un formato de tarjeta estructurado de "alta legibilidad técnica" que separa estrictamente la información narrativa de los metadatos de máquina y de las acciones operativas.
+
+### A. Contenedor Físico Principal (Card Shell)
+Las tarjetas deben evocar terminales físicas independientes, descartando redondear las esquinas y apostando por bordes finos.
+*   **Geometría y Composición:** `group relative p-8 flex flex-col justify-between min-h-[300px] overflow-hidden rounded-none`.
+*   **Material:** Efecto de cristal esmerilado con fondo de superficie estándar (`bg-card backdrop-blur-sm`).
+*   **Interacción Activa:** Borde sutil en reposo (`border border-border`) que "se enciende" tenuemente al hacer hover (`hover:border-primary/40`).
+*   **Animación Constante:** Transición extendida y suave para otorgar sensación de inercia pesada (`transition-all duration-500`).
+
+### B. Marca de Agua Decorativa (Watermark Indicator)
+Si la tarjeta forma parte de un índice o listado secuencial, es mandatorio integrar una marca de agua inerte en el fondo.
+*   **Posicionamiento:** Pegada arriba a la derecha (`absolute top-0 right-0 p-4`).
+*   **Tipografía y Visibilidad:** Letras gigantes en formato código de máquina y casi invisibles (`opacity-5 font-mono text-7xl font-black`).
+*   **Reacción Visual:** La marca parpadea sutilmente en reposo (`animate-pulse`) y eleva ligeramente su opacidad cuando el ratón interactúa con la tarjeta padre (`group-hover:opacity-10 transition-opacity`).
+
+### C. Bloque Narrativo Superior (Header & Description)
+Área destinada a la lectura rápida para humanos.
+*   **Título Principal:** Tamaño imponente, rudo y condensado (`text-2xl font-bold mb-3 uppercase tracking-tight text-foreground`).
+*   **Descripción Contextual:** Tipografía legible y relajada (`text-sm text-muted-foreground mb-6 leading-relaxed`).
+
+### D. Bandeja de Metadatos (Technical Footer)
+Este bloque se ancla en la parte inferior de la tarjeta, actuando como una "pantalla de logs" de los datos técnicos antes del botón de ejecución.
+*   **Separación:** Debe existir una barrera física cortante entre el texto y la bandeja (`border-t border-border pt-4 mb-6`).
+*   **Estructura de Datos:** Formato flex con separación (`flex gap-4`).
+*   **Visualización de Máquina:** Tipografía extremadamente reducida en monospace, atenuada como información secundaria (`text-[9px] font-mono uppercase text-muted-foreground/50`).
+*   **Destaque:** Los valores críticos o estados (ej. Modo de penalización) deben iluminarse (`text-primary`).
+
+### E. Área de Ejecución Táctica (Action Trigger)
+*   **Geometría del Botón:** Expansión completa y altura masiva para impacto visual (`w-full h-14`).
+*   **Casing:** Acción en código mayúsculas de consola.
+*   **Colores y Estados:** Utilización de variables nativas de la consola técnica (ej. `btn-primary-console` o variaciones secundarias de inyección pura).
+
+### F. Variante B: Tarjetas de Administración con Acciones Múltiples
+Para los paneles de control maestros (ej. Tenant Governance) donde las entidades no solo se abren o lanzan, sino que se editan, eliminan o configuran (CRUD). Mantiene el chasis idéntico a la tarjeta base (cristal esmerilado, proporciones masivas, bordes afilados `rounded-none`), pero introduce dos modificaciones estructurales clave:
+
+1.  **Iconografía de Marca de Agua (Watermark Icon)**
+    *   El icono identificativo del módulo o entidad sustituye al índice numérico secuencial.
+    *   **Posicionamiento:** Anclado arriba a la derecha de forma absoluta (`absolute top-0 right-0 p-6`).
+    *   **Visibilidad Estética:** Se renderiza a gran escala y se funde con el fondo. Usa tamaño masivo (`w-24 h-24` o `size={96}`), opacidad extremadamente reducida (`opacity-5 group-hover:opacity-10 transition-opacity`) e inercia física (`pointer-events-none text-foreground`).
+2.  **Consola de Ejecución Fragmentada (Split Action Block)**
+    *   El área de ejecución táctica inferior deja de ser un solo bloque macizo (`w-full`) para convertirse en un panel de control empaquetado y modular.
+    *   **Contenedor:** Una fila flexible con separación micrométrica (`flex gap-2 h-14`).
+    *   **Acción Maestra (Main Trigger):** Toma la mayor parte de la pantalla comprimiéndose con el resto (`flex-1 btn-primary-console h-full`).
+    *   **Bloque de Operaciones Secundarias (Action Bar):** Los iconos de acciones secundarias (Editar, Eliminar, Configurar) se encajonan en módulos cuadrados perfectos contiguos al botón principal. 
+    *   **Clases de Botón de Operación:** Cubos precisos e incoloros (`w-14 h-full flex items-center justify-center border border-border bg-muted/10 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer active:scale-95`). Para acciones destructivas, el hover mutará al color de emergencia (`hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500`).
+
+---
 **Certificado: SYS_READY (Instrumentation Layer v2.0 - Symmetric Multi-Tenant Standard)**

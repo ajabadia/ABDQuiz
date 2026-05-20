@@ -1,38 +1,5 @@
 import { headers } from 'next/headers';
-
-export interface TenantBrandingTheme {
-  primary: string;
-  secondary?: string;
-  background?: string;
-  rounded?: boolean;
-  radius?: string;
-}
-
-export interface TenantBranding {
-  logoUrl?: string | null;
-  theme?: TenantBrandingTheme | null;
-}
-
-/**
- * 🏢 Extract tenant subdomain from host header
- */
-function getTenantSubdomain(host: string | null): string | null {
-  if (!host) return null;
-  const hostname = host.split(':')[0];
-  const parts = hostname.split('.');
-  
-  if (parts.length > 2) {
-    const subdomain = parts[0];
-    if (subdomain === 'www') return null;
-    return subdomain;
-  }
-  
-  if (parts.length === 2 && parts[1] === 'localhost') {
-    return parts[0];
-  }
-  
-  return null;
-}
+import { getTenantSubdomain, type TenantBranding } from '@abd/satellite-sdk';
 
 /**
  * 🎨 Resolve tenant branding via subdomain API.

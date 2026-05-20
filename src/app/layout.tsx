@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getLocale } from "next-intl/server";
 import { ThemeScript } from "@/components/common/ThemeScript";
-import { TenantBrandingStyle } from "@/components/common/TenantBrandingStyle";
-import { resolveTenantBranding } from "@/lib/tenant-branding";
+import { BrandingStyles } from "@abd/satellite-sdk";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,13 +26,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
-  const branding = await resolveTenantBranding();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         <ThemeScript />
-        <TenantBrandingStyle theme={branding?.theme} />
+        <BrandingStyles />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         {children}

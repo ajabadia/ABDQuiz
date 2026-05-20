@@ -52,15 +52,27 @@ export function SidebarNavigation({ session, logoUrl }: SidebarNavigationProps) 
     email: isLoggedIn && user ? user.email : 'Desconectado',
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (isLoggedIn) {
+      // Silent cookie clear via SDK endpoint before full redirect
+      await fetch('/api/auth/logout?silent=true', { method: 'GET' }).catch(() => null);
       window.location.href = '/api/auth/logout';
     } else {
       router.push('/exams');
     }
   };
 
-  const LocalizedLink = ({ href, onClick, className, children }: { href: string; onClick?: () => void; className?: string; children: React.ReactNode }) => (
+  const LocalizedLink = ({
+    href,
+    onClick,
+    className,
+    children,
+  }: {
+    href: string;
+    onClick?: () => void;
+    className?: string;
+    children: React.ReactNode;
+  }) => (
     <Link href={href} onClick={onClick} className={className}>
       {children}
     </Link>
@@ -72,6 +84,7 @@ export function SidebarNavigation({ session, logoUrl }: SidebarNavigationProps) 
       links={links}
       logoUrl={logoUrl || null}
       onLogout={handleLogout}
+      homeHref={`/${locale}`}
       brandName={isLoggedIn && user?.tenantId ? user.tenantId : t('appTitle')}
       LinkComponent={LocalizedLink}
       activeHref={pathname}

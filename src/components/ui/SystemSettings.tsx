@@ -27,6 +27,7 @@ export function SystemSettings({ isAuthenticated = false }: SystemSettingsProps)
       locale={locale}
       onLocaleChange={handleLocaleChange}
       isAuthenticated={isAuthenticated}
+      showLogin={false}
       onLogin={handleLogin}
       logoutUrl="/api/auth/logout"
       versionSignature="ABD_QUIZ_V1.0"

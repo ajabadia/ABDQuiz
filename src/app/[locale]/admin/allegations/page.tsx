@@ -1,5 +1,6 @@
 import connectDB from '@/lib/database/mongodb';
 import { ensureIndustrialAccess } from '@/lib/session';
+import { resolveTenantContext } from '@/lib/tenant-context';
 import { AllegationService } from '@/services/allegations/allegationService';
 import { AllegationsClientTerminal } from '@/components/admin/AllegationsClientTerminal';
 import { getTranslations } from 'next-intl/server';
@@ -8,16 +9,20 @@ import { Link } from '@/i18n/routing';
 
 interface AllegationsAdminPageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function AllegationsAdminPage({ params }: AllegationsAdminPageProps) {
+export default async function AllegationsAdminPage({ params, searchParams }: AllegationsAdminPageProps) {
   const { locale } = await params;
   const user = await ensureIndustrialAccess('ADMIN');
+  const resolvedTenantId = await resolveTenantContext(searchParams);
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
   const t = await getTranslations('allegations');
   const ap = await getTranslations('adminPortal');
 
   await connectDB();
-  const allegations = await AllegationService.getTenantAllegations(user.tenantId);
+  const allegations = await AllegationService.getTenantAllegations(resolvedTenantId);
 
   // Serialize Mongoose docs to POJOs to prevent Server-to-Client hydration mismatch
   const serializedAllegations = JSON.parse(JSON.stringify(allegations));
@@ -36,7 +41,7 @@ export default async function AllegationsAdminPage({ params }: AllegationsAdminP
             
             <div className="flex items-center gap-4 mt-1">
               <Link 
-                href="/admin"
+                href={`/${locale}/admin${tenantSuffix}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 aria-label={ap('btnBack')}
                 title="Back to Dashboard"
@@ -50,7 +55,7 @@ export default async function AllegationsAdminPage({ params }: AllegationsAdminP
             </div>
             
             <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {t('subtitle')}
+              {t('subtitle')} | Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span>
             </p>
           </div>
         </header>

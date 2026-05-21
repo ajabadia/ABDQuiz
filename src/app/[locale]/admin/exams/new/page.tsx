@@ -1,13 +1,23 @@
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@/lib/session';
+import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
-export default async function NewExamPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function NewExamPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { locale } = await params;
   const t = await getTranslations('admin');
   const user = await ensureIndustrialAccess('ADMIN');
+  const resolvedTenantId = await resolveTenantContext(searchParams);
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
@@ -22,7 +32,7 @@ export default async function NewExamPage({ params }: { params: Promise<{ locale
             
             <div className="flex items-center gap-4 mt-1">
               <Link 
-                href={`/${locale}/admin/exams`}
+                href={`/${locale}/admin/exams${tenantSuffix}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 aria-label="Volver a exámenes"
                 title="Volver a exámenes"
@@ -36,12 +46,12 @@ export default async function NewExamPage({ params }: { params: Promise<{ locale
             </div>
             
             <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {t('creationWizard')} | Tenant: <span className="text-primary font-bold">{user.tenantId}</span>
+              {t('creationWizard')} | Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span>
             </p>
           </div>
         </header>
 
-        <ExamConfigForm locale={locale} />
+        <ExamConfigForm locale={locale} tenantId={resolvedTenantId} />
       </div>
     </main>
   );

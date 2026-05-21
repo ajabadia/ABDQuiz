@@ -4,6 +4,8 @@ import { QuestionService, type QuestionFilters } from '@/services/corpus/Questio
 import { revalidatePath } from 'next/cache';
 import { ensureIndustrialAccess } from '@/lib/session';
 import { type IQuestion } from '@/models/Question';
+import connectDB from '@/lib/database/mongodb';
+import Question from '@/models/Question';
 
 interface ActionResponse<T> {
   success: boolean;
@@ -15,11 +17,16 @@ interface ActionResponse<T> {
  * Obtiene el listado paginado y filtrado de preguntas para el tenant activo
  */
 export async function getQuestionsAction(
-  filters: QuestionFilters
+  filters: QuestionFilters,
+  tenantIdParam?: string
 ): Promise<ActionResponse<{ questions: IQuestion[]; total: number; page: number; pages: number }>> {
   try {
     const user = await ensureIndustrialAccess('ADMIN');
-    const result = await QuestionService.getQuestions(user.tenantId, filters);
+    let activeTenantId = user.tenantId;
+    if (user.role === 'SUPER_ADMIN' && tenantIdParam) {
+      activeTenantId = tenantIdParam;
+    }
+    const result = await QuestionService.getQuestions(activeTenantId, filters);
     return { success: true, data: result };
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
@@ -34,7 +41,15 @@ export async function checkQuestionTraceabilityAction(
   questionId: string
 ): Promise<ActionResponse<boolean>> {
   try {
-    await ensureIndustrialAccess('ADMIN');
+    const user = await ensureIndustrialAccess('ADMIN');
+    await connectDB();
+    const oldQuestion = await Question.findById(questionId);
+    if (!oldQuestion) {
+      return { success: false, error: 'Reactivo no encontrado' };
+    }
+    if (oldQuestion.tenantId !== user.tenantId && user.role !== 'SUPER_ADMIN') {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
     const result = await QuestionService.checkTraceability(questionId);
     return { success: true, data: result };
   } catch (error: unknown) {
@@ -60,7 +75,15 @@ export async function saveQuestionAction(
   }
 ): Promise<ActionResponse<IQuestion>> {
   try {
-    await ensureIndustrialAccess('ADMIN');
+    const user = await ensureIndustrialAccess('ADMIN');
+    await connectDB();
+    const oldQuestion = await Question.findById(questionId);
+    if (!oldQuestion) {
+      return { success: false, error: 'Reactivo no encontrado' };
+    }
+    if (oldQuestion.tenantId !== user.tenantId && user.role !== 'SUPER_ADMIN') {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
     const result = await QuestionService.saveQuestion(questionId, updatedData);
     
     // Forzar revalidación de las consolas de simulación y administración

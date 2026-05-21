@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { SidebarNavigation } from "@/components/layout/SidebarNavigation";
 import { SystemSettings } from "@/components/ui/SystemSettings";
 import { QuizCommandPalette } from "@/components/layout/QuizCommandPalette";
+import { TenantSelector } from "@/components/ui/TenantSelector";
 import { Search } from "lucide-react";
 import { getIndustrialSession } from "@/lib/session";
 import { resolveTenantBranding } from "@/lib/tenant-branding";
@@ -27,6 +28,7 @@ export default async function LocaleLayout({
       
       {/* ⚙️ Floating System Settings Trigger & Search (Top-Right) */}
       <div className="fixed top-6 right-6 z-40 flex items-center gap-2">
+        <TenantSelector sessionUser={session.user} />
         <button
           id="command-palette-trigger"
           aria-label="Buscar comandos (Ctrl+K)"

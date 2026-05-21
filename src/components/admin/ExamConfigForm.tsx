@@ -19,9 +19,10 @@ import { TogglesCard } from './exam-config/TogglesCard';
 interface ExamConfigFormProps {
   initialData?: SerializedExamConfig;
   locale: string;
+  tenantId?: string;
 }
 
-export default function ExamConfigForm({ initialData, locale }: ExamConfigFormProps) {
+export default function ExamConfigForm({ initialData, locale, tenantId }: ExamConfigFormProps) {
   const t = useTranslations('admin');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,20 +46,20 @@ export default function ExamConfigForm({ initialData, locale }: ExamConfigFormPr
     difficultyWeights: initialData?.difficultyWeights || { easy: 1, medium: 2, hard: 3 },
   });
 
+  const backUrl = tenantId ? `/${locale}/admin/exams?tenantId=${tenantId}` : `/${locale}/admin/exams`;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      const action = initialData 
-        ? updateExamConfigAction.bind(null, initialData._id) 
-        : createExamConfigAction;
-      
-      const result = await action(formData as unknown as Partial<IExamConfig>);
+      const result = initialData 
+        ? await updateExamConfigAction(initialData._id, formData as unknown as Partial<IExamConfig>)
+        : await createExamConfigAction(formData as unknown as Partial<IExamConfig>, tenantId);
       
       if (result.success) {
         toast.success('Configuración guardada con éxito');
-        router.push(`/${locale}/admin/exams`);
+        router.push(backUrl);
       } else {
         toast.error(result.error || 'Error al guardar');
       }
@@ -159,7 +160,7 @@ export default function ExamConfigForm({ initialData, locale }: ExamConfigFormPr
           type="button" 
           variant="ghost" 
           className="rounded-none font-mono text-[10px] tracking-widest uppercase h-12 px-8"
-          onClick={() => router.back()}
+          onClick={() => router.push(backUrl)}
           disabled={isSubmitting}
         >
           Cancelar

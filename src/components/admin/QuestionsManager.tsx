@@ -21,7 +21,11 @@ interface QuestionItem {
   tags: string[];
 }
 
-export default function QuestionsManager() {
+interface QuestionsManagerProps {
+  tenantId?: string;
+}
+
+export default function QuestionsManager({ tenantId }: QuestionsManagerProps) {
   const t = useTranslations('questions');
   const common = useTranslations('common');
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -41,7 +45,7 @@ export default function QuestionsManager() {
         difficulty: (filters.difficulty as 'easy' | 'medium' | 'hard') || undefined,
         active: activeFilter,
         module: filters.module || undefined
-      });
+      }, tenantId);
       if (res.success && res.data) {
         const mapped: QuestionItem[] = res.data.questions.map(q => ({
           _id: String(q._id),
@@ -62,7 +66,7 @@ export default function QuestionsManager() {
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, [filters, tenantId]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

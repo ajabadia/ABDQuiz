@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
 import { ensureIndustrialAccess } from '@/lib/session';
+import { resolveTenantContext } from '@/lib/tenant-context';
 import { 
   Database, 
   Sliders, 
@@ -15,7 +16,13 @@ import { DashboardCard } from '@/components/admin/DashboardCard';
 /**
  * 🛰️ Central Admin Governance Portal Page (Federated Server Component)
  */
-export default async function AdminPortalPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AdminPortalPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { locale } = await params;
   const t = await getTranslations('admin');
   const h = await getTranslations('home');
@@ -25,6 +32,9 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
   // 🛡️ Ecosystem Identity Guard
   // Only users authenticated via ABDAuth with ADMIN privileges can enter.
   const user = await ensureIndustrialAccess('ADMIN');
+  const resolvedTenantId = await resolveTenantContext(searchParams);
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
   const governanceUrl = process.env.NEXT_PUBLIC_GOVERNANCE_URL || 'https://abd-tenant-gobernance.vercel.app';
 
   return (
@@ -44,7 +54,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
             </h1>
             
             <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {ap('subTitle')}<span className="text-primary font-bold">{user.tenantId}</span>
+              {ap('subTitle')}<span className="text-primary font-bold">{resolvedTenantId}</span>
             </p>
           </div>
         </header>
@@ -64,7 +74,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 description={`${t('subtitle')} ${ap('ingestorDesc')}`}
                 badgeLabel={ap('deduplicacion')}
                 badgeValue={ap('activo')}
-                actionUrl={`/${locale}/admin/corpus`}
+                actionUrl={`/${locale}/admin/corpus${tenantSuffix}`}
                 actionText={ap('ingresarIngestador')}
               />
 
@@ -76,7 +86,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 description={`${t('examsSubtitle')} ${ap('examsDesc')}`}
                 badgeLabel={ap('evaluacionPond')}
                 badgeValue={ap('soportado')}
-                actionUrl={`/${locale}/admin/exams`}
+                actionUrl={`/${locale}/admin/exams${tenantSuffix}`}
                 actionText={ap('ingresarParametrizar')}
               />
 
@@ -88,7 +98,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 description={ap('questionsDesc')}
                 badgeLabel={ap('trazabilidad')}
                 badgeValue={ap('activo')}
-                actionUrl={`/${locale}/admin/questions`}
+                actionUrl={`/${locale}/admin/questions${tenantSuffix}`}
                 actionText={ap('ingresarRepo')}
               />
 
@@ -100,7 +110,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 description="Gestión de reclamaciones técnicas de alumnos, anulación de preguntas y motor de recálculo retroactivo."
                 badgeLabel="Recálculo"
                 badgeValue="Activo"
-                actionUrl={`/${locale}/admin/allegations`}
+                actionUrl={`/${locale}/admin/allegations${tenantSuffix}`}
                 actionText="Gestionar Impugnaciones"
               />
 
@@ -112,7 +122,7 @@ export default async function AdminPortalPage({ params }: { params: Promise<{ lo
                 description="Auditoría e invalidación lógica de intentos de simulacros. Concede reintentos extraordinarios de forma instantánea y segura."
                 badgeLabel="Reintentos Extraordinarios"
                 badgeValue="Soportado"
-                actionUrl={`/${locale}/admin/attempts`}
+                actionUrl={`/${locale}/admin/attempts${tenantSuffix}`}
                 actionText="Gestionar Intentos y Reintentos"
                 colSpan="col-span-1 md:col-span-2"
               />

@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@/lib/session';
+import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import ExamConfig from '@/models/ExamConfig';
 import { notFound } from 'next/navigation';
@@ -7,15 +8,24 @@ import connectDB from '@/lib/database/mongodb';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
-export default async function EditExamPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
+export default async function EditExamPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string, id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { locale, id } = await params;
   const t = await getTranslations('admin');
   const user = await ensureIndustrialAccess('ADMIN');
+  const resolvedTenantId = await resolveTenantContext(searchParams);
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
 
   await connectDB();
   const config = await ExamConfig.findById(id).lean();
 
-  if (!config || config.tenantId !== user.tenantId) {
+  if (!config || (config.tenantId !== user.tenantId && !isSuperAdmin)) {
     return notFound();
   }
 
@@ -35,7 +45,7 @@ export default async function EditExamPage({ params }: { params: Promise<{ local
             
             <div className="flex items-center gap-4 mt-1">
               <Link 
-                href={`/${locale}/admin/exams`}
+                href={`/${locale}/admin/exams${tenantSuffix}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 aria-label="Volver a exámenes"
                 title="Volver a exámenes"
@@ -54,7 +64,7 @@ export default async function EditExamPage({ params }: { params: Promise<{ local
           </div>
         </header>
 
-        <ExamConfigForm initialData={serializedConfig} locale={locale} />
+        <ExamConfigForm initialData={serializedConfig} locale={locale} tenantId={resolvedTenantId} />
       </div>
     </main>
   );

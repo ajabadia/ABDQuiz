@@ -1,12 +1,19 @@
 import { getTranslations } from 'next-intl/server';
 import { Separator } from '@/components/ui/separator';
 import { ensureIndustrialAccess } from '@/lib/session';
+import { resolveTenantContext } from '@/lib/tenant-context';
 import { getAttemptsAction } from '@/actions/quiz';
 import AttemptsManager from '@/components/admin/AttemptsManager';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
-export default async function AdminAttemptsPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function AdminAttemptsPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { locale } = await params;
   const t = await getTranslations('admin');
   const h = await getTranslations('home');
@@ -14,8 +21,11 @@ export default async function AdminAttemptsPage({ params }: { params: Promise<{ 
   
   // 🛡️ Identity & Ecosystem Security Guard
   const user = await ensureIndustrialAccess('ADMIN');
+  const resolvedTenantId = await resolveTenantContext(searchParams);
+  const isSuperAdmin = user.role === 'SUPER_ADMIN';
+  const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
   
-  const attempts = await getAttemptsAction();
+  const attempts = await getAttemptsAction(resolvedTenantId);
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
@@ -31,7 +41,7 @@ export default async function AdminAttemptsPage({ params }: { params: Promise<{ 
             
             <div className="flex items-center gap-4 mt-1">
               <Link 
-                href="/admin"
+                href={`/${locale}/admin${tenantSuffix}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 aria-label={ap('btnBack')}
                 title="Back to Dashboard"
@@ -45,7 +55,7 @@ export default async function AdminAttemptsPage({ params }: { params: Promise<{ 
             </div>
             
             <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              Historial del Tenant: <span className="text-primary font-bold">{user.tenantId}</span> — Anulación y concesión de reintentos extraordinarios.
+              Historial del Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span> — Anulación y concesión de reintentos extraordinarios.
             </p>
           </div>
         </header>

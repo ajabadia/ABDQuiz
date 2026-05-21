@@ -127,6 +127,12 @@ export async function invalidateAttemptAction(attemptId: string) {
       return { success: false, error: 'Intento de examen no encontrado' };
     }
     
+    // Anti-IDOR Guard: standard admin can only invalidate their own tenant's attempts
+    if (attempt.tenantId !== admin.tenantId && admin.role !== 'SUPER_ADMIN') {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
+    
+    const targetTenantId = attempt.tenantId;
     const previousState = JSON.parse(JSON.stringify(attempt));
     attempt.isInvalidated = true;
     attempt.invalidatedBy = admin.email || admin.id;
@@ -136,7 +142,7 @@ export async function invalidateAttemptAction(attemptId: string) {
     
     // Log the invalidation event
     await LogsClient.log({
-      tenantId: admin.tenantId,
+      tenantId: targetTenantId,
       action: 'EXAM_ATTEMPT_INVALIDATED',
       entityType: 'EXAM',
       entityId: attemptId,
@@ -162,13 +168,19 @@ export async function invalidateAttemptAction(attemptId: string) {
 /**
  * Recupera todos los intentos de examen para el tenant actual
  */
-export async function getAttemptsAction() {
+export async function getAttemptsAction(tenantIdParam?: string) {
   try {
     const admin = await ensureIndustrialAccess('ADMIN');
     await connectDB();
     
+    // Anti-IDOR Guard: Only allow tenantIdParam if user is SUPER_ADMIN
+    let activeTenantId = admin.tenantId;
+    if (admin.role === 'SUPER_ADMIN' && tenantIdParam) {
+      activeTenantId = tenantIdParam;
+    }
+    
     const attempts = await ExamAttempt.find({
-      tenantId: admin.tenantId
+      tenantId: activeTenantId
     })
     .populate('examConfigId')
     .sort({ createdAt: -1 })

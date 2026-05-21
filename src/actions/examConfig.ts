@@ -13,11 +13,16 @@ const FAKE_USER_ID = "admin_001";
 /**
  * Recupera todas las configuraciones de examen activas para el tenant
  */
-export async function getExamConfigsAction() {
+export async function getExamConfigsAction(tenantIdParam?: string) {
   try {
     await connectDB();
     const session = await getIndustrialSession();
-    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    
+    // Anti-IDOR Guard
+    let activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    if (session.user?.role === 'SUPER_ADMIN' && tenantIdParam) {
+      activeTenantId = tenantIdParam;
+    }
 
     let configs = await ExamConfig.find({ 
       tenantId: activeTenantId,
@@ -86,11 +91,16 @@ export async function getExamConfigsAction() {
 /**
  * Crea una nueva configuración de examen
  */
-export async function createExamConfigAction(data: Partial<IExamConfig>) {
+export async function createExamConfigAction(data: Partial<IExamConfig>, tenantIdParam?: string) {
   try {
     await connectDB();
     const session = await getIndustrialSession();
-    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    
+    // Anti-IDOR Guard
+    let activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+    if (session.user?.role === 'SUPER_ADMIN' && tenantIdParam) {
+      activeTenantId = tenantIdParam;
+    }
     
     const newConfig = await ExamConfig.create({
       ...data,
@@ -126,19 +136,24 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
   try {
     await connectDB();
     const session = await getIndustrialSession();
-    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const config = await ExamConfig.findById(id);
-    if (!config || (config.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+    if (!config) {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
+
+    // Anti-IDOR Guard
+    if (config.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
       return { success: false, error: 'Acceso no autorizado' };
     }
     
+    const targetTenantId = config.tenantId;
     const previousState = JSON.parse(JSON.stringify(config));
     await ExamConfig.findByIdAndUpdate(id, data);
     
     // Log the update event
     await LogsClient.log({
-      tenantId: activeTenantId,
+      tenantId: targetTenantId,
       action: 'EXAM_CONFIG_UPDATED',
       entityType: 'CONFIG',
       entityId: id,
@@ -165,19 +180,24 @@ export async function deleteExamConfigAction(id: string) {
   try {
     await connectDB();
     const session = await getIndustrialSession();
-    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const config = await ExamConfig.findById(id);
-    if (!config || (config.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+    if (!config) {
+      return { success: false, error: 'Acceso no autorizado' };
+    }
+
+    // Anti-IDOR Guard
+    if (config.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
       return { success: false, error: 'Acceso no autorizado' };
     }
     
+    const targetTenantId = config.tenantId;
     const previousState = JSON.parse(JSON.stringify(config));
     await ExamConfig.findByIdAndUpdate(id, { active: false });
     
     // Log the deletion event
     await LogsClient.log({
-      tenantId: activeTenantId,
+      tenantId: targetTenantId,
       action: 'EXAM_CONFIG_DELETED',
       entityType: 'CONFIG',
       entityId: id,
@@ -204,25 +224,30 @@ export async function cloneExamConfigAction(id: string) {
   try {
     await connectDB();
     const session = await getIndustrialSession();
-    const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
     
     const source = await ExamConfig.findById(id).lean();
-    if (!source || (source.tenantId !== activeTenantId && session.user?.role !== 'SUPER_ADMIN')) {
+    if (!source) {
+      return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
+    }
+
+    // Anti-IDOR Guard
+    if (source.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
       return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
     }
     
+    const targetTenantId = source.tenantId;
     const { _id, createdAt, updatedAt, ...rest } = source as unknown as Record<string, unknown>;
     
     const cloned = await ExamConfig.create({
       ...rest,
-      tenantId: activeTenantId,
+      tenantId: targetTenantId,
       name: `${source.name} (Copia)`,
       isDefault: false
     });
     
     // Log the cloning event
     await LogsClient.log({
-      tenantId: activeTenantId,
+      tenantId: targetTenantId,
       action: 'EXAM_CONFIG_CLONED',
       entityType: 'CONFIG',
       entityId: cloned._id.toString(),

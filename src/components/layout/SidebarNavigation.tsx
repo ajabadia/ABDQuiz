@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { TacticalSidebar as SharedTacticalSidebar } from '@abd/styles';
 import { Home, BookOpen, BarChart2, Terminal, AlertTriangle } from 'lucide-react';
@@ -26,6 +27,8 @@ export function SidebarNavigation({ session, logoUrl }: SidebarNavigationProps) 
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tenantId = searchParams.get('tenantId');
 
   const isLoggedIn = session.authenticated && !!session.user;
   const user = session.user;
@@ -72,11 +75,14 @@ export function SidebarNavigation({ session, logoUrl }: SidebarNavigationProps) 
     onClick?: () => void;
     className?: string;
     children: React.ReactNode;
-  }) => (
-    <Link href={href} onClick={onClick} className={className}>
-      {children}
-    </Link>
-  );
+  }) => {
+    const finalHref = tenantId ? `${href}?tenantId=${tenantId}` : href;
+    return (
+      <Link href={finalHref} onClick={onClick} className={className}>
+        {children}
+      </Link>
+    );
+  };
 
   return (
     <SharedTacticalSidebar

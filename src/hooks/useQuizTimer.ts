@@ -27,6 +27,14 @@ export function useQuizTimer({
     questionTimeoutRef.current = false;
   }, [questionSeconds]);
 
+  const onGlobalTimeoutRef = useRef(onGlobalTimeout);
+  const onQuestionTimeoutRef = useRef(onQuestionTimeout);
+
+  useEffect(() => {
+    onGlobalTimeoutRef.current = onGlobalTimeout;
+    onQuestionTimeoutRef.current = onQuestionTimeout;
+  }, [onGlobalTimeout, onQuestionTimeout]);
+
   useEffect(() => {
     if (isPaused) return;
 
@@ -59,17 +67,17 @@ export function useQuizTimer({
       if (isGlobalDone && !globalTimeoutRef.current) {
         globalTimeoutRef.current = true;
         clearInterval(timer);
-        onGlobalTimeout();
+        onGlobalTimeoutRef.current();
       }
 
       if (isQuestionDone && !questionTimeoutRef.current) {
         questionTimeoutRef.current = true;
-        onQuestionTimeout();
+        onQuestionTimeoutRef.current();
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [onGlobalTimeout, onQuestionTimeout, isPaused, totalSeconds, questionSeconds]);
+  }, [isPaused, totalSeconds, questionSeconds]);
 
   return {
     globalTime,

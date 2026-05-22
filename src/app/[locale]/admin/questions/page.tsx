@@ -61,7 +61,7 @@ export default async function AdminQuestionsPage({
 
         <QuestionsManager tenantId={resolvedTenantId} />
         
-        <Footer label={`${admin('brandPart1')}${admin('brandPart2')} ${h('version')}`} opacity="low" />
+        <Footer label={`${admin('brandPart1')}${admin('brandPart2')} ${h('version')}`} opacity={20} />
       </div>
     </main>
   );

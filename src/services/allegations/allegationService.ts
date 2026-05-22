@@ -131,7 +131,7 @@ export class AllegationService {
       'questions.questionId': questionId.toString(),
     });
 
-    console.log(`[RECALCULO] Iniciando recálculo en ${attempts.length} intentos para la pregunta: ${questionId}`);
+
 
     for (const attempt of attempts) {
       // Buscar la pregunta dentro del intento
@@ -215,7 +215,7 @@ export class AllegationService {
 
     await allegation.save();
 
-    console.log(`[RECALCULO] Recálculo completado con éxito para reclamación: ${allegationId}`);
+
     return allegation;
   }
 

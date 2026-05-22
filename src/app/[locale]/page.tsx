@@ -93,7 +93,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             { label: h('styleLabel'), value: h('style') }
           ]} 
           separatorWidth="short"
-          opacity="low"
+          opacity={20}
         />
 
       </div>

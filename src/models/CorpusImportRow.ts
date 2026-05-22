@@ -21,6 +21,8 @@ const CorpusImportRowSchema = new Schema<ICorpusImportRow>({
   timestamps: { createdAt: true, updatedAt: false }
 });
 
+CorpusImportRowSchema.index({ corpusImportId: 1, rowNumber: 1 });
+
 import { getTenantModel } from '@/lib/database/tenant-model';
 
 const CorpusImportRow: Model<ICorpusImportRow> = getTenantModel<ICorpusImportRow>('CorpusImportRow', CorpusImportRowSchema);

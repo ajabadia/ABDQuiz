@@ -174,7 +174,7 @@ export default async function AdminPortalPage({
         </div>
 
         {/* Footer */}
-        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity="low" />
+        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
 
       </div>
     </main>

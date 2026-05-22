@@ -9,8 +9,6 @@ import { ensureIndustrialAccess, getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
 
-const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
-const FAKE_USER_ID = "user_001"; // MVP: Usuario único
 
 /**
  * Inicia un nuevo examen basado en una configuración parametrizada
@@ -21,16 +19,20 @@ export async function startQuizAction(examConfigId: string) {
     
     try {
       const session = await getIndustrialSession();
-      const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+      if (!session?.user?.id || !session?.user?.tenantId) {
+        throw new Error('Unauthorized: Session or User Identity is missing.');
+      }
+      
+      const activeTenantId = session.user.tenantId;
+      const userId = session.user.id;
       
       const attempt = await QuizService.createExamAttempt(
-        session.user?.id || FAKE_USER_ID,
+        userId,
         activeTenantId,
         examConfigId
       );
       
       attemptId = attempt._id.toString();
-      console.log(`✅ Quiz attempt created: ${attemptId}`);
       
       // Log the start attempt
       await LogsClient.log({
@@ -38,7 +40,7 @@ export async function startQuizAction(examConfigId: string) {
         action: 'EXAM_ATTEMPT_STARTED',
         entityType: 'EXAM',
         entityId: attemptId,
-        userId: session.user?.id || FAKE_USER_ID,
+        userId: userId,
         userEmail: session.user?.email || 'student@abd.com',
         changedFields: {
           examConfigId
@@ -69,12 +71,16 @@ export async function submitAnswerAction(formData: {
 }) {
   return withTenantContext(async () => {
     try {
+      const session = await getIndustrialSession();
+      if (!session?.user?.id) throw new Error('Unauthorized');
+      
       await QuizService.submitAnswer(
         formData.attemptId,
         formData.questionIndex,
         formData.selectedOptionIndex,
         formData.timeSpent,
-        formData.status
+        formData.status,
+        session.user.id
       );
       
       revalidatePath(`/quiz/${formData.attemptId}`);
@@ -92,17 +98,18 @@ export async function submitAnswerAction(formData: {
 export async function finishQuizAction(attemptId: string) {
   return withTenantContext(async () => {
     try {
-      await QuizService.finishExam(attemptId);
-      
-      // Log the finish attempt
       const session = await getIndustrialSession();
-      const activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
+      if (!session?.user?.id || !session?.user?.tenantId) throw new Error('Unauthorized');
+
+      await QuizService.finishExam(attemptId, session.user.id);
+      
+      const activeTenantId = session.user.tenantId;
       await LogsClient.log({
         tenantId: activeTenantId,
         action: 'EXAM_ATTEMPT_COMPLETED',
         entityType: 'EXAM',
         entityId: attemptId,
-        userId: session.user?.id || FAKE_USER_ID,
+        userId: session.user.id,
         userEmail: session.user?.email || 'student@abd.com',
         changedFields: {
           attemptId
@@ -116,7 +123,7 @@ export async function finishQuizAction(attemptId: string) {
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to finish quiz:', message);
-      throw new Error('Finalization failed');
+      throw new Error('Finalization failed: ' + message);
     }
   });
 }
@@ -141,7 +148,7 @@ export async function invalidateAttemptAction(attemptId: string) {
       }
       
       const targetTenantId = attempt.tenantId;
-      const previousState = JSON.parse(JSON.stringify(attempt));
+      const previousState = attempt.toObject() as unknown as Record<string, unknown>;
       attempt.isInvalidated = true;
       attempt.invalidatedBy = admin.email || admin.id;
       attempt.invalidatedAt = new Date();
@@ -183,7 +190,6 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       const admin = await ensureIndustrialAccess('ADMIN');
       await connectDB();
       
-      // Anti-IDOR Guard: Only allow tenantIdParam if user is SUPER_ADMIN
       let activeTenantId = admin.tenantId;
       if (admin.role === 'SUPER_ADMIN' && tenantIdParam) {
         activeTenantId = tenantIdParam;
@@ -196,10 +202,20 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       .sort({ createdAt: -1 })
       .lean();
       
-      return JSON.parse(JSON.stringify(attempts));
+      // Sanitizar IDs para Server Actions
+      return attempts.map((a: any) => ({
+        ...a,
+        _id: a._id.toString(),
+        userId: a.userId?.toString(),
+        examConfigId: a.examConfigId ? {
+           ...a.examConfigId,
+           _id: a.examConfigId._id?.toString()
+        } : null
+      }));
     } catch (error: unknown) {
-      console.error('❌ Error fetching attempts:', error);
-      return [];
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error fetching attempts:', msg);
+      throw new Error(msg); // No silenciar errores
     }
   });
 }

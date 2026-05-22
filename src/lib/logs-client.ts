@@ -1,7 +1,7 @@
 export interface LogPayload {
   tenantId: string;
   action: string;
-  entityType: 'USER' | 'TENANT' | 'SSO' | 'EXAM' | 'CONFIG' | 'SYSTEM' | 'SPACE' | 'BRANDING';
+  entityType: 'USER' | 'TENANT' | 'SSO' | 'EXAM' | 'CONFIG' | 'SYSTEM' | 'SPACE' | 'BRANDING' | 'QUESTION' | 'ALLEGATION';
   entityId: string;
   userId: string;
   userEmail: string;
@@ -13,9 +13,12 @@ export interface LogPayload {
 
 export class LogsClient {
   private static getApiConfig() {
+    if (!process.env.LOGS_SECRET_TOKEN) {
+      throw new Error('LOGS_SECRET_TOKEN is not defined in the environment variables');
+    }
     return {
       endpoint: process.env.LOGS_SERVICE_URL || 'http://localhost:3600/api/logs',
-      token: process.env.LOGS_SECRET_TOKEN || 'shared-system-token-2026',
+      token: process.env.LOGS_SECRET_TOKEN,
       appId: process.env.NEXT_PUBLIC_APP_ID || 'quiz',
     };
   }

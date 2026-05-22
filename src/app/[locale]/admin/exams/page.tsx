@@ -57,7 +57,7 @@ export default async function AdminExamsPage({
 
         <ExamsList configs={configs} locale={locale} />
         
-        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity="low" />
+        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
       </div>
     </main>
   );

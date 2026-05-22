@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
-import { CommandPalette, Command } from '@abd/styles';
+import { CommandPalette, Command } from '@abd/ecosystem-widgets';
 import { FileText, Clock, PenTool, Terminal, Globe, LogOut, Settings } from 'lucide-react';
 
 export function QuizCommandPalette() {
@@ -101,7 +101,6 @@ export function QuizCommandPalette() {
     <CommandPalette
       commands={commands}
       placeholder={locale === 'es' ? 'Escribe un comando o busca un examen...' : 'Type a command or search exams...'}
-      triggerElementId="command-palette-trigger"
     />
   );
 }

@@ -93,8 +93,13 @@ export class CorpusImporter {
   private static mapDifficulty(val: unknown): 'easy' | 'medium' | 'hard' {
     if (!val) return 'medium';
     const str = String(val).toLowerCase().trim();
-    if (str.includes('fac') || str.includes('eas') || str === '1' || str.includes('baj')) return 'easy';
-    if (str.includes('dif') || str.includes('har') || str === '3' || str.includes('alt')) return 'hard';
+    
+    const EASY_KEYWORDS = new Set(['facil', 'fácil', 'easy', '1', 'bajo', 'baja']);
+    const HARD_KEYWORDS = new Set(['dificil', 'difícil', 'hard', '3', 'alto', 'alta']);
+    
+    if (EASY_KEYWORDS.has(str)) return 'easy';
+    if (HARD_KEYWORDS.has(str)) return 'hard';
+    
     return 'medium';
   }
 

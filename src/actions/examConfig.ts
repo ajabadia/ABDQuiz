@@ -8,8 +8,7 @@ import { getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
 
-const DEFAULT_TENANT = process.env.SINGLE_TENANT_ID || "abd_global";
-const FAKE_USER_ID = "admin_001";
+
 
 /**
  * Recupera todas las configuraciones de examen activas para el tenant
@@ -20,9 +19,12 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       await connectDB();
       const session = await getIndustrialSession();
       
-      // Anti-IDOR Guard
-      let activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
-      if (session.user?.role === 'SUPER_ADMIN' && tenantIdParam) {
+      if (!session?.user?.id || !session?.user?.tenantId) {
+        throw new Error('Unauthorized');
+      }
+      
+      let activeTenantId = session.user.tenantId;
+      if (session.user.role === 'SUPER_ADMIN' && tenantIdParam) {
         activeTenantId = tenantIdParam;
       }
 
@@ -33,7 +35,6 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       
       // Seed default configurations if none exist
       if (configs.length === 0) {
-        console.log(`🌱 Seeding default exam configurations for tenant: ${activeTenantId}...`);
         const defaultConfigs = [
           {
             tenantId: activeTenantId,
@@ -52,7 +53,7 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
             reviewOmittedQuestions: false,
             maxAttempts: 0,
             isDefault: true,
-            createdBy: FAKE_USER_ID,
+            createdBy: session.user.id,
             active: true
           },
           {
@@ -72,7 +73,7 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
             reviewOmittedQuestions: false,
             maxAttempts: 0,
             isDefault: true,
-            createdBy: FAKE_USER_ID,
+            createdBy: session.user.id,
             active: true
           }
         ];
@@ -83,10 +84,17 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
         }).sort({ createdAt: -1 }).lean();
       }
       
-      return JSON.parse(JSON.stringify(configs));
-    } catch (error) {
-      console.error('❌ Error fetching exam configs:', error);
-      return [];
+      // Convert ObjectIds to strings
+      return configs.map((c: any) => ({
+        ...c,
+        _id: c._id.toString(),
+        createdAt: c.createdAt?.toISOString(),
+        updatedAt: c.updatedAt?.toISOString()
+      }));
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error fetching exam configs:', msg);
+      throw new Error(msg); // Do not silence
     }
   });
 }
@@ -100,16 +108,19 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
       await connectDB();
       const session = await getIndustrialSession();
       
-      // Anti-IDOR Guard
-      let activeTenantId = session.user?.tenantId || DEFAULT_TENANT;
-      if (session.user?.role === 'SUPER_ADMIN' && tenantIdParam) {
+      if (!session?.user?.id || !session?.user?.tenantId) {
+        return { success: false, error: 'Unauthorized' };
+      }
+      
+      let activeTenantId = session.user.tenantId;
+      if (session.user.role === 'SUPER_ADMIN' && tenantIdParam) {
         activeTenantId = tenantIdParam;
       }
       
       const newConfig = await ExamConfig.create({
         ...data,
         tenantId: activeTenantId,
-        createdBy: FAKE_USER_ID,
+        createdBy: session.user.id,
       });
       
       // Log the creation event
@@ -118,9 +129,9 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
         action: 'EXAM_CONFIG_CREATED',
         entityType: 'CONFIG',
         entityId: newConfig._id.toString(),
-        userId: session.user?.id || FAKE_USER_ID,
-        userEmail: session.user?.email || 'system@abd.com',
-        changedFields: JSON.parse(JSON.stringify(newConfig)),
+        userId: session.user.id,
+        userEmail: session.user.email || 'system@abd.com',
+        changedFields: { ...data, tenantId: activeTenantId },
       });
       
       revalidatePath('/admin/exams');
@@ -128,8 +139,9 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
       
       return { success: true, id: newConfig._id.toString() };
     } catch (error: unknown) {
-      console.error('❌ Error creating exam config:', error);
-      return { success: false, error: (error as Error).message };
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error creating exam config:', msg);
+      return { success: false, error: msg };
     }
   });
 }
@@ -143,18 +155,20 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       await connectDB();
       const session = await getIndustrialSession();
       
+      if (!session?.user?.id) return { success: false, error: 'Unauthorized' };
+
       const config = await ExamConfig.findById(id);
       if (!config) {
         return { success: false, error: 'Acceso no autorizado' };
       }
 
       // Anti-IDOR Guard
-      if (config.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
+      if (config.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       
       const targetTenantId = config.tenantId;
-      const previousState = JSON.parse(JSON.stringify(config));
+      const previousState = config.toObject() as unknown as Record<string, unknown>;
       await ExamConfig.findByIdAndUpdate(id, data);
       
       // Log the update event
@@ -163,9 +177,9 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
         action: 'EXAM_CONFIG_UPDATED',
         entityType: 'CONFIG',
         entityId: id,
-        userId: session.user?.id || FAKE_USER_ID,
-        userEmail: session.user?.email || 'system@abd.com',
-        changedFields: JSON.parse(JSON.stringify(data)),
+        userId: session.user.id,
+        userEmail: session.user.email || 'system@abd.com',
+        changedFields: data as any,
         previousState,
       });
       
@@ -174,8 +188,9 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       
       return { success: true };
     } catch (error: unknown) {
-      console.error('❌ Error updating exam config:', error);
-      return { success: false, error: (error as Error).message };
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error updating exam config:', msg);
+      return { success: false, error: msg };
     }
   });
 }
@@ -189,18 +204,20 @@ export async function deleteExamConfigAction(id: string) {
       await connectDB();
       const session = await getIndustrialSession();
       
+      if (!session?.user?.id) return { success: false, error: 'Unauthorized' };
+      
       const config = await ExamConfig.findById(id);
       if (!config) {
         return { success: false, error: 'Acceso no autorizado' };
       }
 
       // Anti-IDOR Guard
-      if (config.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
+      if (config.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       
       const targetTenantId = config.tenantId;
-      const previousState = JSON.parse(JSON.stringify(config));
+      const previousState = config.toObject() as unknown as Record<string, unknown>;
       await ExamConfig.findByIdAndUpdate(id, { active: false });
       
       // Log the deletion event
@@ -209,8 +226,8 @@ export async function deleteExamConfigAction(id: string) {
         action: 'EXAM_CONFIG_DELETED',
         entityType: 'CONFIG',
         entityId: id,
-        userId: session.user?.id || FAKE_USER_ID,
-        userEmail: session.user?.email || 'system@abd.com',
+        userId: session.user.id,
+        userEmail: session.user.email || 'system@abd.com',
         changedFields: { active: false },
         previousState,
       });
@@ -220,8 +237,9 @@ export async function deleteExamConfigAction(id: string) {
       
       return { success: true };
     } catch (error: unknown) {
-      console.error('❌ Error deleting exam config:', error);
-      return { success: false, error: (error as Error).message };
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error deleting exam config:', msg);
+      return { success: false, error: msg };
     }
   });
 }
@@ -235,13 +253,15 @@ export async function cloneExamConfigAction(id: string) {
       await connectDB();
       const session = await getIndustrialSession();
       
+      if (!session?.user?.id) return { success: false, error: 'Unauthorized' };
+      
       const source = await ExamConfig.findById(id).lean();
       if (!source) {
         return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
       }
 
       // Anti-IDOR Guard
-      if (source.tenantId !== session.user?.tenantId && session.user?.role !== 'SUPER_ADMIN') {
+      if (source.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
       }
       
@@ -261,8 +281,8 @@ export async function cloneExamConfigAction(id: string) {
         action: 'EXAM_CONFIG_CLONED',
         entityType: 'CONFIG',
         entityId: cloned._id.toString(),
-        userId: session.user?.id || FAKE_USER_ID,
-        userEmail: session.user?.email || 'system@abd.com',
+        userId: session.user.id,
+        userEmail: session.user.email || 'system@abd.com',
         changedFields: {
           sourceId: id,
           name: cloned.name,
@@ -274,8 +294,9 @@ export async function cloneExamConfigAction(id: string) {
       
       return { success: true, id: cloned._id.toString() };
     } catch (error: unknown) {
-      console.error('❌ Error cloning exam config:', error);
-      return { success: false, error: (error as Error).message };
+      const msg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ Error cloning exam config:', msg);
+      return { success: false, error: msg };
     }
   });
 }

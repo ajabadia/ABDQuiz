@@ -1,10 +1,28 @@
 import { NextResponse } from 'next/server';
 import { ensureIndustrialAccess } from '@/lib/session';
-import connectDB from '@/lib/database/mongodb';
-import Question from '@/models/Question';
-import ExamConfig from '@/models/ExamConfig';
+import mongoose from 'mongoose';
 
 export const revalidate = 0; // Evitar el cacheado estático de la API
+
+const globalWithMongoose = global as typeof globalThis & {
+  authConnPromise?: Promise<mongoose.Connection>;
+};
+
+async function getAuthConnection() {
+  if (globalWithMongoose.authConnPromise) {
+    return globalWithMongoose.authConnPromise;
+  }
+  
+  const authUri = process.env.MONGODB_AUTH_URI;
+  if (!authUri) throw new Error("MONGODB_AUTH_URI no definido");
+  
+  const fullUri = authUri.endsWith('/') 
+    ? `${authUri}ABDElevators-Auth?retryWrites=true&w=majority`
+    : `${authUri}/ABDElevators-Auth?retryWrites=true&w=majority`;
+    
+  globalWithMongoose.authConnPromise = mongoose.createConnection(fullUri, { maxPoolSize: 5 }).asPromise();
+  return globalWithMongoose.authConnPromise;
+}
 
 export async function GET() {
   try {
@@ -16,21 +34,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await connectDB();
+    const conn = await getAuthConnection();
+    const TenantSchema = new mongoose.Schema({ tenantId: String, name: String, active: Boolean }, { collection: 'tenants' });
+    const TenantModel = conn.models.Tenant || conn.model('Tenant', TenantSchema);
     
-    // Obtener los tenants con registros en Questions y ExamConfigs
-    const [questionTenants, examTenants] = await Promise.all([
-      Question.distinct('tenantId'),
-      ExamConfig.distinct('tenantId')
-    ]);
-
-    // Unir y dedupificar
-    const uniqueTenants = Array.from(new Set([...questionTenants, ...examTenants])).filter(Boolean);
-
-    const tenants = uniqueTenants.map((id) => ({
-      tenantId: id,
-      name: id === 'SYSTEM' ? 'Sistema Global' : `Org: ${id}`,
-      active: true,
+    const rawTenants = await TenantModel.find().lean();
+    
+    const tenants = rawTenants.map((t: any) => ({
+      tenantId: t.tenantId,
+      name: t.name || t.tenantId,
+      active: t.active !== false,
     }));
 
     return NextResponse.json(tenants);

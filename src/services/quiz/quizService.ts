@@ -132,13 +132,14 @@ export class QuizService {
     questionIndex: number,
     selectedOptionIndex: number | null,
     timeSpent: number,
-    status: QuizAttemptQuestion['status']
+    status: QuizAttemptQuestion['status'],
+    userId: string
   ): Promise<IExamAttempt> {
     await connectDB();
     
-    const attempt = await ExamAttempt.findById(attemptId);
+    const attempt = await ExamAttempt.findOne({ _id: attemptId, userId });
     if (!attempt || attempt.status !== 'in_progress') {
-      throw new Error('Exam attempt not found or already finished');
+      throw new Error('Exam attempt not found, unauthorized, or already finished');
     }
 
     const question = attempt.questions[questionIndex];
@@ -156,13 +157,14 @@ export class QuizService {
   /**
    * Finaliza el examen y calcula la nota según las reglas de la configuración
    */
-  static async finishExam(attemptId: string): Promise<IExamAttempt> {
+  static async finishExam(attemptId: string, userId: string): Promise<IExamAttempt> {
     await connectDB();
     
-    const attempt = await ExamAttempt.findById(attemptId).populate('examConfigId');
-    if (!attempt) throw new Error('Exam attempt not found');
+    const attempt = await ExamAttempt.findOne({ _id: attemptId, userId }).populate<{ examConfigId: IExamConfig }>('examConfigId');
+    if (!attempt) throw new Error('Exam attempt not found or unauthorized');
 
-    const config = attempt.examConfigId as unknown as IExamConfig;
+    const config = attempt.examConfigId;
+    if (!config) throw new Error('Exam configuration missing');
     
     let totalScore = 0;
     let maxPossible = 0;
@@ -194,6 +196,6 @@ export class QuizService {
     attempt.percentage = maxPossible > 0 ? (attempt.score / maxPossible) * 100 : 0;
 
     await attempt.save();
-    return attempt;
+    return attempt as unknown as IExamAttempt;
   }
 }

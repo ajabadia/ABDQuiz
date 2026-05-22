@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { SystemSettings as SharedSystemSettings } from '@abd/styles';
+import { SystemSettings as SharedSystemSettings } from '@abd/ecosystem-widgets';
 
 interface SystemSettingsProps {
   isAuthenticated?: boolean;
@@ -31,17 +31,6 @@ export function SystemSettings({ isAuthenticated = false }: SystemSettingsProps)
       onLogin={handleLogin}
       logoutUrl="/api/auth/logout"
       versionSignature="ABD_QUIZ_V1.0"
-      translations={{
-        title: t('title'),
-        close: t('close'),
-        language: t('language'),
-        theme: t('theme'),
-        themeLight: t('theme_light'),
-        themeDark: t('theme_dark'),
-        themeSystem: t('theme_system'),
-        logout: t('logout'),
-        login: t('login'),
-      }}
     />
   );
 }

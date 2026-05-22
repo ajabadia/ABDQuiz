@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';
-import { getExamConfigsAction } from './actions';
-import { SerializedExamConfig } from '@/lib/models/ExamConfig';
+import { getExamConfigsAction } from '@/actions/examConfig';
+import { type SerializedExamConfig } from '@/types/quiz';
 import { HeroHeader } from '@abd/styles';
 import { Footer } from '@abd/styles';
 

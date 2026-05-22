@@ -46,7 +46,7 @@ export default async function AdminAttemptsPage({
                 <ArrowLeft size={14} aria-hidden="true" />
               </Link>
           }
-          description={<>Historial del Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span> — Anulación y concesión de reintentos extraordinarios.</>}
+          description={<>{ap('trazabilidad')} <span className="text-primary font-bold">{resolvedTenantId}</span></>}
         />
 
         <AttemptsManager attempts={attempts} />

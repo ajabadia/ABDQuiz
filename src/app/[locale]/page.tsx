@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { BrainCircuit, Timer, FileCode2, History, ArrowRight } from 'lucide-react';
+import { BrainCircuit, Timer, FileCode2, History, ArrowRight, Cpu, Sliders, Database } from 'lucide-react';
 import { HeroHeader } from '@abd/styles';
 import Link from 'next/link';
 import { Footer } from '@abd/styles';

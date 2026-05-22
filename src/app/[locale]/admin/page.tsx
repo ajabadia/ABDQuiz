@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import { Separator } from '@/components/ui/separator';
 import { Card } from '@/components/ui/card';
+import { Footer } from '@abd/styles';
+import { Separator } from '@/components/ui/separator';
 import { ensureIndustrialAccess } from '@/lib/session';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { 
@@ -12,6 +13,7 @@ import {
   Terminal
 } from 'lucide-react';
 import { DashboardCard } from '@/components/admin/DashboardCard';
+import { AdminPageHeader } from '@abd/styles';
 
 /**
  * 🛰️ Central Admin Governance Portal Page (Federated Server Component)
@@ -42,22 +44,12 @@ export default async function AdminPortalPage({
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
         
         {/* Header: Variante A */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
-          <div className="flex flex-col gap-2">
-            <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-primary flex items-center gap-2 mb-2">
-              <LayoutDashboard size={14} className="text-primary animate-pulse" aria-hidden="true" />
-              {c('appTitle')} • DASHBOARD
-            </div>
-            
-            <h1 className="text-3xl font-black uppercase italic tracking-tight text-foreground leading-none">
-              {c('appTitle')} <span className="text-primary">{ap('gobernanza')}</span>
-            </h1>
-            
-            <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {ap('subTitle')}<span className="text-primary font-bold">{resolvedTenantId}</span>
-            </p>
-          </div>
-        </header>
+        <AdminPageHeader
+          icon={LayoutDashboard}
+          breadcrumb={<>{c('appTitle')} • DASHBOARD</>}
+          title={<>{c('appTitle')} <span className="text-primary">{ap('gobernanza')}</span></>}
+          description={<>{ap('subTitle')}<span className="text-primary font-bold">{resolvedTenantId}</span></>}
+        />
 
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -182,10 +174,7 @@ export default async function AdminPortalPage({
         </div>
 
         {/* Footer */}
-        <footer className="mt-auto pt-12 flex flex-col items-center gap-6 text-muted-foreground/20 font-mono text-[9px] uppercase tracking-[0.3em]" role="contentinfo">
-          <Separator className="bg-border" aria-hidden="true" />
-          <span>{t('brandPart1')}{t('brandPart2')} {h('version')}</span>
-        </footer>
+        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity="low" />
 
       </div>
     </main>

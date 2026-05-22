@@ -128,7 +128,7 @@ export class AllegationService {
     // Buscar todos los intentos de exámenes finalizados o en curso del tenant que contienen esta pregunta
     const attempts = await ExamAttempt.find({
       tenantId,
-      'questions.questionId': questionId,
+      'questions.questionId': questionId.toString(),
     });
 
     console.log(`[RECALCULO] Iniciando recálculo en ${attempts.length} intentos para la pregunta: ${questionId}`);

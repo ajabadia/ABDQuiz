@@ -6,15 +6,17 @@ import { ensureIndustrialAccess } from './session';
  * - If the user is SUPER_ADMIN and queryTenantId is provided, returns that queryTenantId.
  * - Otherwise, returns the user's default session tenantId, ignoring any manipulated query params.
  */
+type ResolvedSearchParams = URLSearchParams | Record<string, string | string[] | undefined>;
+
 export async function resolveTenantContext(
-  searchParams: any
+  searchParams: ResolvedSearchParams | Promise<ResolvedSearchParams>
 ): Promise<string> {
   // 🛡️ Ecosystem Identity Guard
   const user = await ensureIndustrialAccess('ADMIN');
   
-  // Resolve searchParams if it is passed as a Promise
-  const resolvedParams = typeof searchParams?.then === 'function' 
-    ? await searchParams 
+  // Resolve searchParams if it is passed as a Promise (Next.js 15+ async params)
+  const resolvedParams: ResolvedSearchParams = searchParams instanceof Promise
+    ? await searchParams
     : searchParams;
   
   let queryTenantId: string | null = null;
@@ -23,11 +25,11 @@ export async function resolveTenantContext(
     if (resolvedParams instanceof URLSearchParams) {
       queryTenantId = resolvedParams.get('tenantId');
     } else {
-      const val = resolvedParams['tenantId'];
+      const val = (resolvedParams as Record<string, string | string[] | undefined>)['tenantId'];
       if (typeof val === 'string') {
         queryTenantId = val;
       } else if (Array.isArray(val)) {
-        queryTenantId = val[0];
+        queryTenantId = val[0] ?? null;
       }
     }
   }

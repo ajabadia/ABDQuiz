@@ -4,7 +4,7 @@ import { type QuizQuestionSnapshot } from '@/types/quiz';
 export interface IExamAttempt extends Document {
   tenantId: string;
   userId: string;
-  examConfigId?: string; // Nuevo: Referencia a la plantilla
+  examConfigId?: string | mongoose.Types.ObjectId; // Nuevo: Referencia a la plantilla
   mode: 'training' | 'mock';
   moduleFilter?: string[];
   score: number;
@@ -18,9 +18,9 @@ export interface IExamAttempt extends Document {
   invalidatedBy?: string;
   invalidatedAt?: Date;
   questions: {
-    questionId: string;
+    questionId: string | mongoose.Types.ObjectId;
     questionSnapshot: QuizQuestionSnapshot;
-    selectedOptionIndex?: number;
+    selectedOptionIndex?: number | null;
     isCorrect: boolean;
     timeSpentSeconds: number;
     status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
@@ -70,5 +70,8 @@ const ExamAttemptSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.ExamAttempt ||
-  mongoose.model<IExamAttempt>('ExamAttempt', ExamAttemptSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const ExamAttempt = getTenantModel<IExamAttempt>('ExamAttempt', ExamAttemptSchema);
+
+export default ExamAttempt;

@@ -21,6 +21,8 @@ const CorpusImportRowSchema = new Schema<ICorpusImportRow>({
   timestamps: { createdAt: true, updatedAt: false }
 });
 
-const CorpusImportRow: Model<ICorpusImportRow> = mongoose.models.CorpusImportRow || mongoose.model<ICorpusImportRow>('CorpusImportRow', CorpusImportRowSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const CorpusImportRow: Model<ICorpusImportRow> = getTenantModel<ICorpusImportRow>('CorpusImportRow', CorpusImportRowSchema);
 
 export default CorpusImportRow;

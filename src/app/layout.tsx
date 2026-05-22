@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getLocale } from "next-intl/server";
-import { ThemeScript } from "@/components/common/ThemeScript";
+import { ThemeScript } from "@abd/styles";
 import { BrandingStyles } from "@abd/satellite-sdk";
 import "./globals.css";
 

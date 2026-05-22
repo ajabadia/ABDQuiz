@@ -42,6 +42,8 @@ QuestionSchema.index(
   { unique: true, partialFilterExpression: { active: true } }
 );
 
-const Question: Model<IQuestion> = mongoose.models.Question || mongoose.model<IQuestion>('Question', QuestionSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const Question: Model<IQuestion> = getTenantModel<IQuestion>('Question', QuestionSchema);
 
 export default Question;

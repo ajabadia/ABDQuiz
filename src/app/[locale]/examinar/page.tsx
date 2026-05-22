@@ -1,9 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';
-import { Separator } from '@/components/ui/separator';
-import { getExamConfigsAction } from '@/actions/examConfig';
-import { type SerializedExamConfig } from '@/types/quiz';
+import { getExamConfigsAction } from './actions';
+import { SerializedExamConfig } from '@/lib/models/ExamConfig';
+import { HeroHeader } from '@abd/styles';
+import { Footer } from '@abd/styles';
 
 export default async function ExaminarPage() {
   const t = await getTranslations('common');
@@ -17,21 +18,13 @@ export default async function ExaminarPage() {
       <div className="absolute inset-0 bg-industrial-grid mask-industrial-fade pointer-events-none opacity-50" aria-hidden="true" />
 
       <div className="z-10 w-full max-w-5xl flex flex-col gap-12 animate-in fade-in duration-500">
-        <header className="flex flex-col gap-4 items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-mono">
-            <span className="relative flex h-2 w-2" aria-hidden="true">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            {h('status')}
-          </div>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-foreground italic uppercase antialiased">
-            {t('brandPart1')}<span className="text-primary/80">{t('brandPart2')}</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-[600px] font-light leading-relaxed font-sans">
-            {h('tagline')}
-          </p>
-        </header>
+        <HeroHeader
+          statusText={h('status')}
+          title={
+            <>{t('brandPart1')}<span className="text-primary/80">{t('brandPart2')}</span></>
+          }
+          description={t('subtitle')}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8" role="region" aria-label="Simulation Modes">
           {configs.map((config, index) => {
@@ -69,14 +62,14 @@ export default async function ExaminarPage() {
           })}
         </div>
 
-        <footer className="flex flex-col items-center gap-6 text-muted-foreground/30 font-mono text-[9px] uppercase tracking-[0.3em] pt-8" role="contentinfo">
-          <Separator className="w-24 bg-white/10" aria-hidden="true" />
-          <div className="flex gap-12">
-            <span>{h('coreLabel')}: {h('version')}</span>
-            <span>{h('logicLabel')}: {h('engine')}</span>
-            <span>{h('styleLabel')}: {h('style')}</span>
-          </div>
-        </footer>
+        <Footer 
+          separatorWidth="short"
+          telemetryItems={[
+            { label: h('coreLabel'), value: h('version') },
+            { label: h('logicLabel'), value: h('engine') },
+            { label: h('styleLabel'), value: h('style') }
+          ]}
+        />
       </div>
     </main>
   );

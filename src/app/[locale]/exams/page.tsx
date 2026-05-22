@@ -1,17 +1,16 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';
-import { Separator } from '@/components/ui/separator';
 import { getExamConfigsAction } from '@/actions/examConfig';
 import { type SerializedExamConfig } from '@/types/quiz';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { Footer } from '@abd/styles';
 
 export default async function ExamsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations('common');
   const h = await getTranslations('home');
-  const results = await getTranslations('results');
   
   // Fetch active configurations from database
   const configs: SerializedExamConfig[] = await getExamConfigsAction();
@@ -28,43 +27,44 @@ export default async function ExamsPage({ params }: { params: Promise<{ locale: 
           <div className="flex flex-col gap-2">
             <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-primary flex items-center gap-2 mb-2">
               <FolderOpen size={14} className="text-primary animate-pulse" aria-hidden="true" />
-              {t('appTitle')} • {h('launchConsole')}
+              {t('quizCenter')} • {t('exams')}
             </div>
             
             <div className="flex items-center gap-4 mt-1">
               <Link 
-                href="/"
+                href={`/${locale}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
-                aria-label={results('backHome')}
-                title="Back to Home"
+                aria-label="Back to landing"
+                title="Back to Landing"
               >
                 <ArrowLeft size={14} aria-hidden="true" />
               </Link>
               
               <h1 className="text-3xl font-black uppercase italic tracking-tight text-foreground leading-none flex-1 truncate">
-                {h('simulationTemplates')}
+                {t('exams')}
               </h1>
             </div>
             
             <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {h('examsDescription')}
+              {t('examsSubtitle')}
             </p>
           </div>
         </header>
 
-        {/* Exams Launch Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8" role="region" aria-label="Simulation Modes">
+        {/* Configurations Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" role="region" aria-label="Simulation Modes">
           {configs.map((config, index) => {
             const launchAction = startQuizAction.bind(null, config._id);
             const isEven = index % 2 === 0;
             return (
-              <Card key={config._id} className="group relative p-8 bg-card border border-border hover:border-primary/40 transition-all duration-500 overflow-hidden backdrop-blur-sm rounded-none flex flex-col justify-between min-h-[300px]">
+              <Card key={config._id} className="group relative p-8 bg-card/40 border-border hover:border-primary/40 transition-all duration-500 overflow-hidden backdrop-blur-sm rounded-none flex flex-col justify-between min-h-[320px]">
                 <div>
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity font-mono text-7xl font-black animate-pulse" aria-hidden="true">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity font-mono text-7xl font-black" aria-hidden="true">
                     {String(index + 1).padStart(2, '0')}
                   </div>
+                  
                   <h3 className="text-2xl font-bold mb-3 uppercase tracking-tight text-foreground">{config.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mb-6 leading-relaxed font-sans min-h-[48px]">
                     {config.description}
                   </p>
                 </div>
@@ -90,14 +90,14 @@ export default async function ExamsPage({ params }: { params: Promise<{ locale: 
         </div>
 
         {/* Footer */}
-        <footer className="flex flex-col items-center gap-6 text-muted-foreground/30 font-mono text-[9px] uppercase tracking-[0.3em] pt-8" role="contentinfo">
-          <Separator className="w-24 bg-border" aria-hidden="true" />
-          <div className="flex gap-12">
-            <span>{h('coreLabel')}: {h('version')}</span>
-            <span>{h('logicLabel')}: {h('engine')}</span>
-            <span>{h('styleLabel')}: {h('style')}</span>
-          </div>
-        </footer>
+        <Footer 
+          separatorWidth="short"
+          telemetryItems={[
+            { label: h('coreLabel'), value: h('version') },
+            { label: h('logicLabel'), value: h('engine') },
+            { label: h('styleLabel'), value: h('style') }
+          ]}
+        />
 
       </div>
     </main>

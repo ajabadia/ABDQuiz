@@ -4,6 +4,7 @@ import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import { AdminPageHeader } from '@abd/styles';
 
 export default async function NewExamPage({
   params,
@@ -23,14 +24,11 @@ export default async function NewExamPage({
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
         {/* Header Navigation */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
-          <div className="flex flex-col gap-2">
-            <div className="text-[10px] font-mono font-black uppercase tracking-[0.25em] text-primary flex items-center gap-2 mb-2">
-              <FolderOpen size={14} className="text-primary animate-pulse" aria-hidden="true" />
-              CONSOLA DE CONTROL • {t('newExam')}
-            </div>
-            
-            <div className="flex items-center gap-4 mt-1">
+        <AdminPageHeader
+          icon={FolderOpen}
+          breadcrumb={<>CONSOLA DE CONTROL • {t('newExam')}</>}
+          title={t('newExam')}
+          backButton={
               <Link 
                 href={`/${locale}/admin/exams${tenantSuffix}`}
                 className="inline-flex items-center justify-center p-2 bg-transparent text-muted-foreground hover:text-foreground border border-border hover:border-border/80 transition-all duration-200 cursor-pointer rounded-none active:scale-[0.95] shrink-0 focus:outline-none focus:ring-1 focus:ring-primary/50"
@@ -39,17 +37,9 @@ export default async function NewExamPage({
               >
                 <ArrowLeft size={14} aria-hidden="true" />
               </Link>
-              
-              <h1 className="text-3xl font-black uppercase italic tracking-tight text-foreground leading-none flex-1 truncate">
-                {t('newExam')}
-              </h1>
-            </div>
-            
-            <p className="text-sm text-muted-foreground font-sans mt-2 leading-relaxed">
-              {t('creationWizard')} | Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span>
-            </p>
-          </div>
-        </header>
+          }
+          description={<>{t('creationWizard')} | Tenant: <span className="text-primary font-bold">{resolvedTenantId}</span></>}
+        />
 
         <ExamConfigForm locale={locale} tenantId={resolvedTenantId} />
       </div>

@@ -99,6 +99,8 @@ const ExamConfigSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-const ExamConfig: Model<IExamConfig> = mongoose.models.ExamConfig || mongoose.model<IExamConfig>('ExamConfig', ExamConfigSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const ExamConfig: Model<IExamConfig> = getTenantModel<IExamConfig>('ExamConfig', ExamConfigSchema);
 
 export default ExamConfig;

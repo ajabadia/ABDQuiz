@@ -35,6 +35,8 @@ const CorpusImportSchema = new Schema<ICorpusImport>({
   timestamps: true
 });
 
-const CorpusImport: Model<ICorpusImport> = mongoose.models.CorpusImport || mongoose.model<ICorpusImport>('CorpusImport', CorpusImportSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const CorpusImport: Model<ICorpusImport> = getTenantModel<ICorpusImport>('CorpusImport', CorpusImportSchema);
 
 export default CorpusImport;

@@ -36,6 +36,8 @@ const AllegationSchema = new Schema<IAllegation>({
   timestamps: true
 });
 
-const Allegation: Model<IAllegation> = mongoose.models.Allegation || mongoose.model<IAllegation>('Allegation', AllegationSchema);
+import { getTenantModel } from '@/lib/database/tenant-model';
+
+const Allegation: Model<IAllegation> = getTenantModel<IAllegation>('Allegation', AllegationSchema);
 
 export default Allegation;

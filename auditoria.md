@@ -319,7 +319,7 @@ Las funciones `finishExam`, `resolveAllegation`, `saveQuestion` son candidatas i
 | 13 | `useQuizTimer` dependencias inestables | 🟢 MEDIA | Bajo | Rendimiento | **REPARADO** |
 | 14 | Sin índice en `CorpusImportRow` | 🟢 MEDIA | Bajo | Rendimiento | **REPARADO** |
 | 15 | `entityType` del log no cubre todas las operaciones | 🟢 MEDIA | Bajo | Auditoría | **REPARADO** |
-| 16 | Sin tests automatizados | 🟢 MEDIA | Alto | Calidad | Pendiente |
+| 16 | Sin tests automatizados | 🟢 MEDIA | Alto | Calidad | **REPARADO** - Configurado Vitest e implementados 30 tests unitarios y de integración para todos los servicios |
 | 17 | `pnpm-workspace.yaml` sin uso | 🟢 BAJA | Bajo | Mantenibilidad | **REPARADO** |
 | 18 | `patterns.css` posible dead code | 🟢 BAJA | Bajo | Mantenibilidad | **REPARADO** |
 | 19 | Cast `as RequestInit & { next? }` frágil | 🟢 BAJA | Bajo | Mantenibilidad | **REPARADO** |
@@ -429,3 +429,29 @@ Todos los issues marcados como "REPARADO" en la matriz han sido verificados cont
 
 - `quizService.ts:181`: `return attempt as unknown as IExamAttempt;` — cast residual. Bajo riesgo porque `attempt` ya está populado con `IExamConfig`. No requiere acción inmediata.
 - `examConfig.ts:164`: `changedFields: data as any` — uso de `any` en logging. Bajo riesgo (solo afecta al log de auditoría).
+
+---
+
+## 🔍 Cobertura de Pruebas Unitarias y de Integración (2026-05-24 — Antigravity)
+
+### ✅ Pruebas Automatizadas con Vitest (30/30 Exitosas)
+Se ha configurado un entorno de pruebas robusto y aislado en `vitest.config.ts`, empleando mocks completos para las conexiones de base de datos de Mongoose (`connectDB`) y los esquemas (`Question`, `ExamAttempt`, `ExamConfig`, `Allegation`, `CorpusImport`, `CorpusImportRow`).
+
+Las pruebas implementadas cubren las siguientes capacidades del sistema:
+- **`QuizService` (9 tests)**: Verificación de creación de intentos (incluyendo límites de intentos de usuario), selección aleatoria/estratificada por dificultad, mezclado/shuffle de opciones con remapeo de índices de respuesta, registro de respuestas unitario (`submitAnswer`) y cálculo de scoring bajo distintos modos (`simple`, `penalty`, `weighted`).
+- **`QuestionService` (6 tests)**: Verificación de paginación/búsqueda de reactivos, comprobación de trazabilidad en intentos existentes, y el ciclo Copy-On-Write (COW) que bifurca reactivos versionados cuando hay trazabilidad histórica previa.
+- **`CorpusImporter` (6 tests)**: Ingesta determinista de archivos JSON/CSV con validación Zod estricta, deduplicación semántica por SHA-256 de pregunta normalizada, y registro estructurado de errores y duplicados.
+- **`AllegationService` (9 tests)**: Flujo completo de alegaciones, rechazos operacionales, y resoluciones de impugnación con estrategias `CORRECTION_SHIFT`, `CANCEL_QUESTION` y `GIVE_POINTS_TO_ALL` incluyendo el recálculo retroactivo exacto de los exámenes del tenant afectado.
+
+### Resultados de Ejecución
+```bash
+ RUN  v4.1.7 D:/desarrollos/ABDSuite/ABDQuiz
+
+ ✓ src/services/corpus/QuestionService.test.ts (6 tests) 21ms
+ ✓ src/services/quiz/quizService.test.ts (9 tests) 22ms
+ ✓ src/services/corpus/CorpusImporter.test.ts (6 tests) 28ms
+ ✓ src/services/allegations/allegationService.test.ts (9 tests) 19ms    
+
+ Test Files  4 passed (4)
+      Tests  30 passed (30)
+```

@@ -8,6 +8,8 @@ import { getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
 
+import { type SerializedExamConfig } from '@/types/quiz';
+
 
 
 /**
@@ -85,12 +87,15 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       }
       
       // Convert ObjectIds to strings
-      return configs.map((c: any) => ({
-        ...c,
-        _id: c._id.toString(),
-        createdAt: c.createdAt?.toISOString(),
-        updatedAt: c.updatedAt?.toISOString()
-      }));
+      return configs.map((c) => {
+        const doc = c as unknown as Record<string, unknown>;
+        return {
+          ...doc,
+          _id: (doc._id as { toString(): string }).toString(),
+          createdAt: (doc.createdAt as Date | undefined)?.toISOString() || '',
+          updatedAt: (doc.updatedAt as Date | undefined)?.toISOString() || ''
+        } as unknown as SerializedExamConfig;
+      });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ Error fetching exam configs:', msg);
@@ -179,7 +184,7 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
         entityId: id,
         userId: session.user.id,
         userEmail: session.user.email || 'system@abd.com',
-        changedFields: data as any,
+        changedFields: data as Record<string, unknown>,
         previousState,
       });
       

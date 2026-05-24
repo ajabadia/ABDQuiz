@@ -26,12 +26,21 @@ export default async function QuizPage({ params }: QuizPageProps) {
       return notFound();
     }
 
+    interface SerializedQuestion {
+      questionSnapshot?: {
+        correctOptionIndex?: number;
+        [key: string]: unknown;
+      };
+      [key: string]: unknown;
+    }
+
     // Convertir IDs de MongoDB a strings para el Client Component
     const serializedAttempt = JSON.parse(JSON.stringify(attempt));
     
     // Ocultar correctOptionIndex para evitar fugas de información
-    if (serializedAttempt.questions) {
-      serializedAttempt.questions.forEach((q: any) => {
+    const questions = serializedAttempt.questions as SerializedQuestion[] | undefined;
+    if (questions) {
+      questions.forEach((q) => {
         if (q.questionSnapshot) {
           delete q.questionSnapshot.correctOptionIndex;
         }

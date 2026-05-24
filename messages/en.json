@@ -40,7 +40,10 @@
     "historyMenu": "History & Analytics",
     "welcomeMenu": "Welcome",
     "claimsMenu": "Claims",
-    "disconnectedSession": "Session Disconnected"
+    "disconnectedSession": "Session Disconnected",
+    "quizCenter": "Quiz Center",
+    "exams": "Exams",
+    "examsSubtitle": "Select a simulation template to begin your technical evaluation. All timing and scoring parameters will be enforced automatically."
   },
   "home": {
     "status": "System Status: Operational",

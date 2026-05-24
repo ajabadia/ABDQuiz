@@ -9,6 +9,25 @@ import { ensureIndustrialAccess, getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
 
+export interface SerializedAttempt {
+  _id: string;
+  userId: string;
+  mode: 'training' | 'mock';
+  score: number;
+  percentage: number;
+  startedAt: string;
+  endedAt?: string;
+  status: 'in_progress' | 'completed' | 'timeout';
+  isInvalidated?: boolean;
+  invalidatedBy?: string;
+  invalidatedAt?: string;
+  examConfigId?: {
+    _id: string;
+    name: string;
+    passThreshold: number;
+  };
+}
+
 
 /**
  * Inicia un nuevo examen basado en una configuración parametrizada
@@ -203,15 +222,33 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       .lean();
       
       // Sanitizar IDs para Server Actions
-      return attempts.map((a: any) => ({
-        ...a,
-        _id: a._id.toString(),
-        userId: a.userId?.toString(),
-        examConfigId: a.examConfigId ? {
-           ...a.examConfigId,
-           _id: a.examConfigId._id?.toString()
-        } : null
-      }));
+      return (attempts as unknown as Record<string, unknown>[]).map((a) => {
+        const result: SerializedAttempt = {
+          _id: (a._id as { toString(): string }).toString(),
+          userId: (a.userId as { toString(): string })?.toString() || '',
+          mode: a.mode as 'training' | 'mock',
+          score: a.score as number,
+          percentage: a.percentage as number,
+          startedAt: (a.startedAt as Date).toISOString(),
+          status: a.status as 'in_progress' | 'completed' | 'timeout',
+        };
+
+        if (a.endedAt) result.endedAt = (a.endedAt as Date).toISOString();
+        if (a.isInvalidated) result.isInvalidated = a.isInvalidated as boolean;
+        if (a.invalidatedBy) result.invalidatedBy = a.invalidatedBy as string;
+        if (a.invalidatedAt) result.invalidatedAt = (a.invalidatedAt as Date).toISOString();
+
+        if (a.examConfigId) {
+          const config = a.examConfigId as Record<string, unknown>;
+          result.examConfigId = {
+            _id: (config._id as { toString(): string }).toString(),
+            name: config.name as string,
+            passThreshold: config.passThreshold as number,
+          };
+        }
+
+        return result;
+      });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ Error fetching attempts:', msg);

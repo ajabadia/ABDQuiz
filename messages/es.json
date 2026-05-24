@@ -40,7 +40,10 @@
     "historyMenu": "Historial & Analíticas",
     "welcomeMenu": "Bienvenida",
     "claimsMenu": "Impugnaciones",
-    "disconnectedSession": "Sesión Desconectada"
+    "disconnectedSession": "Sesión Desconectada",
+    "quizCenter": "Centro de Exámenes",
+    "exams": "Exámenes",
+    "examsSubtitle": "Selecciona una plantilla de simulación para iniciar la evaluación técnica. Las condiciones temporales y de puntuación se aplicarán automáticamente."
   },
   "home": {
     "status": "Estado del Sistema: Operativo",

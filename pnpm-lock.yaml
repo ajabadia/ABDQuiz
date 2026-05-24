@@ -130,8 +130,8 @@ packages:
       next-intl: ^4.12.0
       react: ^19.0.0
 
-  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/4bdc988d0a07526f4807baeffa6039c4afcb1338':
-    resolution: {tarball: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/4bdc988d0a07526f4807baeffa6039c4afcb1338}
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/cba96b3bad9a734b5f3bc97a3ba8173b878f9627':
+    resolution: {tarball: https://codeload.github.com/ajabadia/ABDStyles/tar.gz/cba96b3bad9a734b5f3bc97a3ba8173b878f9627}
     version: 1.0.0
     peerDependencies:
       lucide-react: ^0.46.0 || ^1.0.0
@@ -4429,7 +4429,7 @@ snapshots:
 
   '@abd/ecosystem-widgets@file:../ABDEcosystemWidgets(lucide-react@1.14.0(react@19.2.4))(next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react@19.2.4)':
     dependencies:
-      '@abd/styles': https://codeload.github.com/ajabadia/ABDStyles/tar.gz/4bdc988d0a07526f4807baeffa6039c4afcb1338(lucide-react@1.14.0(react@19.2.4))(next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react@19.2.4)
+      '@abd/styles': https://codeload.github.com/ajabadia/ABDStyles/tar.gz/cba96b3bad9a734b5f3bc97a3ba8173b878f9627(lucide-react@1.14.0(react@19.2.4))(next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react@19.2.4)
       clsx: 2.1.1
       lucide-react: 1.14.0(react@19.2.4)
       next-intl: 4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -4454,7 +4454,7 @@ snapshots:
       tailwind-merge: 2.6.1
       zod: 3.25.76
 
-  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/4bdc988d0a07526f4807baeffa6039c4afcb1338(lucide-react@1.14.0(react@19.2.4))(next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react@19.2.4)':
+  '@abd/styles@https://codeload.github.com/ajabadia/ABDStyles/tar.gz/cba96b3bad9a734b5f3bc97a3ba8173b878f9627(lucide-react@1.14.0(react@19.2.4))(next-intl@4.12.0(next@16.2.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react@19.2.4)':
     dependencies:
       clsx: 2.1.1
       lucide-react: 1.14.0(react@19.2.4)

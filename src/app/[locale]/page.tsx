@@ -20,7 +20,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <HeroHeader
           statusText={h('status')}
           title={
-            <>{h('brandPart1')}<span className="text-primary">{h('brandPart2')}</span></>
+            <>{t('brandPart1')}<span className="text-primary">{t('brandPart2')}</span></>
           }
           description={h('tagline')}
         />

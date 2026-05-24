@@ -404,3 +404,28 @@ Principales: `QuizInterface`, `QuizQuestion`, `QuizHeader`, `QuizFooter`, `QuizN
 ---
 
 *Informe generado por Antigravity Codebuff · ABD Ecosystem Architecture Team*
+
+---
+
+## 🔍 Verificación de Correcciones (2026-05-21 — Codebuff)
+
+### ✅ Issues #1–#21 — Verificados como CORRECTAMENTE CORREGIDOS
+
+Todos los issues marcados como "REPARADO" en la matriz han sido verificados contra el código fuente actual:
+
+- **#1 `console.log` con PII**: Eliminados o protegidos con `NODE_ENV` ✅
+- **#2 Secretos con fallback**: `logs-client.ts` ahora lanza `Error` si falta `LOGS_SECRET_TOKEN` ✅
+- **#3 `FAKE_USER_ID`**: Eliminado; ahora usa `session.user.id` real ✅
+- **#4 `DEFAULT_TENANT`**: Eliminado; el tenant se resuelve de la sesión federada ✅
+- **#5 Validación de ownership en `submitAnswer`**: `ExamAttempt.findOne({ _id: attemptId, userId })` ✅
+- **#6 `as unknown as IExamConfig` en scoring**: `.populate<{ examConfigId: IExamConfig }>()` tipado correctamente ✅
+- **#7 Errores silenciados con `return []`**: Ahora lanzan `throw new Error(msg)` ✅
+- **#8 `JSON.parse(JSON.stringify())`**: Reemplazado por `.lean()` + mapeo explícito ✅
+- **#9 `(error as Error).message`**: Ahora usa `error instanceof Error ? error.message : 'Unknown error'` ✅
+- **#10 `auth-bridge.ts`**: Eliminado (dead code) ✅
+- Resto de issues #11–#21: Verificados ✅
+
+### ⚠️ Hallazgo menor adicional (no documentado previamente)
+
+- `quizService.ts:181`: `return attempt as unknown as IExamAttempt;` — cast residual. Bajo riesgo porque `attempt` ya está populado con `IExamConfig`. No requiere acción inmediata.
+- `examConfig.ts:164`: `changedFields: data as any` — uso de `any` en logging. Bajo riesgo (solo afecta al log de auditoría).

@@ -393,5 +393,20 @@
     "feedbackTecnico": "Technical Feedback",
     "resolutionStrategy": "Resolution Strategy",
     "newCorrectIndex": "New correct option index (0-3)"
+  },
+  "widgets": {
+    "tenant_selector_select": "Select organization",
+    "tenant_selector_title": "ORGANIZATION",
+    "tenant_selector_search": "Search...",
+    "tenant_selector_empty": "No results",
+    "tenant_selector_active": "Active Organization",
+    "system_settings_title": "SYSTEM SETTINGS",
+    "system_settings_close": "Close",
+    "system_settings_language": "LANGUAGE",
+    "system_settings_theme": "THEME",
+    "system_settings_theme_light": "LIGHT",
+    "system_settings_theme_dark": "DARK",
+    "system_settings_theme_system": "SYSTEM",
+    "system_settings_logout": "Sign Out"
   }
 }

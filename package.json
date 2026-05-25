@@ -10,7 +10,8 @@
     "arch-audit": "node scripts/arch-guard.mjs",
     "full-audit": "powershell -ExecutionPolicy Bypass -File scripts/abd-audit.ps1",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "pnpm": {
     "onlyBuiltDependencies": []
@@ -49,7 +50,8 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.7"
   }
 }
 

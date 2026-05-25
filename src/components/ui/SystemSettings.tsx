@@ -15,7 +15,18 @@ export function SystemSettings({ isAuthenticated = false }: SystemSettingsProps)
   const pathname = usePathname();
 
   const handleLocaleChange = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
+    let domainSuffix = "";
+    const hostname = window.location.hostname;
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      const parts = hostname.split('.');
+      if (parts.length >= 2) {
+        domainSuffix = `; domain=.${parts.slice(-2).join('.')}`;
+      }
+    }
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax${domainSuffix}`;
+    
+    const search = typeof window !== 'undefined' ? window.location.search : '';
+    router.replace(`${pathname}${search}`, { locale: newLocale });
   };
 
   const handleLogin = () => {

@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { getExamConfigsAction } from '@/actions/examConfig';
-import { AdminPageHeader, Footer } from '@abd/styles';
+import { AdminPageHeader } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 
 export default async function AdminExamsPage({
   params,
@@ -57,7 +58,7 @@ export default async function AdminExamsPage({
 
         <ExamsList configs={configs} locale={locale} />
         
-        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
+        <GlobalFooter label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
       </div>
     </main>
   );

@@ -44,8 +44,19 @@ vi.mock('@/models/ExamAttempt', () => {
   };
 });
 
-import { mockFind, mockCountDocuments as mockQuestionCount, mockFindById, mockFindByIdAndUpdate, mockCreate } from '@/models/Question';
-import { mockCountDocuments as mockAttemptCount } from '@/models/ExamAttempt';
+import * as QuestionMod from '@/models/Question';
+import * as ExamAttemptMod from '@/models/ExamAttempt';
+
+const { mockFind, mockCountDocuments: mockQuestionCount, mockFindById, mockFindByIdAndUpdate, mockCreate } = QuestionMod as unknown as {
+  mockFind: ReturnType<typeof vi.fn>;
+  mockCountDocuments: ReturnType<typeof vi.fn>;
+  mockFindById: ReturnType<typeof vi.fn>;
+  mockFindByIdAndUpdate: ReturnType<typeof vi.fn>;
+  mockCreate: ReturnType<typeof vi.fn>;
+};
+const { mockCountDocuments: mockAttemptCount } = ExamAttemptMod as unknown as {
+  mockCountDocuments: ReturnType<typeof vi.fn>;
+};
 
 describe('QuestionService', () => {
   beforeEach(() => {

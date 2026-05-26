@@ -64,10 +64,26 @@ vi.mock('@/models/Question', () => {
 });
 
 // Import mock references
-import { mockCreate as mockCreateAllegation, mockFind as mockFindAllegation, mockFindById as mockFindByIdAllegation } from '@/models/Allegation';
-import { mockFind as mockFindAttempt, mockFindById as mockFindByIdAttempt } from '@/models/ExamAttempt';
-import { mockFindById as mockFindByIdConfig } from '@/models/ExamConfig';
-import { mockUpdateOne as mockUpdateOneQuestion } from '@/models/Question';
+import * as AllegationMod from '@/models/Allegation';
+import * as ExamAttemptMod from '@/models/ExamAttempt';
+import * as ExamConfigMod from '@/models/ExamConfig';
+import * as QuestionMod from '@/models/Question';
+
+const { mockCreate: mockCreateAllegation, mockFind: mockFindAllegation, mockFindById: mockFindByIdAllegation } = AllegationMod as unknown as {
+  mockCreate: ReturnType<typeof vi.fn>;
+  mockFind: ReturnType<typeof vi.fn>;
+  mockFindById: ReturnType<typeof vi.fn>;
+};
+const { mockFind: mockFindAttempt, mockFindById: mockFindByIdAttempt } = ExamAttemptMod as unknown as {
+  mockFind: ReturnType<typeof vi.fn>;
+  mockFindById: ReturnType<typeof vi.fn>;
+};
+const { mockFindById: mockFindByIdConfig } = ExamConfigMod as unknown as {
+  mockFindById: ReturnType<typeof vi.fn>;
+};
+const { mockUpdateOne: mockUpdateOneQuestion } = QuestionMod as unknown as {
+  mockUpdateOne: ReturnType<typeof vi.fn>;
+};
 
 describe('AllegationService', () => {
   beforeEach(() => {
@@ -269,6 +285,7 @@ describe('AllegationService', () => {
             questionSnapshot: {
               difficulty: 'easy',
               correctOptionIndex: 0,
+              isCancelled: false,
             },
           },
           {

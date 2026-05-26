@@ -124,15 +124,24 @@ export function ImportDialog({ onSuccess, onClose }: ImportDialogProps) {
 
   const submitFinalizedList = async (finalList: RawQuestion[]) => {
     setIsUploading(true);
-    try {
-      const result = await importFinalizedQuestionsAction(finalList, file?.name || 'import.json');
-      if (result.success && result.data) {
-        toast.success(t('importSuccess', { count: result.data.validRows }));
-        onSuccess();
-        onClose();
-      } else toast.error(t('importError', { error: result.error || 'Unknown Error' }));
-    } catch { toast.error(t('techFailure')); }
-    finally { setIsUploading(false); }
+    const promise = importFinalizedQuestionsAction(finalList, file?.name || 'import.json')
+      .then(result => {
+        if (result.success && result.data) {
+          onSuccess();
+          onClose();
+          return result.data;
+        }
+        throw new Error(result.error || 'Unknown Error');
+      });
+
+    toast.promise(promise, {
+      loading: t('techProcessing', { defaultMessage: 'Procesando preguntas...' }),
+      success: (data) => t('importSuccess', { count: data.validRows }),
+      error: (err: Error) => err.message || t('techFailure'),
+    });
+
+    await promise.catch(() => {});
+    setIsUploading(false);
   };
 
   const handleBulkRemediationSubmit = async (e: React.FormEvent) => {

@@ -45,9 +45,16 @@ vi.mock('@/models/Question', () => {
   };
 });
 
-import { mockCreate as mockCreateImport } from '@/models/CorpusImport';
-import { mockCreate as mockCreateImportRow } from '@/models/CorpusImportRow';
-import { mockFindOne as mockFindQuestion, mockCreate as mockCreateQuestion } from '@/models/Question';
+import * as CorpusImportMod from '@/models/CorpusImport';
+import * as CorpusImportRowMod from '@/models/CorpusImportRow';
+import * as QuestionMod from '@/models/Question';
+
+const { mockCreate: mockCreateImport } = CorpusImportMod as unknown as { mockCreate: ReturnType<typeof vi.fn> };
+const { mockCreate: mockCreateImportRow } = CorpusImportRowMod as unknown as { mockCreate: ReturnType<typeof vi.fn> };
+const { mockFindOne: mockFindQuestion, mockCreate: mockCreateQuestion } = QuestionMod as unknown as {
+  mockFindOne: ReturnType<typeof vi.fn>;
+  mockCreate: ReturnType<typeof vi.fn>;
+};
 
 describe('CorpusImporter', () => {
   beforeEach(() => {

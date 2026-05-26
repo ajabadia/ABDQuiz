@@ -43,7 +43,8 @@
     "disconnectedSession": "Session Disconnected",
     "quizCenter": "Quiz Center",
     "exams": "Exams",
-    "examsSubtitle": "Select a simulation template to begin your technical evaluation. All timing and scoring parameters will be enforced automatically."
+    "examsSubtitle": "Select a simulation template to begin your technical evaluation. All timing and scoring parameters will be enforced automatically.",
+    "subtitle": "Industrial-grade exam simulator."
   },
   "home": {
     "status": "System Status: Operational",
@@ -271,7 +272,8 @@
     "labelSource": "Source of Origin",
     "labelDifficulty": "Difficulty Level (Dropdown)",
     "btnSaving": "SAVING...",
-    "btnNextQuestion": "NEXT QUESTION"
+    "btnNextQuestion": "NEXT QUESTION",
+    "btnApplyBank": "APPLY & INGEST BANK"
   },
   "settings": {
     "title": "System Settings",
@@ -285,6 +287,7 @@
     "login": "Login"
   },
   "questions": {
+    "newQuestion": "New Question",
     "title": "Question Repository",
     "subtitle": "Management, editing and historical traceability of individual questions.",
     "searchPlaceholder": "SEARCH BY QUESTION TEXT...",

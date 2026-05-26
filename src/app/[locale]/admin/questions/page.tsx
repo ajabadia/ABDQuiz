@@ -4,7 +4,8 @@ import { ensureIndustrialAccess } from '@/lib/session';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { ArrowLeft, FolderOpen, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AdminPageHeader, Footer } from '@abd/styles';
+import { AdminPageHeader } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 import { Link } from '@/i18n/routing';
 
 /**
@@ -61,7 +62,7 @@ export default async function AdminQuestionsPage({
 
         <QuestionsManager tenantId={resolvedTenantId} />
         
-        <Footer label={`${admin('brandPart1')}${admin('brandPart2')} ${h('version')}`} opacity={20} />
+        <GlobalFooter label={`${admin('brandPart1')}${admin('brandPart2')} ${h('version')}`} opacity={20} />
       </div>
     </main>
   );

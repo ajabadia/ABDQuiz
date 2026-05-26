@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { Footer, AdminPageHeader } from '@abd/styles';
+import { AdminPageHeader } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 import { ensureIndustrialAccess } from '@/lib/session';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { getAttemptsAction } from '@/actions/quiz';
@@ -51,7 +52,7 @@ export default async function AdminAttemptsPage({
 
         <AttemptsManager attempts={attempts} />
         
-        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
+        <GlobalFooter label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
       </div>
     </main>
   );

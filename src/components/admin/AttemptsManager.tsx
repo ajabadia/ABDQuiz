@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { invalidateAttemptAction } from '@/actions/quiz';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@abd/ecosystem-widgets';
 
 interface AttemptProps {
   _id: string;
@@ -34,6 +35,10 @@ interface AttemptsManagerProps {
 export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
   const [search, setSearch] = useState('');
   const [loadingIds, setLoadingIds] = useState<Record<string, boolean>>({});
+  
+  // Custom Confirm Dialog States
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingAttemptId, setPendingAttemptId] = useState<string | null>(null);
 
   const filteredAttempts = attempts.filter((attempt) => {
     const term = search.toLowerCase();
@@ -44,10 +49,16 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
     );
   });
 
-  const handleInvalidate = async (attemptId: string) => {
-    if (!confirm('¿Estás seguro de que deseas anular este intento? El estudiante podrá realizar un nuevo intento de inmediato.')) {
-      return;
-    }
+  const handleInvalidateClick = (attemptId: string) => {
+    setPendingAttemptId(attemptId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmInvalidate = async () => {
+    if (!pendingAttemptId) return;
+    const attemptId = pendingAttemptId;
+    setPendingAttemptId(null);
+    setIsConfirmOpen(false);
 
     setLoadingIds((prev) => ({ ...prev, [attemptId]: true }));
     try {
@@ -181,7 +192,7 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
                           </div>
                         ) : (
                           <Button
-                            onClick={() => handleInvalidate(attempt._id)}
+                            onClick={() => handleInvalidateClick(attempt._id)}
                             disabled={loadingIds[attempt._id]}
                             variant="outline"
                             className="h-8 rounded-none border-destructive/30 text-destructive bg-destructive/10 hover:bg-destructive/20 hover:text-destructive font-mono text-[9px] tracking-wider"
@@ -199,6 +210,17 @@ export default function AttemptsManager({ attempts }: AttemptsManagerProps) {
           </div>
         </div>
       )}
+
+      {/* Governance Confirmation Modal */}
+      <ConfirmDialog
+        open={isConfirmOpen}
+        onCancel={() => { setIsConfirmOpen(false); setPendingAttemptId(null); }}
+        onConfirm={handleConfirmInvalidate}
+        title="ANULACIÓN DE INTENTO"
+        message="¿Estás seguro de que deseas anular este intento? El estudiante podrá realizar un nuevo intento de inmediato."
+        confirmLabel="ANULAR INTENTO"
+        cancelLabel="CANCELAR"
+      />
     </div>
   );
 }

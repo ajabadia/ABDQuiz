@@ -4,7 +4,7 @@ import { startQuizAction } from '@/actions/quiz';
 import { getExamConfigsAction } from '@/actions/examConfig';
 import { type SerializedExamConfig } from '@/types/quiz';
 import { HeroHeader } from '@abd/styles';
-import { Footer } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 
 export default async function ExaminarPage() {
   const t = await getTranslations('common');
@@ -62,7 +62,7 @@ export default async function ExaminarPage() {
           })}
         </div>
 
-        <Footer 
+        <GlobalFooter 
           separatorWidth="short"
           telemetryItems={[
             { label: h('coreLabel'), value: h('version') },

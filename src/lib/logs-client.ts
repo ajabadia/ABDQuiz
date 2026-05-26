@@ -11,6 +11,7 @@ export interface LogPayload {
   previousState?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
+  [key: string]: unknown;
 }
 
 export class LogsClient {

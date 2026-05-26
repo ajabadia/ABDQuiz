@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from 'next-themes';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { SystemSettings as SharedSystemSettings } from '@abd/ecosystem-widgets';
@@ -10,6 +11,7 @@ interface SystemSettingsProps {
 
 export function SystemSettings({ isAuthenticated = false }: SystemSettingsProps) {
   const t = useTranslations('settings');
+  const { theme, setTheme } = useTheme();
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -30,17 +32,22 @@ export function SystemSettings({ isAuthenticated = false }: SystemSettingsProps)
   };
 
   const handleLogin = () => {
-    router.push('/exams');
+    window.location.href = 'http://localhost:3400/login';
+  };
+
+  const handleLogout = () => {
+    window.location.href = 'http://localhost:3400';
   };
 
   return (
     <SharedSystemSettings
       locale={locale}
       onLocaleChange={handleLocaleChange}
+      theme={theme}
+      onThemeChange={setTheme}
       isAuthenticated={isAuthenticated}
-      showLogin={false}
       onLogin={handleLogin}
-      logoutUrl="/api/auth/logout"
+      onLogout={handleLogout}
       versionSignature="ABD_QUIZ_V1.0"
     />
   );

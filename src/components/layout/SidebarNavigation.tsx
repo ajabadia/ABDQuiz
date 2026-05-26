@@ -1,9 +1,9 @@
 'use client';
 
+import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
-import { Link, usePathname, useRouter } from '@/i18n/routing';
-import { TacticalSidebar as SharedTacticalSidebar } from '@abd/styles';
+import { usePathname, useRouter } from '@/i18n/routing';
+import { SmartNavbar, buildSidebarLinks } from '@abd/ecosystem-widgets';
 import { Home, BookOpen, BarChart2, Terminal, AlertTriangle } from 'lucide-react';
 
 interface UserSession {
@@ -20,83 +20,77 @@ interface UserSession {
 interface SidebarNavigationProps {
   session: UserSession;
   logoUrl?: string | null;
+  tenantSelectorSlot?: React.ReactNode;
+  settingsSlot?: React.ReactNode;
 }
 
-export function SidebarNavigation({ session, logoUrl }: SidebarNavigationProps) {
+export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settingsSlot }: SidebarNavigationProps) {
   const t = useTranslations('common');
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const tenantId = searchParams.get('tenantId');
+  const [tenantId, setTenantId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setTenantId(params.get('tenantId'));
+  }, []);
 
   const isLoggedIn = session.authenticated && !!session.user;
   const user = session.user;
-  const isAdmin = isLoggedIn && user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
 
-  // Dynamic tactical links mapped to shared sidebar
-  const links = [
+  const allLinks = [
     { href: '/', label: t('welcomeMenu'), icon: <Home className="w-4 h-4" /> },
     { href: '/exams', label: t('homeMenu'), icon: <BookOpen className="w-4 h-4" /> },
-    ...(isLoggedIn ? [
-      { href: '/history', label: t('historyMenu'), icon: <BarChart2 className="w-4 h-4" /> }
-    ] : []),
-    ...(isLoggedIn && isAdmin ? [
-      { href: '/admin', label: t('adminMenu'), icon: <Terminal className="w-4 h-4" /> },
-      { href: '/admin/allegations', label: t('claimsMenu'), icon: <AlertTriangle className="w-4 h-4" /> }
-    ] : [])
-  ];
+    { href: '/history', label: t('historyMenu'), icon: <BarChart2 className="w-4 h-4" />, requiresAuth: true },
+    { href: '/admin', label: t('adminMenu'), icon: <Terminal className="w-4 h-4" />, requiresAdmin: true },
+    { href: '/admin/allegations', label: t('claimsMenu'), icon: <AlertTriangle className="w-4 h-4" />, requiresAdmin: true },
+  ] as const;
 
-  // Map user session parameters to the shared NavUser signature
-  const navUser = {
-    name: isLoggedIn && user ? `${user.name} ${user.surname}` : t('disconnectedSession'),
-    role: isLoggedIn && user ? user.role : 'PÚBLICO',
-    tenantId: isLoggedIn && user ? user.tenantId : '',
-    email: isLoggedIn && user ? user.email : 'Desconectado',
+  const links = buildSidebarLinks(allLinks, user?.role, isLoggedIn);
+
+  const handleLogout = () => {
+    window.location.href = '/api/auth/logout';
   };
 
-  const handleLogout = async () => {
-    if (isLoggedIn) {
-      // Silent cookie clear via SDK endpoint before full redirect
-      await fetch('/api/auth/logout?silent=true', { method: 'GET' }).catch(() => null);
-      window.location.href = '/api/auth/logout';
-    } else {
-      router.push('/exams');
+  // Add tenantId query param to all nav links
+  const transformHref = (href: string) => {
+    return tenantId ? `${href}?tenantId=${tenantId}` : href;
+  };
+
+  const handleLocaleChange = (newLocale: string) => {
+    let domainSuffix = "";
+    const hostname = window.location.hostname;
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      const parts = hostname.split('.');
+      if (parts.length >= 2) {
+        domainSuffix = `; domain=.${parts.slice(-2).join('.')}`;
+      }
     }
-  };
-
-  const LocalizedLink = ({
-    href,
-    onClick,
-    className,
-    children,
-  }: {
-    href: string;
-    onClick?: () => void;
-    className?: string;
-    children: React.ReactNode;
-  }) => {
-    const finalHref = tenantId ? `${href}?tenantId=${tenantId}` : href;
-    return (
-      <Link href={finalHref} onClick={onClick} className={className}>
-        {children}
-      </Link>
-    );
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax${domainSuffix}`;
+    const search = typeof window !== 'undefined' ? window.location.search : '';
+    router.replace(`${pathname}${search}`, { locale: newLocale });
   };
 
   return (
-    <SharedTacticalSidebar
-      user={navUser}
+    <SmartNavbar
+      session={session}
       links={links}
       logoUrl={logoUrl || null}
-      onLogout={handleLogout}
-      homeHref={`/${locale}`}
-      brandName={isLoggedIn && user?.tenantId ? user.tenantId : t('appTitle')}
-      LinkComponent={LocalizedLink}
+      brandName={t('appTitle')}
       activeHref={pathname}
+      locale={locale}
+      onLogout={handleLogout}
+      transformHref={tenantId ? transformHref : undefined}
+      tenantSelectorSlot={tenantSelectorSlot}
+      settingsSlot={settingsSlot}
+      onLocaleChange={handleLocaleChange}
+      onSearchTrigger={() => {
+        window.dispatchEvent(new CustomEvent('abd-command-palette-open'));
+      }}
       translations={{
         brandFallback: t('appTitle'),
-        logoutBtn: isLoggedIn ? t('logout') : t('login'),
+        logoutBtn: t('logout'),
         identityProvider: 'IDENTITY PROVIDER',
         statusOnline: isLoggedIn ? 'ONLINE' : 'OFFLINE',
         emailLabel: 'EMAIL',

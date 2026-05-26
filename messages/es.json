@@ -43,7 +43,8 @@
     "disconnectedSession": "Sesión Desconectada",
     "quizCenter": "Centro de Exámenes",
     "exams": "Exámenes",
-    "examsSubtitle": "Selecciona una plantilla de simulación para iniciar la evaluación técnica. Las condiciones temporales y de puntuación se aplicarán automáticamente."
+    "examsSubtitle": "Selecciona una plantilla de simulación para iniciar la evaluación técnica. Las condiciones temporales y de puntuación se aplicarán automáticamente.",
+    "subtitle": "Simulador de exámenes de grado industrial."
   },
   "home": {
     "status": "Estado del Sistema: Operativo",
@@ -271,7 +272,8 @@
     "labelSource": "Fuente de Origen",
     "labelDifficulty": "Nivel de Dificultad (Desplegable)",
     "btnSaving": "GUARDANDO...",
-    "btnNextQuestion": "SIGUIENTE PREGUNTA"
+    "btnNextQuestion": "SIGUIENTE PREGUNTA",
+    "btnApplyBank": "APLICAR Y INGESTAR BANCO"
   },
   "settings": {
     "title": "Ajustes de Sistema",
@@ -285,6 +287,7 @@
     "login": "Iniciar Sesión"
   },
   "questions": {
+    "newQuestion": "Nuevo Reactivo",
     "title": "Repositorio de Preguntas",
     "subtitle": "Gestión, edición y trazabilidad histórica de reactivos individuales.",
     "searchPlaceholder": "BUSCAR POR TEXTO DEL ENUNCIADO...",

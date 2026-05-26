@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { type SerializedExamConfig } from '@/types/quiz';
 import Link from 'next/link';
 import { deleteExamConfigAction, cloneExamConfigAction } from '@/actions/examConfig';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@abd/ecosystem-widgets';
 
 interface ExamsListProps {
   configs: SerializedExamConfig[];
@@ -18,8 +20,20 @@ interface ExamsListProps {
 export default function ExamsList({ configs, locale }: ExamsListProps) {
   const t = useTranslations('admin');
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('delete') + '?')) return;
+  // Custom Confirm Dialog States
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const handleDeleteClick = (id: string) => {
+    setPendingDeleteId(id);
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    setIsConfirmOpen(false);
     
     const result = await deleteExamConfigAction(id);
     if (result.success) {
@@ -48,67 +62,79 @@ export default function ExamsList({ configs, locale }: ExamsListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {configs.map((config) => (
-        <Card key={config._id} className="group relative bg-card/40 border-white/5 hover:border-primary/40 transition-all duration-500 overflow-hidden rounded-none p-6 flex flex-col gap-6">
-          <div className="flex justify-between items-start">
-            <div className="space-y-1">
-              <h3 className="text-xl font-bold tracking-tight uppercase italic group-hover:text-primary transition-colors">
-                {config.name}
-              </h3>
-              <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                ID: {config._id.slice(-8)} {config.isDefault && <span className="text-primary ml-2">{t('defaultBadge')}</span>}
-              </p>
+    <div className="relative">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {configs.map((config) => (
+          <Card key={config._id} className="group relative bg-card/40 border-white/5 hover:border-primary/40 transition-all duration-500 overflow-hidden rounded-none p-6 flex flex-col gap-6">
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold tracking-tight uppercase italic group-hover:text-primary transition-colors">
+                  {config.name}
+                </h3>
+                <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                  ID: {config._id.slice(-8)} {config.isDefault && <span className="text-primary ml-2">{t('defaultBadge')}</span>}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-primary/10 hover:text-primary" asChild>
+                  <Link href={`/${locale}/admin/exams/${config._id}/edit`}>
+                    <Pencil className="w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-primary/10 hover:text-primary" onClick={() => handleClone(config._id)} title="Clonar">
+                  <Copy className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDeleteClick(config._id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-primary/10 hover:text-primary" asChild>
-                <Link href={`/${locale}/admin/exams/${config._id}/edit`}>
-                  <Pencil className="w-4 h-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-primary/10 hover:text-primary" onClick={() => handleClone(config._id)} title="Clonar">
-                <Copy className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(config._id)}>
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-mono uppercase">{config.questionCount} {t('questionsCount')}</span>
+            <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-mono uppercase">{config.questionCount} {t('questionsCount')}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-mono uppercase">{config.globalTimeLimitSeconds ? `${config.globalTimeLimitSeconds / 60}m` : '∞'}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Target className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-mono uppercase">{config.scoringMode}</span>
+              </div>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="w-3.5 h-3.5 rounded-full border border-primary/40 flex items-center justify-center text-[8px] font-bold">%</div>
+                <span className="text-[10px] font-mono uppercase">{config.passThreshold}%</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Clock className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-mono uppercase">{config.globalTimeLimitSeconds ? `${config.globalTimeLimitSeconds / 60}m` : '∞'}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Target className="w-3.5 h-3.5" />
-              <span className="text-[10px] font-mono uppercase">{config.scoringMode}</span>
-            </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="w-3.5 h-3.5 rounded-full border border-primary/40 flex items-center justify-center text-[8px] font-bold">%</div>
-              <span className="text-[10px] font-mono uppercase">{config.passThreshold}%</span>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap gap-2">
-            {config.moduleFilter.length > 0 ? (
-              config.moduleFilter.map(m => (
-                <Badge key={m} variant="outline" className="rounded-none border-white/10 bg-white/5 text-[8px] font-mono uppercase">
-                  {m}
+            <div className="flex flex-wrap gap-2">
+              {config.moduleFilter.length > 0 ? (
+                config.moduleFilter.map(m => (
+                  <Badge key={m} variant="outline" className="rounded-none border-white/10 bg-white/5 text-[8px] font-mono uppercase">
+                    {m}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="outline" className="rounded-none border-white/10 bg-white/5 text-[8px] font-mono uppercase">
+                  All Modules
                 </Badge>
-              ))
-            ) : (
-              <Badge variant="outline" className="rounded-none border-white/10 bg-white/5 text-[8px] font-mono uppercase">
-                All Modules
-              </Badge>
-            )}
-          </div>
-        </Card>
-      ))}
+              )}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <ConfirmDialog
+        open={isConfirmOpen}
+        onCancel={() => { setIsConfirmOpen(false); setPendingDeleteId(null); }}
+        onConfirm={handleConfirmDelete}
+        title="ELIMINAR CONFIGURACIÓN"
+        message="¿Estás seguro de que deseas eliminar esta configuración de examen? Esta acción no se puede deshacer."
+        confirmLabel="ELIMINAR"
+        cancelLabel="CANCELAR"
+      />
     </div>
   );
 }

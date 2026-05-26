@@ -196,6 +196,8 @@ export class QuizService {
     attempt.percentage = maxPossible > 0 ? (attempt.score / maxPossible) * 100 : 0;
 
     await attempt.save();
+    // Cast necesario: tras populate(), examConfigId es IExamConfig (no ObjectId).
+    // Bajo riesgo — el documento tiene todos los campos requeridos por la interfaz.
     return attempt as unknown as IExamAttempt;
   }
 }

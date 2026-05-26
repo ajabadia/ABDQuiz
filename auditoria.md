@@ -3,7 +3,7 @@
 **Fecha:** 25 de Mayo de 2026
 **Versión:** SYS_CERTIFIED (ERA 11)
 **Rol:** Simulador de exámenes multi-tenant
-**Auditoría v02:** Codebuff AI — Verificación post-correcciones
+**Auditoría v04:** Codebuff AI — Dependencias no usadas eliminadas
 
 ---
 
@@ -15,13 +15,15 @@
 | Modelos Mongoose | 6 | = |
 | Servicios | 5 | = |
 | Server Actions | 6 | = |
-| Tests (Vitest) | 30 | 🆕 (0 → 30) |
+| Tests (Vitest) | 30 | = |
 | `console.log` con datos sensibles | 0 | ✅ Eliminados |
 | `FAKE_USER_ID` hardcodeado | 0 | ✅ Eliminado |
 | `DEFAULT_TENANT` fallback | 0 | ✅ Eliminado |
 | `JSON.parse(JSON.stringify())` | 0 | ✅ Reemplazado por `.lean()` |
 | `auth-bridge.ts` (dead code) | 0 | ✅ Eliminado |
 | `pnpm-workspace.yaml` | 0 | ✅ Eliminado |
+| `jose` (dependencia no usada) | 0 | ✅ Eliminada v03 |
+| Cast `as any` en producción | 0 | ✅ Solo en tests (aceptado) |
 
 ---
 
@@ -81,14 +83,20 @@ Archivo de configuración de Shadcn UI presente en la raíz.
 
 ## 🟡 Observaciones Nuevas
 
-### 1. 🟡 `quizService.ts:181` — Cast residual `as unknown as IExamAttempt`
-Verificado: `return attempt as unknown as IExamAttempt;`. Bajo riesgo porque `attempt` ya está populado con `IExamConfig`. Se documentó en v01 como hallazgo menor.
+### 1. 🟡 `quizService.ts` — Cast residual `as unknown as IExamAttempt`
+**Documentado con comentario explícito en v03.** Bajo riesgo — el documento populado ya contiene todos los campos requeridos por la interfaz. El cast es necesario porque tras `.populate()`, `examConfigId` es de tipo `IExamConfig` en lugar de `ObjectId`.
 
-### 2. 🟡 `examConfig.ts:164` — `changedFields: data as any`
-Verificado: uso de `any` en logging de auditoría. Bajo riesgo, solo afecta al log.
+### 2. ✅ `examConfig.ts` — `changedFields: data as any`
+**Ya corregido antes de v03.** El código actual usa `data as Record<string, unknown>` en lugar de `as any`.
 
-### 3. 🟢 Dependencia `jose` en package.json
-`jose` ^6.2.3 está en dependencias pero no se usa directamente en ABDQuiz (se usa a través del SDK). Dependencia transitiva, no es crítica.
+### 3. ✅ Dependencia `jose` en package.json
+**ELIMINADA en v03.** No había imports directos de `jose` en ABDQuiz. La funcionalidad JWT se maneja a través de `@abd/satellite-sdk`.
+
+### 4. ✅ `shadcn` eliminado (v04)
+**ELIMINADO en v04.** 0 imports en producción — CLI tool no usado.
+
+### 5. ✅ `@radix-ui/react-dialog` y `@radix-ui/react-separator` eliminados (v04)
+**ELIMINADOS en v04.** Redundantes — Dialog y Separator se importan desde `radix-ui` (meta-package). `@radix-ui/react-progress` se conserva (import directo en `progress.tsx`).
 
 ---
 
@@ -101,6 +109,9 @@ Verificado: uso de `any` en logging de auditoría. Bajo riesgo, solo afecta al l
 | `zod` | ^4.4.3 | = |
 | `papaparse` | ^5.5.3 | = |
 | `jose` | ^6.2.3 | = (transitivo) |
+| `shadcn` | — | 🗑️ Eliminada |
+| `@radix-ui/react-dialog` | — | 🗑️ Eliminada (redundante) |
+| `@radix-ui/react-separator` | — | 🗑️ Eliminada (redundante) |
 | `vitest` | ^4.1.7 | 🆕 |
 
 ---
@@ -110,3 +121,7 @@ Verificado: uso de `any` en logging de auditoría. Bajo riesgo, solo afecta al l
 **ABDQuiz** ha completado todas las correcciones identificadas en la v01. Los 30 tests unitarios certifican el correcto funcionamiento de los servicios críticos (scoring, copy-on-write, importación, alegaciones).
 
 **Calificación general:** ✅ SYS_CERTIFIED — Listo para producción industrial.
+
+**Correcciones de v04:**
+- 🗑️ `shadcn` eliminado (0 imports)
+- 🗑️ `@radix-ui/react-dialog`, `@radix-ui/react-separator` eliminados (redundantes vs `radix-ui`)

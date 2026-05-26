@@ -9,6 +9,7 @@ export interface QuizQuestionSnapshot {
   explanation: string;
   correctOptionIndex: number;
   difficulty?: 'easy' | 'medium' | 'hard';
+  isCancelled?: boolean;
 }
 
 export interface QuizAttemptQuestion {

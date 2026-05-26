@@ -49,9 +49,17 @@ vi.mock('@/models/ExamAttempt', () => {
 });
 
 // Import mock references
-import { mockFindById } from '@/models/ExamConfig';
-import { mockFind } from '@/models/Question';
-import { mockCountDocuments, mockCreate, mockFindOne } from '@/models/ExamAttempt';
+import * as ExamConfigMod from '@/models/ExamConfig';
+import * as QuestionMod from '@/models/Question';
+import * as ExamAttemptMod from '@/models/ExamAttempt';
+
+const { mockFindById } = ExamConfigMod as unknown as { mockFindById: ReturnType<typeof vi.fn> };
+const { mockFind } = QuestionMod as unknown as { mockFind: ReturnType<typeof vi.fn> };
+const { mockCountDocuments, mockCreate, mockFindOne } = ExamAttemptMod as unknown as {
+  mockCountDocuments: ReturnType<typeof vi.fn>;
+  mockCreate: ReturnType<typeof vi.fn>;
+  mockFindOne: ReturnType<typeof vi.fn>;
+};
 
 describe('QuizService', () => {
   beforeEach(() => {
@@ -216,8 +224,8 @@ describe('QuizService', () => {
         _id: 'attempt-123',
         status: 'in_progress',
         questions: [
-          { questionId: 'q1', status: 'no_respondida', selectedOptionIndex: null },
-          { questionId: 'q2', status: 'no_respondida', selectedOptionIndex: null },
+          { questionId: 'q1', status: 'no_respondida', selectedOptionIndex: null, timeSpentSeconds: 0, isCorrect: false },
+          { questionId: 'q2', status: 'no_respondida', selectedOptionIndex: null, timeSpentSeconds: 0, isCorrect: false },
         ],
         save: mockSave,
       };

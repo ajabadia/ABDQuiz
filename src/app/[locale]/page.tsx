@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
-import { BrainCircuit, Timer, FileCode2, History, ArrowRight, Cpu, Sliders, Database } from 'lucide-react';
+import { BrainCircuit, Timer, FileCode2, History, ArrowRight } from 'lucide-react';
 import { HeroHeader } from '@abd/styles';
 import Link from 'next/link';
-import { Footer } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -28,26 +28,26 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         {/* Central Tactical Action Area (CTA) */}
         <div className="flex flex-col items-center justify-center gap-4">
           <Link
-            href={`/${locale}/exams`}
+            href={`/${locale}/examinar`}
             className="inline-flex items-center justify-center px-10 py-5 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-widest hover:bg-primary/80 transition-all duration-300 font-black cursor-pointer shadow-lg active:scale-95 border border-primary/30 rounded-lg"
           >
-            {t('begin')}
+            {h('accessSimulator')}
             <ArrowRight className="w-4 h-4 ml-3 animate-pulse" />
           </Link>
           <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
             {locale === 'es' 
-              ? 'Conexión segura y federada vía ABDAuth' 
-              : 'Secure, federated connection powered by ABDAuth'}
+              ? 'Inicie sesión con sus credenciales federadas de ABDAuth' 
+              : 'Sign in utilizing your federated credentials from ABDAuth'}
           </span>
         </div>
 
         {/* Tactical Key Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6" role="region" aria-label="System Capabilities">
           
-          {/* Feature 1: Execution Engine */}
+          {/* Feature 1 */}
           <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4">
             <div className="p-2.5 bg-secondary/10 border border-border text-primary w-fit rounded-lg">
-              <Cpu className="w-5 h-5" />
+              <Timer className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
               {h('feature1Title')}
@@ -57,10 +57,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </p>
           </div>
 
-          {/* Feature 2: Scoring Systems */}
+          {/* Feature 2 */}
           <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4">
             <div className="p-2.5 bg-secondary/10 border border-border text-primary w-fit rounded-lg">
-              <Sliders className="w-5 h-5" />
+              <BrainCircuit className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
               {h('feature2Title')}
@@ -70,10 +70,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </p>
           </div>
 
-          {/* Feature 3: Security & Deduplication */}
+          {/* Feature 3 */}
           <div className="p-6 bg-card border border-border rounded-xl flex flex-col gap-4">
             <div className="p-2.5 bg-secondary/10 border border-border text-primary w-fit rounded-lg">
-              <Database className="w-5 h-5" />
+              <FileCode2 className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-black uppercase tracking-wider text-foreground">
               {h('feature3Title')}
@@ -85,18 +85,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         </div>
 
-        {/* Telemetry Footer */}
-        <Footer 
+        <GlobalFooter 
+          separatorWidth="short"
           telemetryItems={[
             { label: h('coreLabel'), value: h('version') },
             { label: h('logicLabel'), value: h('engine') },
             { label: h('styleLabel'), value: h('style') }
-          ]} 
-          separatorWidth="short"
-          opacity={20}
+          ]}
         />
 
       </div>
     </main>
   );
 }
+

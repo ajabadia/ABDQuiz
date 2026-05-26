@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
-import { Footer } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 import { Separator } from '@/components/ui/separator';
 import { ensureIndustrialAccess } from '@/lib/session';
 import { resolveTenantContext } from '@/lib/tenant-context';
@@ -174,7 +174,7 @@ export default async function AdminPortalPage({
         </div>
 
         {/* Footer */}
-        <Footer label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
+        <GlobalFooter label={`${t('brandPart1')}${t('brandPart2')} ${h('version')}`} opacity={20} />
 
       </div>
     </main>

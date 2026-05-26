@@ -5,7 +5,7 @@ import { getExamConfigsAction } from '@/actions/examConfig';
 import { type SerializedExamConfig } from '@/types/quiz';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
-import { Footer } from '@abd/styles';
+import { GlobalFooter } from '@abd/ecosystem-widgets';
 
 export default async function ExamsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -90,7 +90,7 @@ export default async function ExamsPage({ params }: { params: Promise<{ locale: 
         </div>
 
         {/* Footer */}
-        <Footer 
+        <GlobalFooter 
           separatorWidth="short"
           telemetryItems={[
             { label: h('coreLabel'), value: h('version') },

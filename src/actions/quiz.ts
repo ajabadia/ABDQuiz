@@ -5,9 +5,12 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import connectDB from '@/lib/database/mongodb';
 import ExamAttempt from '@/models/ExamAttempt';
-import { ensureIndustrialAccess, getIndustrialSession } from '@/lib/session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
+import { getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
+import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
+import { AnalyticsSyncService } from '@/services/quiz/analyticsSyncService';
 
 export interface SerializedAttempt {
   _id: string;
@@ -87,6 +90,7 @@ export async function submitAnswerAction(formData: {
   selectedOptionIndex: number | null;
   timeSpent: number;
   status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
+  attemptToken?: string;
 }) {
   return withTenantContext(async () => {
     try {
@@ -99,7 +103,8 @@ export async function submitAnswerAction(formData: {
         formData.selectedOptionIndex,
         formData.timeSpent,
         formData.status,
-        session.user.id
+        session.user.id,
+        formData.attemptToken
       );
       
       revalidatePath(`/quiz/${formData.attemptId}`);
@@ -114,15 +119,21 @@ export async function submitAnswerAction(formData: {
 /**
  * Finaliza el examen
  */
-export async function finishQuizAction(attemptId: string) {
+export async function finishQuizAction(attemptId: string, attemptToken?: string, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       const session = await getIndustrialSession();
       if (!session?.user?.id || !session?.user?.tenantId) throw new Error('Unauthorized');
 
-      await QuizService.finishExam(attemptId, session.user.id);
+      await QuizService.finishExam(attemptId, session.user.id, attemptToken);
       
-      const activeTenantId = session.user.tenantId;
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
+
+      // Decoupled sync for course and user analytics (fire-and-forget)
+      AnalyticsSyncService.sync(attemptId, activeTenantId, session.user.id);
+      
       await LogsClient.log({
         tenantId: activeTenantId,
         action: 'EXAM_ATTEMPT_COMPLETED',
@@ -144,16 +155,18 @@ export async function finishQuizAction(attemptId: string) {
       console.error('Failed to finish quiz:', message);
       throw new Error('Finalization failed: ' + message);
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Anula un intento de examen de forma lógica para permitir un reintento
  */
-export async function invalidateAttemptAction(attemptId: string) {
+export async function invalidateAttemptAction(attemptId: string, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
-      const admin = await ensureIndustrialAccess('ADMIN');
+      const admin = await ensureAdminOrProfessor();
       await connectDB();
       
       const attempt = await ExamAttempt.findById(attemptId);
@@ -161,8 +174,9 @@ export async function invalidateAttemptAction(attemptId: string) {
         return { success: false, error: 'Intento de examen no encontrado' };
       }
       
-      // Anti-IDOR Guard: standard admin can only invalidate their own tenant's attempts
-      if (attempt.tenantId !== admin.tenantId && admin.role !== 'SUPER_ADMIN') {
+      // Anti-IDOR Guard
+      const activeTenantId = explicitCtx?.tenantId || admin.tenantId;
+      if (attempt.tenantId !== activeTenantId && admin.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       
@@ -197,22 +211,21 @@ export async function invalidateAttemptAction(attemptId: string) {
       console.error('❌ [INVALIDATE_ATTEMPT_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Recupera todos los intentos de examen para el tenant actual
  */
 export async function getAttemptsAction(tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
-      const admin = await ensureIndustrialAccess('ADMIN');
+      const admin = await ensureAdminOrProfessor();
       await connectDB();
       
-      let activeTenantId = admin.tenantId;
-      if (admin.role === 'SUPER_ADMIN' && tenantIdParam) {
-        activeTenantId = tenantIdParam;
-      }
+      const activeTenantId = explicitCtx?.tenantId || admin.tenantId;
       
       const attempts = await ExamAttempt.find({
         tenantId: activeTenantId
@@ -254,5 +267,5 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       console.error('❌ Error fetching attempts:', msg);
       throw new Error(msg); // No silenciar errores
     }
-  });
+  }, explicitCtx);
 }

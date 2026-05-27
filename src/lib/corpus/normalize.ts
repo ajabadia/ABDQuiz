@@ -3,21 +3,17 @@
  */
 
 /**
- * Normaliza un string para comparación: trim, lowercase, unificar espacios
+ * Aplana un texto eliminando espacios, saltos de línea, puntuación y acentos,
+ * convirtiendo todo a mayúsculas para comparación semántica.
  */
-export function normalizeString(str: string): string {
+export function flattenText(str: string): string {
   if (!str) return "";
   return str
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ') // Unifica múltiples espacios en uno solo
-    .replace(/[\u2010-\u2015]/g, '-') // Normaliza guiones
-    .normalize('NFC'); // Normaliza caracteres unicode
+    .toUpperCase()
+    .normalize('NFD') // Descompone caracteres con acentos
+    .replace(/[\u0300-\u036f]/g, '') // Elimina los diacríticos (acentos)
+    .replace(/Ñ/g, 'N') // Reemplaza Ñ por N
+    .replace(/[\.,;:_\-\?\!\(\)\[\]\{\}'"¿¡]/g, '') // Elimina puntuación
+    .replace(/\s+/g, ''); // Elimina todo espacio en blanco, tabulación y salto de línea
 }
 
-/**
- * Normaliza un array de opciones
- */
-export function normalizeOptions(options: string[]): string[] {
-  return options.map(opt => normalizeString(opt));
-}

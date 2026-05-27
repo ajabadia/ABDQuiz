@@ -35,30 +35,48 @@ vi.mock('@/models/ExamAttempt', () => {
   const mockCountDocuments = vi.fn();
   const mockCreate = vi.fn();
   const mockFindOne = vi.fn();
+  const mockFind = vi.fn();
   class MockExamAttempt {
     static countDocuments = mockCountDocuments;
     static create = mockCreate;
     static findOne = mockFindOne;
+    static find = mockFind;
   }
   return {
     default: MockExamAttempt,
     mockCountDocuments,
     mockCreate,
     mockFindOne,
+    mockFind,
   };
 });
 
 // Import mock references
 import * as ExamConfigMod from '@/models/ExamConfig';
 import * as QuestionMod from '@/models/Question';
+vi.mock('@/models/ExamAssignment', () => {
+  const mockFindOne = vi.fn();
+  class MockExamAssignment {
+    static findOne = mockFindOne;
+  }
+  return {
+    default: MockExamAssignment,
+    mockFindOne,
+  };
+});
+
 import * as ExamAttemptMod from '@/models/ExamAttempt';
 
 const { mockFindById } = ExamConfigMod as unknown as { mockFindById: ReturnType<typeof vi.fn> };
 const { mockFind } = QuestionMod as unknown as { mockFind: ReturnType<typeof vi.fn> };
-const { mockCountDocuments, mockCreate, mockFindOne } = ExamAttemptMod as unknown as {
+import * as ExamAssignmentMod from '@/models/ExamAssignment';
+const { mockFindOne: mockAssignFindOne } = ExamAssignmentMod as unknown as { mockFindOne: ReturnType<typeof vi.fn> };
+
+const { mockCountDocuments, mockCreate, mockFindOne, mockFind: mockAttemptFind } = ExamAttemptMod as unknown as {
   mockCountDocuments: ReturnType<typeof vi.fn>;
   mockCreate: ReturnType<typeof vi.fn>;
   mockFindOne: ReturnType<typeof vi.fn>;
+  mockFind: ReturnType<typeof vi.fn>;
 };
 
 describe('QuizService', () => {
@@ -67,6 +85,19 @@ describe('QuizService', () => {
   });
 
   describe('createExamAttempt', () => {
+    beforeEach(() => {
+      // Default: active assignment exists
+      mockAssignFindOne.mockResolvedValue({
+        tenantId: 't1',
+        examConfigId: 'config-1',
+        status: 'published',
+        active: true,
+        startDate: new Date('2020-01-01'),
+        endDate: new Date('2030-01-01'),
+        maxAttempts: 0,
+      });
+    });
+
     it('should throw an error if configuration does not exist or is inactive', async () => {
       mockFindById.mockResolvedValue(null);
 
@@ -76,6 +107,15 @@ describe('QuizService', () => {
     });
 
     it('should throw an error if user exceeds maxAttempts limit', async () => {
+      mockAssignFindOne.mockResolvedValue({
+        tenantId: 't1',
+        examConfigId: 'config-1',
+        status: 'published',
+        active: true,
+        startDate: new Date('2020-01-01'),
+        endDate: new Date('2030-01-01'),
+        maxAttempts: 0,
+      });
       mockFindById.mockResolvedValue({
         _id: 'config-1',
         active: true,
@@ -101,6 +141,7 @@ describe('QuizService', () => {
         moduleFilter: ['Módulo 1'],
         questionCount: 2,
         showFeedbackDuringExam: true,
+        excludePreviouslyCorrect: false,
       });
 
       const mockQuestions = [
@@ -149,6 +190,7 @@ describe('QuizService', () => {
           medium: 1,
           hard: 1,
         },
+        excludePreviouslyCorrect: false,
       });
 
       const mockQuestions = [
@@ -188,6 +230,7 @@ describe('QuizService', () => {
         moduleFilter: [],
         questionCount: 1,
         shuffleOptions: true,
+        excludePreviouslyCorrect: false,
       });
 
       const mockQuestions = [
@@ -215,7 +258,208 @@ describe('QuizService', () => {
       expect(correctText).toBe('C');
       expect(mockSave).toHaveBeenCalled();
     });
+    it('should exclude previously correct questions when excludePreviouslyCorrect is enabled', async () => {
+      mockFindById.mockResolvedValue({
+        _id: 'config-1',
+        active: true,
+        maxAttempts: 0,
+        moduleFilter: [],
+        questionCount: 3,
+        excludePreviouslyCorrect: true,
+      });
+
+      // 5 questions in DB: q1/correct, q2/incorrect, q3/no_respondida, q4/correct, q5/incorrect
+      const mockQuestions = [
+        { _id: 'q1', questionText: 'Q1 Already Correct', options: ['A', 'B'], difficulty: 'easy', correctOptionIndex: 0 },
+        { _id: 'q2', questionText: 'Q2 Incorrect', options: ['C', 'D'], difficulty: 'medium', correctOptionIndex: 0 },
+        { _id: 'q3', questionText: 'Q3 No respondida', options: ['E', 'F'], difficulty: 'hard', correctOptionIndex: 0 },
+        { _id: 'q4', questionText: 'Q4 Already Correct', options: ['G', 'H'], difficulty: 'easy', correctOptionIndex: 0 },
+        { _id: 'q5', questionText: 'Q5 Incorrect', options: ['I', 'J'], difficulty: 'medium', correctOptionIndex: 0 },
+      ];
+
+      mockFind.mockReturnValue({
+        lean: vi.fn().mockResolvedValue(mockQuestions),
+      } as any);
+
+      // Mock ExamAttempt.find for previous attempts (implementation does NOT use .lean() here)
+      // Must use mockResolvedValue (thenable) not mockReturnValue({ lean: ... })
+      mockAttemptFind.mockResolvedValue([
+        {
+          _id: 'prev-attempt-1',
+          userId: 'u1',
+          examConfigId: 'config-1',
+          status: 'completed',
+          questions: [
+            { questionId: 'q1', status: 'correcta' },
+            { questionId: 'q2', status: 'incorrecta' },
+            { questionId: 'q3', status: 'no_respondida' },
+          ],
+        },
+        {
+          _id: 'prev-attempt-2',
+          userId: 'u1',
+          examConfigId: 'config-1',
+          status: 'completed',
+          questions: [
+            { questionId: 'q4', status: 'correcta' },
+            { questionId: 'q5', status: 'incorrecta' },
+          ],
+        },
+      ]);
+
+      mockCreate.mockImplementation(async (data: any) => ({
+        _id: 'attempt-exclude',
+        questions: data.questions,
+        save: vi.fn().mockResolvedValue(true),
+      }));
+
+      const attempt = await QuizService.createExamAttempt('u1', 't1', 'config-1');
+
+      // Should NOT include q1 and q4 (correctly answered)
+      const questionIds = attempt.questions.map((q: any) => q.questionId);
+      expect(questionIds).not.toContain('q1');
+      expect(questionIds).not.toContain('q4');
+      // Should include q2, q3, q5 (not previously correct)
+      expect(questionIds).toContain('q2');
+      expect(questionIds).toContain('q3');
+      expect(questionIds).toContain('q5');
+      // Should have 3 questions (config questionCount)
+      expect(attempt.questions).toHaveLength(3);
+    });
+
+    it('should throw when excludePreviouslyCorrect leaves no remaining questions', async () => {
+      mockFindById.mockResolvedValue({
+        _id: 'config-1',
+        active: true,
+        maxAttempts: 0,
+        moduleFilter: [],
+        questionCount: 3,
+        excludePreviouslyCorrect: true,
+      });
+
+      const mockQuestions = [
+        { _id: 'q1', questionText: 'Q1', options: ['A', 'B'], difficulty: 'easy', correctOptionIndex: 0 },
+        { _id: 'q2', questionText: 'Q2', options: ['C', 'D'], difficulty: 'medium', correctOptionIndex: 0 },
+      ];
+
+      mockFind.mockReturnValue({
+        lean: vi.fn().mockResolvedValue(mockQuestions),
+      } as any);
+
+      // Both q1 and q2 were correctly answered before — all available questions are excluded
+      mockAttemptFind.mockResolvedValue([
+        {
+          _id: 'prev-attempt',
+          userId: 'u1',
+          examConfigId: 'config-1',
+          status: 'completed',
+          questions: [
+            { questionId: 'q1', status: 'correcta' },
+            { questionId: 'q2', status: 'correcta' },
+          ],
+        },
+      ]);
+
+      await expect(
+        QuizService.createExamAttempt('u1', 't1', 'config-1')
+      ).rejects.toThrow('Ya has acertado todas las preguntas disponibles');
+    });
   });
+
+    it('should perform adaptive weighted selection when adaptiveQuestionSelection is enabled', async () => {
+      mockFindById.mockResolvedValue({
+        _id: 'config-adaptive',
+        active: true,
+        maxAttempts: 0,
+        moduleFilter: [],
+        questionCount: 3,
+        adaptiveQuestionSelection: true,
+      });
+
+      // Questions from 2 modules, each with some correct/incorrect in history
+      const mockQuestions = [
+        { _id: 'q_weak_mod', questionText: 'Weak Module Q1', options: ['A', 'B'], difficulty: 'easy', module: 'Módulo Débil', correctOptionIndex: 0 },
+        { _id: 'q_weak_mod2', questionText: 'Weak Module Q2', options: ['C', 'D'], difficulty: 'hard', module: 'Módulo Débil', correctOptionIndex: 0 },
+        { _id: 'q_weak_mod3', questionText: 'Weak Module Q3', options: ['E', 'F'], difficulty: 'medium', module: 'Módulo Débil', correctOptionIndex: 0 },
+        { _id: 'q_strong_mod', questionText: 'Strong Module Q1', options: ['G', 'H'], difficulty: 'easy', module: 'Módulo Fuerte', correctOptionIndex: 0 },
+        { _id: 'q_strong_mod2', questionText: 'Strong Module Q2', options: ['I', 'J'], difficulty: 'hard', module: 'Módulo Fuerte', correctOptionIndex: 0 },
+      ];
+
+      mockFind.mockReturnValue({
+        lean: vi.fn().mockResolvedValue(mockQuestions),
+      } as any);
+
+      // Historical data: user is weak on 'Módulo Débil' (0% correct) and strong on 'Módulo Fuerte' (100% correct)
+      mockAttemptFind.mockResolvedValue([
+        {
+          _id: 'prev-attempt',
+          userId: 'u1',
+          examConfigId: 'config-adaptive',
+          status: 'completed',
+          questions: [
+            { questionId: 'q_weak_mod', status: 'incorrecta', questionSnapshot: { module: 'Módulo Débil', difficulty: 'easy' } },
+            { questionId: 'q_strong_mod', status: 'correcta', questionSnapshot: { module: 'Módulo Fuerte', difficulty: 'easy' } },
+            { questionId: 'q_strong_mod2', status: 'correcta', questionSnapshot: { module: 'Módulo Fuerte', difficulty: 'hard' } },
+          ],
+        },
+      ]);
+
+      mockCreate.mockImplementation(async (data: any) => ({
+        _id: 'attempt-adaptive',
+        questions: data.questions,
+        save: vi.fn().mockResolvedValue(true),
+      }));
+
+      const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.01);
+      const attempt = await QuizService.createExamAttempt('u1', 't1', 'config-adaptive');
+      randomSpy.mockRestore();
+
+      expect(attempt.questions).toHaveLength(3);
+      // All 3 weak module questions should be selected (higher weight)
+      const questionIds = attempt.questions.map((q: any) => q.questionId);
+      const weakCount = questionIds.filter((id: string) =>
+        id === 'q_weak_mod' || id === 'q_weak_mod2' || id === 'q_weak_mod3'
+      ).length;
+      // With 3 slots and weak module having much higher weight, expect at least 2 weak module questions
+      expect(weakCount).toBeGreaterThanOrEqual(2);
+    });
+
+    it('should fall back to random selection when adaptive is enabled but no history exists', async () => {
+      mockFindById.mockResolvedValue({
+        _id: 'config-adaptive-no-history',
+        active: true,
+        maxAttempts: 0,
+        moduleFilter: [],
+        questionCount: 2,
+        adaptiveQuestionSelection: true,
+      });
+
+      const mockQuestions = [
+        { _id: 'q1', questionText: 'Q1', options: ['A', 'B'], difficulty: 'easy', module: 'Mod1', correctOptionIndex: 0 },
+        { _id: 'q2', questionText: 'Q2', options: ['C', 'D'], difficulty: 'medium', module: 'Mod1', correctOptionIndex: 0 },
+        { _id: 'q3', questionText: 'Q3', options: ['E', 'F'], difficulty: 'hard', module: 'Mod2', correctOptionIndex: 0 },
+      ];
+
+      mockFind.mockReturnValue({
+        lean: vi.fn().mockResolvedValue(mockQuestions),
+      } as any);
+
+      // No previous attempts
+      mockAttemptFind.mockResolvedValue([]);
+
+      mockCreate.mockImplementation(async (data: any) => ({
+        _id: 'attempt-adaptive-no-history',
+        questions: data.questions,
+        save: vi.fn().mockResolvedValue(true),
+      }));
+
+      const attempt = await QuizService.createExamAttempt('u1', 't1', 'config-adaptive-no-history');
+
+      expect(attempt.questions).toHaveLength(2);
+      // Should have selected 2 of 3 questions
+      const questionIds = attempt.questions.map((q: any) => q.questionId);
+      expect(questionIds.length).toBe(2);
+    });
 
   describe('submitAnswer', () => {
     it('should update and save the selected question answer in the attempt', async () => {
@@ -243,16 +487,57 @@ describe('QuizService', () => {
       expect(updated).toEqual(mockAttempt);
     });
 
-    it('should throw an error if attempt is not found, unauthorized, or not in progress', async () => {
-      mockFindOne.mockResolvedValue(null);
+    it('should throw error if attemptToken is missing or incorrect when attempt has token', async () => {
+      const mockAttempt = {
+        _id: 'attempt-123',
+        status: 'in_progress',
+        attemptToken: 'secret-token',
+        attemptTokenExpiresAt: new Date(Date.now() + 60000),
+        questions: [{ questionId: 'q1', status: 'no_respondida', selectedOptionIndex: null, timeSpentSeconds: 0, isCorrect: false }],
+        save: vi.fn(),
+      };
+      mockFindOne.mockResolvedValue(mockAttempt);
 
       await expect(
-        QuizService.submitAnswer('attempt-123', 0, 1, 10, 'incorrecta', 'user-1')
-      ).rejects.toThrow('Exam attempt not found, unauthorized, or already finished');
+        QuizService.submitAnswer('attempt-123', 0, 1, 15, 'correcta', 'user-1', 'wrong-token')
+      ).rejects.toThrow('Token de intento no válido o desincronizado.');
+    });
+
+    it('should throw error if attemptToken has expired', async () => {
+      const mockAttempt = {
+        _id: 'attempt-123',
+        status: 'in_progress',
+        attemptToken: 'secret-token',
+        attemptTokenExpiresAt: new Date(Date.now() - 10000), // Expired
+        questions: [{ questionId: 'q1', status: 'no_respondida', selectedOptionIndex: null, timeSpentSeconds: 0, isCorrect: false }],
+        save: vi.fn(),
+      };
+      mockFindOne.mockResolvedValue(mockAttempt);
+
+      await expect(
+        QuizService.submitAnswer('attempt-123', 0, 1, 15, 'correcta', 'user-1', 'secret-token')
+      ).rejects.toThrow('El token de intento ha expirado.');
     });
   });
 
   describe('finishExam', () => {
+    it('should throw error if attemptToken is invalid in finishExam', async () => {
+      const mockAttempt = {
+        _id: 'attempt-finish-token',
+        status: 'in_progress',
+        attemptToken: 'secret-token',
+        attemptTokenExpiresAt: new Date(Date.now() + 60000),
+      };
+      const mockPopulate = vi.fn().mockResolvedValue(mockAttempt);
+      mockFindOne.mockReturnValue({
+        populate: mockPopulate,
+      } as any);
+
+      await expect(
+        QuizService.finishExam('attempt-finish-token', 'user-1', 'wrong-token')
+      ).rejects.toThrow('Token de intento no válido o desincronizado.');
+    });
+
     it('should calculate the score percentage correctly based on scoringMode', async () => {
       const mockSave = vi.fn().mockResolvedValue(true);
       const mockAttempt = {

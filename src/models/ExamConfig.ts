@@ -37,8 +37,13 @@ export interface IExamConfig extends Document {
   allowReviewPrevious: boolean;
   autoAdvanceOnSelect: boolean;
   reviewOmittedQuestions: boolean;
+  excludePreviouslyCorrect: boolean;
+  adaptiveQuestionSelection: boolean;
   maxAttempts: number;
   
+  // --- Vinculación al Ecosistema de Aprendizaje ---
+  courseId?: mongoose.Types.ObjectId; // Referencia opcional a Course (Fase 1)
+
   // --- Metadata ---
   isDefault: boolean;
   active: boolean;
@@ -89,8 +94,13 @@ const ExamConfigSchema: Schema = new Schema(
     allowReviewPrevious: { type: Boolean, default: false },
     autoAdvanceOnSelect: { type: Boolean, default: false },
     reviewOmittedQuestions: { type: Boolean, default: false },
+    excludePreviouslyCorrect: { type: Boolean, default: false },
+    adaptiveQuestionSelection: { type: Boolean, default: false },
     maxAttempts: { type: Number, default: 0 },
     
+    // --- Vinculación al Ecosistema de Aprendizaje ---
+    courseId: { type: Schema.Types.ObjectId, ref: 'Course', index: true },
+
     // --- Metadata ---
     isDefault: { type: Boolean, default: false },
     active: { type: Boolean, default: true, index: true },

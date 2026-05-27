@@ -2,11 +2,12 @@
 
 import { QuestionService, type QuestionFilters } from '@/services/corpus/QuestionService';
 import { revalidatePath } from 'next/cache';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { type IQuestion } from '@/models/Question';
 import connectDB from '@/lib/database/mongodb';
 import Question from '@/models/Question';
 import { withTenantContext } from '@/lib/database/tenant-model';
+import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 interface ActionResponse<T> {
   success: boolean;
@@ -21,37 +22,40 @@ export async function getQuestionsAction(
   filters: QuestionFilters,
   tenantIdParam?: string
 ): Promise<ActionResponse<{ questions: IQuestion[]; total: number; page: number; pages: number }>> {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
-      const user = await ensureIndustrialAccess('ADMIN');
-      let activeTenantId = user.tenantId;
-      if (user.role === 'SUPER_ADMIN' && tenantIdParam) {
-        activeTenantId = tenantIdParam;
-      }
+      const user = await ensureAdminOrProfessor();
+      const activeTenantId = explicitCtx?.tenantId || user.tenantId;
       const result = await QuestionService.getQuestions(activeTenantId, filters);
       return { success: true, data: result };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       return { success: false, error: message };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Verifica si un reactivo específico ha sido respondido en exámenes pasados
  */
 export async function checkQuestionTraceabilityAction(
-  questionId: string
+  questionId: string,
+  tenantIdParam?: string
 ): Promise<ActionResponse<boolean>> {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
-      const user = await ensureIndustrialAccess('ADMIN');
+      const user = await ensureAdminOrProfessor();
       await connectDB();
       const oldQuestion = await Question.findById(questionId);
       if (!oldQuestion) {
         return { success: false, error: 'Reactivo no encontrado' };
       }
-      if (oldQuestion.tenantId !== user.tenantId && user.role !== 'SUPER_ADMIN') {
+      const activeTenantId = explicitCtx?.tenantId || user.tenantId;
+      if (oldQuestion.tenantId !== activeTenantId && user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       const result = await QuestionService.checkTraceability(questionId);
@@ -60,7 +64,7 @@ export async function checkQuestionTraceabilityAction(
       const message = error instanceof Error ? error.message : 'Unknown error';
       return { success: false, error: message };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
@@ -77,17 +81,21 @@ export async function saveQuestionAction(
     module: string;
     source: string;
     tags: string[];
-  }
+  },
+  tenantIdParam?: string
 ): Promise<ActionResponse<IQuestion>> {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
-      const user = await ensureIndustrialAccess('ADMIN');
+      const user = await ensureAdminOrProfessor();
       await connectDB();
       const oldQuestion = await Question.findById(questionId);
       if (!oldQuestion) {
         return { success: false, error: 'Reactivo no encontrado' };
       }
-      if (oldQuestion.tenantId !== user.tenantId && user.role !== 'SUPER_ADMIN') {
+      const activeTenantId = explicitCtx?.tenantId || user.tenantId;
+      if (oldQuestion.tenantId !== activeTenantId && user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       const result = await QuestionService.saveQuestion(questionId, updatedData);
@@ -102,5 +110,5 @@ export async function saveQuestionAction(
       const message = error instanceof Error ? error.message : 'Unknown error';
       return { success: false, error: message };
     }
-  });
+  }, explicitCtx);
 }

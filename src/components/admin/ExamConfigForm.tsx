@@ -40,6 +40,8 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
     allowReviewPrevious: initialData?.allowReviewPrevious ?? false,
     autoAdvanceOnSelect: initialData?.autoAdvanceOnSelect ?? false,
     reviewOmittedQuestions: initialData?.reviewOmittedQuestions ?? false,
+    excludePreviouslyCorrect: initialData?.excludePreviouslyCorrect ?? false,
+    adaptiveQuestionSelection: initialData?.adaptiveQuestionSelection ?? false,
     maxAttempts: initialData?.maxAttempts || 0,
     pointsPerCorrect: initialData?.pointsPerCorrect || 1,
     penaltyPerIncorrect: initialData?.penaltyPerIncorrect || 0,
@@ -133,13 +135,14 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
         </div>
       </div>
 
-      {/* Panel Inferior: Toggles de Comportamiento */}
-      <TogglesCard
+      {/* Panel Inferior: Toggles de Comportamiento */}        <TogglesCard
         showFeedbackDuringExam={formData.showFeedbackDuringExam}
         allowSkip={formData.allowSkip}
         allowReviewPrevious={formData.allowReviewPrevious}
         autoAdvanceOnSelect={formData.autoAdvanceOnSelect}
         reviewOmittedQuestions={formData.reviewOmittedQuestions}
+        excludePreviouslyCorrect={formData.excludePreviouslyCorrect}
+        adaptiveQuestionSelection={formData.adaptiveQuestionSelection}
         onChange={(fields) => setFormData(prev => ({ ...prev, ...fields }))}
         translations={{
           feedbackLabel: t('feedbackLabel'),
@@ -152,6 +155,10 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
           autoAdvanceDesc: t('autoAdvanceDesc'),
           reviewOmittedLabel: t('reviewOmittedLabel'),
           reviewOmittedDesc: t('reviewOmittedDesc'),
+          excludeCorrectLabel: t('excludeCorrectLabel'),
+          excludeCorrectDesc: t('excludeCorrectDesc'),
+          adaptiveLabel: t('adaptiveLabel'),
+          adaptiveDesc: t('adaptiveDesc'),
         }}
       />
 

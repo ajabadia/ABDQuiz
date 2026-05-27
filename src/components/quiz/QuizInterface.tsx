@@ -63,7 +63,8 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         questionIndex: currentIndex,
         selectedOptionIndex: selectedOption,
         timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-        status
+        status,
+        attemptToken: (initialAttempt as any).attemptToken
       });
 
       setAnswers(prev => {
@@ -101,7 +102,8 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         questionIndex: currentIndex,
         selectedOptionIndex: selectedOption,
         timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-        status
+        status,
+        attemptToken: (initialAttempt as any).attemptToken
       });
 
       const updatedAnswers = [...answers];
@@ -161,7 +163,8 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
           questionIndex: currentIndex,
           selectedOptionIndex: optionIndex,
           timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-          status
+          status,
+          attemptToken: (initialAttempt as any).attemptToken
         });
 
         const updatedAnswers = [...answers];
@@ -228,7 +231,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
 
   const handleGlobalTimeout = useCallback(() => {
     toast.error(t('globalTimeout'));
-    finishQuizAction(initialAttempt._id).then(() => {
+    finishQuizAction(initialAttempt._id, (initialAttempt as any).attemptToken).then(() => {
       router.push(`/quiz/${initialAttempt._id}/results`);
     });
   }, [initialAttempt._id, router, t]);
@@ -258,7 +261,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
     setIsSubmitting(true);
     setShowFinishConfirm(false);
     try {
-      const result = await finishQuizAction(initialAttempt._id);
+      const result = await finishQuizAction(initialAttempt._id, (initialAttempt as any).attemptToken);
       if (result.success) {
         router.push(`/quiz/${initialAttempt._id}/results`);
       }

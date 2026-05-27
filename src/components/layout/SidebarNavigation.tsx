@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { SmartNavbar, buildSidebarLinks } from '@abd/ecosystem-widgets';
-import { Home, BookOpen, BarChart2, Terminal, AlertTriangle } from 'lucide-react';
+import { Home, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange } from 'lucide-react';
 
 interface UserSession {
   authenticated: boolean;
@@ -31,6 +31,8 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
   const router = useRouter();
   const [tenantId, setTenantId] = React.useState<string | null>(null);
 
+  // Leer tenantId de la URL solo en el cliente (post-hidratación)
+  // para evitar hydration mismatch con window.location.search
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setTenantId(params.get('tenantId'));
@@ -45,6 +47,7 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
     { href: '/history', label: t('historyMenu'), icon: <BarChart2 className="w-4 h-4" />, requiresAuth: true },
     { href: '/admin', label: t('adminMenu'), icon: <Terminal className="w-4 h-4" />, requiresAdmin: true },
     { href: '/admin/allegations', label: t('claimsMenu'), icon: <AlertTriangle className="w-4 h-4" />, requiresAdmin: true },
+    { href: '/admin/assignments', label: t('assignmentsMenu'), icon: <CalendarRange className="w-4 h-4" />, requiresAdmin: true },
   ] as const;
 
   const links = buildSidebarLinks(allLinks, user?.role, isLoggedIn);

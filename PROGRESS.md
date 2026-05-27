@@ -33,19 +33,18 @@
 - ✅ **3.6 Advanced Exam Navigation & Flow**: Free navigation (backwards revision), auto-advance upon selection, and closed-loop review of omitted/unanswered questions before final delivery.
 - ✅ **3.7 Attempts Cap & Extraordinary Reset**: Configurable maximum attempts per exam and professor-level capability to invalidate/reset specific attempts for students.
 
+## 🚀 Phase 5: Ecosistema de Aprendizaje Jerárquico & Decoupled Analytics (COMPLETED)
+- ✅ **5.1 Jerarquías y Roles**: Modelos `Course`, `ExamAssignment` y `QuizUserRole` para estructurar el aprendizaje contextual.
+- ✅ **5.2 Guardas de Acceso y AttemptToken**: Control de accesos multi-tenant (`scope-guard.ts`) y AttemptToken efímero criptográfico para mitigar fuerza bruta local.
+- ✅ **5.3 Algoritmo de Slicing Seguro**: Algoritmo exacto de barajado de respuestas asegurando que la opción correcta nunca se descarte.
+- ✅ **5.4 Ingesta Canónica Resiliente**: Hashing semántico enfocado en identidad y robustecimiento de transacciones Mongo con fallback compensatorio standalone.
+- ✅ **5.5 Calificación Humana**: Preguntas `'open_text'` y panel `/admin/grading` para evaluación manual.
+- ✅ **5.6 Desacoplamiento de Analíticas**: `AnalyticsSyncService` asíncrono no bloqueante (Fire & Forget) que actualiza `UserCourseSummary` y `CourseAnalytics`.
+
 ## 📈 Current Status
 - **Audit Results:** **SYS_CERTIFIED (Era 11 - Zero Warnings / Zero Errors)**.
 - **Rules Enforced:** Max 150 lines, No Hardcoded Strings, No Local CSS, No Embedded Scripts.
-- **Data Status:** Ingestador modular, panel lateral táctico, ruteo de exámenes `/exams`, landing de presentación, SSO federado, selector de tema dual, Editor de Preguntas Inmutable (COW), Centro de Analítica Avanzada e Historial con Gráficas SVG, y Parametrización Avanzada con Reset Extraordinario de Intentos.
-
-## 🔮 Phase 4: Analytics, Multi-Tenancy & Claims (IN PROGRESS)
-- ✅ **4.1 Analytics V1:** Historial detallado y mapas de calor de rendimiento cognitivo con gráficas SVG interactivas (Zero-Bloat).
-- ✅ **4.2 Dynamic White-Label Engine (@abd/styles):** Integración del motor dinámico de marca blanca. Inyección SSR de estilos HSL, bordes redondeados y logotipos corporativos por Tenant con cero parpadeo (FOUC).
-- ✅ **4.3 Subdomain Isolation & Cross-Tenant Guards:** Detección dinámica de subdominios, aislamiento estricto de sesiones cruzadas (`cross-tenant`) y pre-vesting del flujo SSO federado.
-- ✅ **4.4 Claims, Invalidation, & Retroactive Exam Recalculation:** Formulario de alegación en AuditDetail, consola de arbitraje en `/admin/allegations` con 3 estrategias de recálculo dinámico en lote excluyendo preguntas anuladas ($N-1$).
-- [ ] **4.5 RBAC Infrastructure:** Gobernanza por academia y profesor (Rol PROFESSOR).
-- [ ] **4.6 AI Orchestrator:** Generación y validación semántica de bancos.
-- [ ] **4.7 Dynamic Branding Console:** Panel administrativo interactivo en ABDAuth para carga de logotipos y paletas HSL con previsualización en tiempo real.
+- **Data Status:** Ecosistema de Aprendizaje Multi-Tenant completo, con control de acceso contextual, tokens de intentos efímeros, ingesta canónica con fallback de transacciones, calificación manual y sincronización analítica asíncrona.
 
 ---
-*Last Update: 2026-05-18 22:47 | Certification: SYS_CERTIFIED*
+*Last Update: 2026-05-27 14:45 | Certification: SYS_CERTIFIED*

@@ -4,7 +4,7 @@ import { type QuizQuestionSnapshot } from '@/types/quiz';
 export interface IExamAttempt extends Document {
   tenantId: string;
   userId: string;
-  examConfigId?: string | mongoose.Types.ObjectId; // Nuevo: Referencia a la plantilla
+  examConfigId?: string | mongoose.Types.ObjectId;
   mode: 'training' | 'mock';
   moduleFilter?: string[];
   score: number;
@@ -14,13 +14,21 @@ export interface IExamAttempt extends Document {
   startedAt: Date;
   endedAt?: Date;
   status: 'in_progress' | 'completed' | 'timeout';
+  gradingStatus: 'auto_graded' | 'pending_manual_review' | 'manually_graded';
+  gradedBy?: string;
+  gradedAt?: Date;
   isInvalidated?: boolean;
   invalidatedBy?: string;
   invalidatedAt?: Date;
+  attemptToken?: string; // Token de intento efímero para prevenir replay attacks / manipulación
+  attemptTokenExpiresAt?: Date; // Expiración absoluta del token
   questions: {
     questionId: string | mongoose.Types.ObjectId;
     questionSnapshot: QuizQuestionSnapshot;
     selectedOptionIndex?: number | null;
+    manualTextAnswer?: string;
+    manualPointsAwarded?: number;
+    feedback?: string;
     isCorrect: boolean;
     timeSpentSeconds: number;
     status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
@@ -45,14 +53,26 @@ const ExamAttemptSchema: Schema = new Schema(
       enum: ['in_progress', 'completed', 'timeout'],
       default: 'in_progress',
     },
+    gradingStatus: {
+      type: String,
+      enum: ['auto_graded', 'pending_manual_review', 'manually_graded'],
+      default: 'auto_graded',
+    },
+    gradedBy: String,
+    gradedAt: Date,
     isInvalidated: { type: Boolean, default: false },
     invalidatedBy: String,
     invalidatedAt: Date,
+    attemptToken: { type: String, index: true },
+    attemptTokenExpiresAt: Date,
     questions: [
       {
         questionId: { type: Schema.Types.ObjectId, ref: 'Question' },
         questionSnapshot: Schema.Types.Mixed,
         selectedOptionIndex: Number,
+        manualTextAnswer: String,
+        manualPointsAwarded: Number,
+        feedback: String,
         isCorrect: { type: Boolean, default: false },
         timeSpentSeconds: { type: Number, default: 0 },
         status: {

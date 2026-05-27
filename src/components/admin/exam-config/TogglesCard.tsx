@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import { CheckCircle2, ArrowRight, AlertCircle } from 'lucide-react';
+import { CheckCircle2, ArrowRight, AlertCircle, BarChart3 } from 'lucide-react';
 
 interface TogglesCardProps {
   showFeedbackDuringExam: boolean;
@@ -9,12 +9,16 @@ interface TogglesCardProps {
   allowReviewPrevious: boolean;
   autoAdvanceOnSelect: boolean;
   reviewOmittedQuestions: boolean;
+  excludePreviouslyCorrect: boolean;
+  adaptiveQuestionSelection: boolean;
   onChange: (fields: {
     showFeedbackDuringExam?: boolean;
     allowSkip?: boolean;
     allowReviewPrevious?: boolean;
     autoAdvanceOnSelect?: boolean;
     reviewOmittedQuestions?: boolean;
+    excludePreviouslyCorrect?: boolean;
+    adaptiveQuestionSelection?: boolean;
   }) => void;
   translations: {
     feedbackLabel: string;
@@ -27,6 +31,10 @@ interface TogglesCardProps {
     autoAdvanceDesc: string;
     reviewOmittedLabel: string;
     reviewOmittedDesc: string;
+    excludeCorrectLabel: string;
+    excludeCorrectDesc: string;
+    adaptiveLabel: string;
+    adaptiveDesc: string;
   };
 }
 
@@ -36,6 +44,8 @@ export function TogglesCard({
   allowReviewPrevious,
   autoAdvanceOnSelect,
   reviewOmittedQuestions,
+  excludePreviouslyCorrect,
+  adaptiveQuestionSelection,
   onChange,
   translations,
 }: TogglesCardProps) {
@@ -107,6 +117,36 @@ export function TogglesCard({
         </div>
         <p className="text-[9px] text-muted-foreground leading-relaxed uppercase font-mono">
           {translations.reviewOmittedDesc}
+        </p>
+      </div>
+
+      <div
+        className={`p-4 border border-border cursor-pointer transition-colors ${
+          excludePreviouslyCorrect ? 'bg-primary/5 border-primary/20' : 'hover:bg-white/5'
+        }`}
+        onClick={() => onChange({ excludePreviouslyCorrect: !excludePreviouslyCorrect })}
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <CheckCircle2 className={`w-4 h-4 ${excludePreviouslyCorrect ? 'text-primary' : 'text-muted-foreground'}`} />
+          <span className="text-[10px] uppercase font-bold tracking-widest">{translations.excludeCorrectLabel}</span>
+        </div>
+        <p className="text-[9px] text-muted-foreground leading-relaxed uppercase font-mono">
+          {translations.excludeCorrectDesc}
+        </p>
+      </div>
+
+      <div
+        className={`p-4 border border-border cursor-pointer transition-colors ${
+          adaptiveQuestionSelection ? 'bg-primary/5 border-primary/20' : 'hover:bg-white/5'
+        }`}
+        onClick={() => onChange({ adaptiveQuestionSelection: !adaptiveQuestionSelection })}
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <BarChart3 className={`w-4 h-4 ${adaptiveQuestionSelection ? 'text-primary' : 'text-muted-foreground'}`} />
+          <span className="text-[10px] uppercase font-bold tracking-widest">{translations.adaptiveLabel}</span>
+        </div>
+        <p className="text-[9px] text-muted-foreground leading-relaxed uppercase font-mono">
+          {translations.adaptiveDesc}
         </p>
       </div>
     </Card>

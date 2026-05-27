@@ -1,25 +1,44 @@
 import { createHash } from 'crypto';
-import { normalizeString, normalizeOptions } from './normalize';
+import { flattenText } from './normalize';
 import { type IngestQuestion } from '../validation/corpusSchema';
 
+export interface SemanticHashResult {
+  questionTextHash: string;
+  optionHashes: string[];
+  contentHash: string;
+}
+
 /**
- * Genera un hash determinista de una pregunta a partir de su contenido semántico
+ * Calcula de manera determinista los hashes semánticos individuales y el maestro
+ * para una pregunta y sus opciones.
+ */
+export function calculateSemanticHashes(
+  pregunta: string,
+  opciones: string[],
+  respuestaCorrecta: number
+): SemanticHashResult {
+  const sha256 = (str: string) => createHash('sha256').update(str).digest('hex');
+  
+  const questionTextHash = sha256(flattenText(pregunta));
+  const optionHashes = opciones.map(opt => sha256(flattenText(opt)));
+  
+  // Ordenar matemáticamente de mayor a menor en valor hexadecimal
+  const sortedOptionHashes = [...optionHashes].sort((a, b) => b.localeCompare(a));
+  
+  // H_maestro = SHA-256(H_pregunta || Sorted(H_opcion1, H_opcion2, ...) || RespuestaCorrecta)
+  const contentHash = sha256(questionTextHash + sortedOptionHashes.join('') + String(respuestaCorrecta));
+  
+  return {
+    questionTextHash,
+    optionHashes,
+    contentHash
+  };
+}
+
+/**
+ * Genera el hash maestro determinista para compatibilidad con la API existente
  */
 export function generateQuestionHash(q: IngestQuestion): string {
-  // Construimos el objeto semántico normalizado
-  const semanticContent = {
-    text: normalizeString(q.pregunta),
-    options: normalizeOptions(q.opciones),
-    correctIndex: q.respuesta_correcta,
-    module: normalizeString(q.modulo),
-    source: normalizeString(q.fuente)
-  };
-
-  // Serializamos a string de forma estable
-  const serialized = JSON.stringify(semanticContent);
-
-  // Generamos SHA-256
-  return createHash('sha256')
-    .update(serialized)
-    .digest('hex');
+  return calculateSemanticHashes(q.pregunta, q.opciones, q.respuesta_correcta).contentHash;
 }
+

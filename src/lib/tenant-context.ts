@@ -1,4 +1,4 @@
-import { ensureIndustrialAccess } from './session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 
 /**
  * Resolves the tenant context for a request or page based on session and searchParams.
@@ -12,7 +12,7 @@ export async function resolveTenantContext(
   searchParams: ResolvedSearchParams | Promise<ResolvedSearchParams>
 ): Promise<string> {
   // 🛡️ Ecosystem Identity Guard
-  const user = await ensureIndustrialAccess('ADMIN');
+  const user = await ensureAdminOrProfessor();
   
   // Resolve searchParams if it is passed as a Promise (Next.js 15+ async params)
   const resolvedParams: ResolvedSearchParams = searchParams instanceof Promise

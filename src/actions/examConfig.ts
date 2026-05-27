@@ -7,6 +7,7 @@ import { type IExamConfig } from '@/models/ExamConfig';
 import { getIndustrialSession } from '@/lib/session';
 import { LogsClient } from '@/lib/logs-client';
 import { withTenantContext } from '@/lib/database/tenant-model';
+import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 import { type SerializedExamConfig } from '@/types/quiz';
 
@@ -16,6 +17,8 @@ import { type SerializedExamConfig } from '@/types/quiz';
  * Recupera todas las configuraciones de examen activas para el tenant
  */
 export async function getExamConfigsAction(tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       await connectDB();
@@ -25,10 +28,7 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
         throw new Error('Unauthorized');
       }
       
-      let activeTenantId = session.user.tenantId;
-      if (session.user.role === 'SUPER_ADMIN' && tenantIdParam) {
-        activeTenantId = tenantIdParam;
-      }
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
 
       let configs = await ExamConfig.find({ 
         tenantId: activeTenantId,
@@ -101,13 +101,15 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       console.error('❌ Error fetching exam configs:', msg);
       throw new Error(msg); // Do not silence
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Crea una nueva configuración de examen
  */
 export async function createExamConfigAction(data: Partial<IExamConfig>, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       await connectDB();
@@ -117,10 +119,7 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
         return { success: false, error: 'Unauthorized' };
       }
       
-      let activeTenantId = session.user.tenantId;
-      if (session.user.role === 'SUPER_ADMIN' && tenantIdParam) {
-        activeTenantId = tenantIdParam;
-      }
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
       
       const newConfig = await ExamConfig.create({
         ...data,
@@ -148,13 +147,15 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
       console.error('❌ Error creating exam config:', msg);
       return { success: false, error: msg };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Actualiza una configuración existente
  */
-export async function updateExamConfigAction(id: string, data: Partial<IExamConfig>) {
+export async function updateExamConfigAction(id: string, data: Partial<IExamConfig>, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       await connectDB();
@@ -168,7 +169,8 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       }
 
       // Anti-IDOR Guard
-      if (config.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
+      if (config.tenantId !== activeTenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       
@@ -197,13 +199,15 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       console.error('❌ Error updating exam config:', msg);
       return { success: false, error: msg };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Borrado lógico de una configuración
  */
-export async function deleteExamConfigAction(id: string) {
+export async function deleteExamConfigAction(id: string, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       await connectDB();
@@ -217,7 +221,8 @@ export async function deleteExamConfigAction(id: string) {
       }
 
       // Anti-IDOR Guard
-      if (config.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
+      if (config.tenantId !== activeTenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
       
@@ -246,13 +251,15 @@ export async function deleteExamConfigAction(id: string) {
       console.error('❌ Error deleting exam config:', msg);
       return { success: false, error: msg };
     }
-  });
+  }, explicitCtx);
 }
 
 /**
  * Clona una configuración de examen existente
  */
-export async function cloneExamConfigAction(id: string) {
+export async function cloneExamConfigAction(id: string, tenantIdParam?: string) {
+  const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
+  
   return withTenantContext(async () => {
     try {
       await connectDB();
@@ -266,7 +273,8 @@ export async function cloneExamConfigAction(id: string) {
       }
 
       // Anti-IDOR Guard
-      if (source.tenantId !== session.user.tenantId && session.user.role !== 'SUPER_ADMIN') {
+      const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
+      if (source.tenantId !== activeTenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Configuración origen no encontrada o acceso no autorizado' };
       }
       
@@ -303,5 +311,5 @@ export async function cloneExamConfigAction(id: string) {
       console.error('❌ Error cloning exam config:', msg);
       return { success: false, error: msg };
     }
-  });
+  }, explicitCtx);
 }

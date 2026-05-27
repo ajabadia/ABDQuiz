@@ -3,7 +3,7 @@ import { logger, configureLogger } from '@abd/satellite-sdk';
 export interface LogPayload {
   tenantId: string;
   action: string;
-  entityType: 'USER' | 'TENANT' | 'SSO' | 'EXAM' | 'CONFIG' | 'SYSTEM' | 'SPACE' | 'BRANDING' | 'QUESTION' | 'ALLEGATION';
+  entityType: 'USER' | 'TENANT' | 'SSO' | 'EXAM' | 'CONFIG' | 'SYSTEM' | 'SPACE' | 'BRANDING' | 'QUESTION' | 'ALLEGATION' | 'COURSE' | 'ASSIGNMENT' | 'QUIZ_USER_ROLE';
   entityId: string;
   userId: string;
   userEmail: string;

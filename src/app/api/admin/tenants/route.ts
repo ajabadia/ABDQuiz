@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import mongoose from 'mongoose';
 
 export const revalidate = 0; // Evitar el cacheado estático de la API
@@ -27,7 +27,7 @@ async function getAuthConnection() {
 export async function GET() {
   try {
     // 🛡️ Verificar acceso con rol mínimo ADMIN
-    const user = await ensureIndustrialAccess('ADMIN');
+    const user = await ensureAdminOrProfessor();
     
     // Solo SUPER_ADMIN puede ver todos los tenants
     if (user.role !== 'SUPER_ADMIN') {

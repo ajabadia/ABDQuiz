@@ -2,7 +2,7 @@
 
 import { CorpusService } from '@/services/corpus/corpusService';
 import { revalidatePath } from 'next/cache';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 
 interface ActionResponse<T> {
   success: boolean;
@@ -31,7 +31,7 @@ interface CorpusStats {
  * Procesa la importación de un archivo de corpus
  */
 export async function importCorpusAction(formData: FormData): Promise<ActionResponse<ImportSummary>> {
-  const user = await ensureIndustrialAccess('ADMIN');
+  const user = await ensureAdminOrProfessor();
   const file = formData.get('file') as File;
   let sourceType = formData.get('sourceType') as 'json' | 'csv';
   if (!file) throw new Error('No se ha proporcionado ningún archivo');
@@ -89,7 +89,7 @@ export async function getImportsAction(filters: {
   source?: string;
 }): Promise<ActionResponse<unknown[]>> {
   try {
-    const user = await ensureIndustrialAccess('ADMIN');
+    const user = await ensureAdminOrProfessor();
     const data = await CorpusService.getImports(user.tenantId, {
       ...filters,
       startDate: filters.startDate ? new Date(filters.startDate) : undefined,
@@ -107,7 +107,7 @@ export async function getImportsAction(filters: {
  */
 export async function getImportDetailAction(importId: string): Promise<ActionResponse<unknown>> {
   try {
-    await ensureIndustrialAccess('ADMIN');
+    await ensureAdminOrProfessor();
     const data = await CorpusService.getImportDetail(importId);
     return { success: true, data: JSON.parse(JSON.stringify(data)) };
   } catch (error: unknown) {
@@ -121,7 +121,7 @@ export async function getImportDetailAction(importId: string): Promise<ActionRes
  */
 export async function getCorpusStatsAction(): Promise<ActionResponse<CorpusStats>> {
   try {
-    const user = await ensureIndustrialAccess('ADMIN');
+    const user = await ensureAdminOrProfessor();
     const stats = await CorpusService.getStats(user.tenantId);
     return { success: true, data: JSON.parse(JSON.stringify(stats)) as CorpusStats };
   } catch (error: unknown) {
@@ -138,7 +138,7 @@ export async function importFinalizedQuestionsAction(
   fileName: string
 ): Promise<ActionResponse<ImportSummary>> {
   try {
-    const user = await ensureIndustrialAccess('ADMIN');
+    const user = await ensureAdminOrProfessor();
     const result = await CorpusService.importFromJson(
       user.id,
       user.tenantId,

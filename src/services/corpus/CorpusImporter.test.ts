@@ -8,6 +8,16 @@ vi.mock('@/lib/database/mongodb', () => {
   };
 });
 
+// Mock mongoose startSession to simulate standalone DB without replica-sets
+vi.mock('mongoose', () => {
+  return {
+    default: {
+      startSession: vi.fn().mockRejectedValue(new Error('Standalone')),
+    },
+    startSession: vi.fn().mockRejectedValue(new Error('Standalone')),
+  };
+});
+
 // 2. Mock Mongoose models
 vi.mock('@/models/CorpusImport', () => {
   const mockCreate = vi.fn();

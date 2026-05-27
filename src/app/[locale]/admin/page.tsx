@@ -2,7 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { GlobalFooter } from '@abd/ecosystem-widgets';
 import { Separator } from '@/components/ui/separator';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { 
   Database, 
@@ -10,7 +10,9 @@ import {
   Settings, 
   ShieldCheck, 
   LayoutDashboard,
-  Terminal
+  Terminal,
+  CalendarRange,
+  GraduationCap
 } from 'lucide-react';
 import { DashboardCard } from '@/components/admin/DashboardCard';
 import { AdminPageHeader } from '@abd/styles';
@@ -33,7 +35,7 @@ export default async function AdminPortalPage({
 
   // 🛡️ Ecosystem Identity Guard
   // Only users authenticated via ABDAuth with ADMIN privileges can enter.
-  const user = await ensureIndustrialAccess('ADMIN');
+  const user = await ensureAdminOrProfessor();
   const resolvedTenantId = await resolveTenantContext(searchParams);
   const isSuperAdmin = user.role === 'SUPER_ADMIN';
   const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
@@ -106,7 +108,19 @@ export default async function AdminPortalPage({
                 actionText="Gestionar Impugnaciones"
               />
 
-              {/* Card 5: Exam Attempt Resets */}
+              {/* Card 5: Exam Assignments */}
+              <DashboardCard
+                icon={CalendarRange}
+                category="Calendarización"
+                title="Asignaciones"
+                description="Creación y gestión de convocatorias de examen con ventanas temporales exactas, control de acceso y publicación."
+                badgeLabel="Timeframes"
+                badgeValue="Activo"
+                actionUrl={`/${locale}/admin/assignments${tenantSuffix}`}
+                actionText="Gestionar Asignaciones"
+              />
+
+              {/* Card 6: Exam Attempt Resets */}
               <DashboardCard
                 icon={Sliders}
                 category="Gobernanza"
@@ -117,6 +131,18 @@ export default async function AdminPortalPage({
                 actionUrl={`/${locale}/admin/attempts${tenantSuffix}`}
                 actionText="Gestionar Intentos y Reintentos"
                 colSpan="col-span-1 md:col-span-2"
+              />
+
+              {/* Card 7: Manual Grading */}
+              <DashboardCard
+                icon={GraduationCap}
+                category={ap('algoritmos')}
+                title={ap('gradingTitle')}
+                description={ap('gradingDesc')}
+                badgeLabel={ap('gradingBadgeLabel')}
+                badgeValue={ap('gradingBadgeValue')}
+                actionUrl={`/${locale}/admin/grading${tenantSuffix}`}
+                actionText={ap('gradingActionText')}
               />
 
             </div>

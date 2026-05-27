@@ -11,6 +11,8 @@ export interface IQuestion extends Document {
   tags: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   active: boolean;
+  questionTextHash: string; // Hash del enunciado aplanado para colisiones parciales
+  optionHashes: string[]; // Hashes individuales aplanados de las opciones
   contentHash: string; // Para detección de duplicados
   version: number;
   originImportId?: mongoose.Types.ObjectId; // Trazabilidad al lote de importación
@@ -29,6 +31,8 @@ const QuestionSchema = new Schema<IQuestion>({
   tags: [{ type: String }],
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
   active: { type: Boolean, default: true, index: true },
+  questionTextHash: { type: String, required: true, index: true },
+  optionHashes: [{ type: String, required: true }],
   contentHash: { type: String, required: true, index: true },
   version: { type: Number, default: 1 },
   originImportId: { type: Schema.Types.ObjectId, ref: 'CorpusImport' }

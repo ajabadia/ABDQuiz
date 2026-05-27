@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';
-import { getExamConfigsAction } from '@/actions/examConfig';
 import { type SerializedExamConfig } from '@/types/quiz';
+import { getAvailableExamsAction } from '@/actions/examAssignment';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { GlobalFooter } from '@abd/ecosystem-widgets';
@@ -13,7 +13,7 @@ export default async function ExamsPage({ params }: { params: Promise<{ locale: 
   const h = await getTranslations('home');
   
   // Fetch active configurations from database
-  const configs: SerializedExamConfig[] = await getExamConfigsAction();
+  const configs: SerializedExamConfig[] = await getAvailableExamsAction();
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">

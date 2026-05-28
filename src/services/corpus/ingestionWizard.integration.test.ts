@@ -47,8 +47,8 @@ const mockCreateImportRow = vi.hoisted(() => vi.fn());
 //  Mocks globales
 // ──────────────────────────────────────────────
 
-vi.mock('@/lib/database/mongodb', () => ({
-  default: vi.fn().mockResolvedValue(null),
+vi.mock('@ajabadia/satellite-sdk', () => ({
+  connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/lib/auth/ensureQuizAccess', () => ({

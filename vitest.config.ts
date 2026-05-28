@@ -8,7 +8,7 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     server: {
       deps: {
-        inline: [/@abd\/satellite-sdk/],
+        inline: [/@ajabadia\/satellite-sdk/],
       },
     },
     coverage: {
@@ -28,6 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'next/server': 'next/server.js',
     },
   },
 });

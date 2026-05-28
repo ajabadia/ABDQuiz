@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QuizService } from './quizService';
 
-// 1. Mock connection module
-vi.mock('@/lib/database/mongodb', () => {
-  return {
-    default: vi.fn().mockResolvedValue(null),
-  };
-});
+vi.mock('@ajabadia/satellite-sdk', () => ({
+  connectDB: vi.fn().mockResolvedValue(undefined),
+}));
 
 // 2. Mock Mongoose models
 vi.mock('@/models/ExamConfig', () => {

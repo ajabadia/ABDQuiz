@@ -2,12 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AllegationService } from './allegationService';
 import mongoose from 'mongoose';
 
-// 1. Mock DB connection module
-vi.mock('@/lib/database/mongodb', () => {
-  return {
-    default: vi.fn().mockResolvedValue(null),
-  };
-});
+vi.mock('@ajabadia/satellite-sdk', () => ({
+  connectDB: vi.fn().mockResolvedValue(undefined),
+}));
 
 // 2. Mock Mongoose models
 vi.mock('@/models/Allegation', () => {

@@ -1,12 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CorpusImporter } from './CorpusImporter';
 
-// 1. Mock database connection
-vi.mock('@/lib/database/mongodb', () => {
-  return {
-    default: vi.fn().mockResolvedValue(null),
-  };
-});
+vi.mock('@ajabadia/satellite-sdk', () => ({
+  connectDB: vi.fn().mockResolvedValue(undefined),
+}));
 
 // Mock mongoose startSession to simulate standalone DB without replica-sets
 vi.mock('mongoose', () => {

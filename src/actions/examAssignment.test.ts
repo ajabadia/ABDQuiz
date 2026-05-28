@@ -3,14 +3,6 @@ import { createAssignmentAction } from './examAssignment';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@/lib/database/mongodb', () => ({
-  default: vi.fn().mockResolvedValue(null),
-}));
-
-vi.mock('@/lib/database/tenant-model', () => ({
-  withTenantContext: vi.fn((fn: () => unknown) => fn()),
-}));
-
 vi.mock('@/lib/tenant-resolver', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
 }));
@@ -19,7 +11,9 @@ vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
   return {
     ...actual,
+    connectDB: vi.fn().mockResolvedValue(undefined),
     getIndustrialSession: vi.fn(),
+    withTenantContext: vi.fn((fn: () => unknown) => fn()),
   };
 });
 
@@ -44,12 +38,6 @@ vi.mock('@/models/ExamAssignment', () => {
     mockCreate,
   };
 });
-
-vi.mock('@/lib/logs-client', () => ({
-  LogsClient: {
-    log: vi.fn().mockResolvedValue(null),
-  },
-}));
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),

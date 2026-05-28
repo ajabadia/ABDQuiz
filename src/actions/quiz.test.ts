@@ -2,19 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@/lib/database/mongodb', () => ({
-  default: vi.fn().mockResolvedValue(null),
-}));
-
-vi.mock('@/lib/database/tenant-model', () => ({
-  withTenantContext: vi.fn((fn: () => unknown) => fn()),
-  getTenantModel: vi.fn((name, schema) => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const mongoose = require('mongoose');
-    return mongoose.models[name] || mongoose.model(name, schema);
-  }),
-}));
-
 vi.mock('@/models/Course', () => ({
   default: {
     findOne: vi.fn().mockResolvedValue({
@@ -45,7 +32,12 @@ vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
   return {
     ...actual,
+    connectDB: vi.fn().mockResolvedValue(undefined),
     getIndustrialSession: vi.fn(),
+    withTenantContext: vi.fn((fn: () => unknown) => fn()),
+    logger: {
+      audit: vi.fn().mockResolvedValue(null),
+    },
   };
 });
 
@@ -82,12 +74,6 @@ vi.mock('@/models/ExamAttempt', () => {
   };
 });
 
-vi.mock('@/lib/logs-client', () => ({
-  LogsClient: {
-    log: vi.fn().mockResolvedValue(null),
-  },
-}));
-
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
@@ -103,11 +89,13 @@ import * as QuizAccessMod from '@/lib/auth/ensureQuizAccess';
 import * as ResolverMod from '@/lib/tenant-resolver';
 import * as QuizServiceMod from '@/services/quiz/quizService';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
-import * as LogsClientMod from '@/lib/logs-client';
 import * as CacheMod from 'next/cache';
 
 const { getIndustrialSession } = SessionMod as unknown as {
   getIndustrialSession: ReturnType<typeof vi.fn>;
+};
+const { logger: mockLogger } = SessionMod as unknown as {
+  logger: { audit: ReturnType<typeof vi.fn> };
 };
 const { ensureAdminOrProfessor } = QuizAccessMod as unknown as {
   ensureAdminOrProfessor: ReturnType<typeof vi.fn>;
@@ -121,9 +109,6 @@ const { QuizService } = QuizServiceMod as unknown as {
 const { mockFindById, mockDoc } = ExamAttemptMod as unknown as {
   mockFindById: ReturnType<typeof vi.fn>;
   mockDoc: Record<string, unknown>;
-};
-const { LogsClient } = LogsClientMod as unknown as {
-  LogsClient: { log: ReturnType<typeof vi.fn> };
 };
 const { revalidatePath } = CacheMod as unknown as {
   revalidatePath: ReturnType<typeof vi.fn>;
@@ -184,7 +169,7 @@ describe('finishQuizAction', () => {
 
     expect(result).toEqual({ success: true });
     expect(QuizService.finishExam).toHaveBeenCalledWith('attempt-1', 'student-1', undefined);
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({
         tenantId: 'tenant-1',
         action: 'EXAM_ATTEMPT_COMPLETED',
@@ -203,7 +188,7 @@ describe('finishQuizAction', () => {
     const result = await finishQuizAction('attempt-1');
 
     expect(result).toEqual({ success: true });
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({ tenantId: 'tenant-1' })
     );
   });
@@ -222,7 +207,7 @@ describe('finishQuizAction', () => {
     expect(result).toEqual({ success: true });
     expect(QuizService.finishExam).toHaveBeenCalled();
     // Log should use the context-shifted tenantId
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({ tenantId: 'tenant-2' })
     );
     expect(resolveTargetTenantContext).toHaveBeenCalledWith('tenant-2');
@@ -277,7 +262,7 @@ describe('invalidateAttemptAction', () => {
     expect(doc.invalidatedBy).toBe('admin@tenant1.com');
     expect(doc.invalidatedAt).toBeInstanceOf(Date);
     expect(doc.save).toHaveBeenCalled();
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({
         tenantId: 'tenant-1',
         action: 'EXAM_ATTEMPT_INVALIDATED',
@@ -321,7 +306,7 @@ describe('invalidateAttemptAction', () => {
     expect(doc.isInvalidated).toBe(true);
     expect(doc.save).toHaveBeenCalled();
     // Log should use target tenant ID (attempt.tenantId), not the session tenant
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({
         tenantId: 'tenant-2',
         action: 'EXAM_ATTEMPT_INVALIDATED',
@@ -375,7 +360,7 @@ describe('invalidateAttemptAction', () => {
 
     expect(result).toEqual({ success: true });
     // Log should use attempt.tenantId, not the explicitCtx tenantId passed by admin
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({ tenantId: 'tenant-3' })
     );
   });
@@ -391,7 +376,7 @@ describe('invalidateAttemptAction', () => {
     const { invalidateAttemptAction } = await getActions();
     await invalidateAttemptAction('attempt-1');
 
-    expect(LogsClient.log).toHaveBeenCalledWith(
+    expect(mockLogger.audit).toHaveBeenCalledWith(
       expect.objectContaining({
         previousState,
       })

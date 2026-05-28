@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@/lib/database/mongodb', () => ({
-  default: vi.fn().mockResolvedValue(undefined),
+vi.mock('@ajabadia/satellite-sdk', () => ({
+  connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 
 const mockFindOne = vi.fn();

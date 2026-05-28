@@ -6,16 +6,25 @@ vi.mock('@/lib/database/mongodb', () => ({
   default: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock('@/lib/database/tenant-model', () => ({
-  withTenantContext: vi.fn((fn: () => unknown) => fn()),
-}));
-
 vi.mock('@/lib/tenant-resolver', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/lib/auth/ensureQuizAccess', () => ({
   ensureAdminOrProfessor: vi.fn(),
+}));
+
+vi.mock('@/lib/auth/scope-guard', () => ({
+  requireQuizScope: vi.fn().mockResolvedValue({ granted: true, roleType: 'CREATOR' }),
+  assertQuizScope: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@/lib/database/tenant-model', () => ({
+  withTenantContext: vi.fn((fn: () => unknown) => fn()),
+  getTenantModel: vi.fn((name, schema) => ({
+    Schema: schema,
+    modelName: name,
+  })),
 }));
 
 vi.mock('@/models/ExamAttempt', () => {
@@ -31,6 +40,7 @@ vi.mock('@/models/ExamAttempt', () => {
     default: MockExamAttempt,
     mockFind,
     mockFindById,
+    getTenantModel: vi.fn(),
   };
 });
 
@@ -46,6 +56,7 @@ import * as SessionMod from '@/lib/auth/ensureQuizAccess';
 import * as ResolverMod from '@/lib/tenant-resolver';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
 import * as LogsClientMod from '@/lib/logs-client';
+import * as ScopeGuardMod from '@/lib/auth/scope-guard';
 
 const { ensureAdminOrProfessor } = SessionMod as unknown as {
   ensureAdminOrProfessor: ReturnType<typeof vi.fn>;
@@ -59,6 +70,9 @@ const { mockFind, mockFindById } = ExamAttemptMod as unknown as {
 };
 const { LogsClient } = LogsClientMod as unknown as {
   LogsClient: { log: ReturnType<typeof vi.fn> };
+};
+const { requireQuizScope } = ScopeGuardMod as unknown as {
+  requireQuizScope: ReturnType<typeof vi.fn>;
 };
 
 // ── Types ──────────────────────────────────────────────
@@ -567,6 +581,7 @@ describe('submitManualGradingAction', () => {
 
   it('should reject cross-tenant grading for ADMIN (anti-IDOR)', async () => {
     ensureAdminOrProfessor.mockResolvedValue(adminSession);
+    requireQuizScope.mockResolvedValueOnce({ granted: false, roleType: null });
 
     const doc = makeMongooseDoc({ tenantId: 'tenant-2' });
     mockFindById.mockResolvedValue(doc);
@@ -574,7 +589,7 @@ describe('submitManualGradingAction', () => {
     const { submitManualGradingAction } = await getActions();
     const result = await submitManualGradingAction('attempt-1', validGrades);
 
-    expect(result).toEqual({ success: false, error: 'Acceso no autorizado' });
+    expect(result).toEqual({ success: false, error: 'Acceso denegado: Rol contextual insuficiente en el espacio formativo' });
     expect(doc.save).not.toHaveBeenCalled();
   });
 

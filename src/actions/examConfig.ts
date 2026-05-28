@@ -1,12 +1,12 @@
 'use server';
 
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamConfig from '@/models/ExamConfig';
 import { revalidatePath } from 'next/cache';
 import { type IExamConfig } from '@/models/ExamConfig';
-import { getIndustrialSession } from '@/lib/session';
-import { LogsClient } from '@/lib/logs-client';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { logger } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 import { type SerializedExamConfig } from '@/types/quiz';
@@ -54,6 +54,7 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
             autoAdvanceOnSelect: false,
             reviewOmittedQuestions: false,
             maxAttempts: 0,
+            sliceOptionsCount: null,
             isDefault: true,
             createdBy: session.user.id,
             active: true
@@ -74,6 +75,7 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
             autoAdvanceOnSelect: false,
             reviewOmittedQuestions: false,
             maxAttempts: 0,
+            sliceOptionsCount: null,
             isDefault: true,
             createdBy: session.user.id,
             active: true
@@ -128,7 +130,7 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
       });
       
       // Log the creation event
-      await LogsClient.log({
+      await logger.audit({
         tenantId: activeTenantId,
         action: 'EXAM_CONFIG_CREATED',
         entityType: 'CONFIG',
@@ -179,7 +181,7 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       await ExamConfig.findByIdAndUpdate(id, data);
       
       // Log the update event
-      await LogsClient.log({
+      await logger.audit({
         tenantId: targetTenantId,
         action: 'EXAM_CONFIG_UPDATED',
         entityType: 'CONFIG',
@@ -231,7 +233,7 @@ export async function deleteExamConfigAction(id: string, tenantIdParam?: string)
       await ExamConfig.findByIdAndUpdate(id, { active: false });
       
       // Log the deletion event
-      await LogsClient.log({
+      await logger.audit({
         tenantId: targetTenantId,
         action: 'EXAM_CONFIG_DELETED',
         entityType: 'CONFIG',
@@ -289,7 +291,7 @@ export async function cloneExamConfigAction(id: string, tenantIdParam?: string) 
       });
       
       // Log the cloning event
-      await LogsClient.log({
+      await logger.audit({
         tenantId: targetTenantId,
         action: 'EXAM_CONFIG_CLONED',
         entityType: 'CONFIG',

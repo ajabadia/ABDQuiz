@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { checkQuestionTraceabilityAction, saveQuestionAction } from '@/actions/question';
 import { toast } from 'sonner';
-import { X, AlertTriangle, CheckCircle, ShieldCheck } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle, ShieldCheck, Paperclip, Upload, Loader2, Trash2, ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+interface Attachment {
+  url: string;
+  name: string;
+  type: string;
+  size: number;
+}
 
 interface QuestionItem {
   _id: string;
@@ -18,6 +25,7 @@ interface QuestionItem {
   correctOptionIndex: number;
   explanation: string;
   tags: string[];
+  attachments?: Attachment[];
 }
 
 interface QuestionEditorModalProps {
@@ -38,8 +46,13 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
     difficulty: question.difficulty,
     module: question.module,
     source: question.source,
-    tags: question.tags?.join(', ') || ''
+    tags: question.tags?.join(', ') || '',
+    attachments: question.attachments || []
   });
+
+  // §12.A — Upload state
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     checkQuestionTraceabilityAction(question._id)
@@ -53,8 +66,15 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
     try {
       const parsedTags = form.tags.split(',').map(s => s.trim()).filter(Boolean);
       const res = await saveQuestionAction(question._id, {
-        ...form,
-        tags: parsedTags
+        questionText: form.questionText,
+        options: form.options,
+        correctOptionIndex: form.correctOptionIndex,
+        explanation: form.explanation,
+        difficulty: form.difficulty,
+        module: form.module,
+        source: form.source,
+        tags: parsedTags,
+        attachments: form.attachments
       });
       if (res.success) {
         toast.success(t('saveSuccess'));
@@ -121,6 +141,82 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
 
           <FormGroup label={t('labelExplanation')}><textarea className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50 min-h-[50px]" value={form.explanation} onChange={e => setForm({ ...form, explanation: e.target.value })} /></FormGroup>
           <FormGroup label={t('labelTags')}><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} /></FormGroup>
+
+          {/* §12.A — Attachments */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold flex items-center gap-2">
+                <Paperclip className="w-3 h-3" /> ADJUNTOS
+              </label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                aria-label={t('btnUpload')}
+                className="text-[8px] uppercase tracking-widest text-primary font-bold hover:underline flex items-center gap-1"
+              >
+                {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                SUBIR
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml,application/pdf,audio/mpeg,audio/wav,audio/ogg,video/mp4,video/webm,text/plain"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setIsUploading(true);
+                try {
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                  const data = await res.json();
+                  if (data.success) {
+                    setForm({ ...form, attachments: [...form.attachments, { url: data.url, name: data.name, type: data.type, size: data.size }] });
+                    toast.success('Archivo subido: ' + data.name);
+                  } else {
+                    toast.error('Error al subir: ' + (data.error || 'desconocido'));
+                  }
+                } catch {
+                  toast.error('Error de conexión al subir el archivo');
+                } finally {
+                  setIsUploading(false);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                }
+              }}
+            />
+
+            {form.attachments.length === 0 ? (
+              <p className="text-[9px] font-mono text-muted-foreground/50 italic">
+                Sin adjuntos. Sube imágenes, PDFs, audio o video.
+              </p>
+            ) : (
+              <div className="space-y-1.5">
+                {form.attachments.map((att, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 group">
+                    <span className="text-[8px] font-mono uppercase text-muted-foreground w-6">{i + 1}.</span>
+                    <span className="flex-1 text-[10px] font-mono truncate" title={att.name}>{att.name}</span>
+                    <span className="text-[7px] font-mono text-muted-foreground/60 uppercase">{(att.size / 1024).toFixed(0)}KB</span>
+                    <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label={`Abrir ${att.name}`}>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, attachments: form.attachments.filter((_, idx) => idx !== i) })}
+                      title={`Eliminar ${att.name}`}
+                      className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                      aria-label={`Eliminar ${att.name}`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <footer className="border-t border-white/5 pt-4 flex gap-4 mt-auto">

@@ -15,7 +15,7 @@ import { type SerializedExamAssignment, type SerializedAuditEntry } from '@/acti
 import { createAssignmentAction, updateAssignmentAction, publishAssignmentAction, archiveAssignmentAction, deleteAssignmentAction } from '@/actions/examAssignment';
 import { getExamConfigsAction } from '@/actions/examConfig';
 import { toast } from 'sonner';
-import { ConfirmDialog } from '@abd/ecosystem-widgets';
+import { ConfirmDialog } from '@ajabadia/ecosystem-widgets';
 
 interface ExamConfigOption {
   _id: string;
@@ -81,7 +81,7 @@ export default function AssignmentsList({ assignments, locale, showCreateForm }:
   const [editingAssignment, setEditingAssignment] = useState<SerializedExamAssignment | null>(null);
   const [creating, setCreating] = useState(false);
   const [examConfigs, setExamConfigs] = useState<ExamConfigOption[]>([]);
-  const [loadingConfigs, setLoadingConfigs] = useState(false);
+  const [loadingConfigs, setLoadingConfigs] = useState(!!showCreateForm);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     examConfigId: '',
@@ -111,25 +111,20 @@ export default function AssignmentsList({ assignments, locale, showCreateForm }:
 
   const isEditingPublished = editingAssignment?.status === 'published';
 
-  const fetchExamConfigs = useCallback(async () => {
-    setLoadingConfigs(true);
-    try {
-      const configs = await getExamConfigsAction();
-      setExamConfigs(
-        configs.map((c) => ({ _id: c._id, name: c.name }))
-      );
-    } catch {
-      toast.error(t('assignmentCreateError'));
-    } finally {
-      setLoadingConfigs(false);
-    }
-  }, [t]);
+  // Reemplazada por lógica inline en useEffect
 
   useEffect(() => {
-    if (showCreate) {
-      fetchExamConfigs();
-    }
-  }, [showCreate, fetchExamConfigs]);
+    if (!showCreate) return;
+    getExamConfigsAction()
+      .then((configs) => {
+        setExamConfigs(configs.map((c) => ({ _id: c._id, name: c.name })));
+        setLoadingConfigs(false);
+      })
+      .catch(() => {
+        toast.error(t('assignmentCreateError'));
+        setLoadingConfigs(false);
+      });
+  }, [showCreate, t]);
 
   const openCreateModal = () => {
     setEditingAssignment(null);
@@ -143,6 +138,7 @@ export default function AssignmentsList({ assignments, locale, showCreateForm }:
     });
     setFormErrors({});
     setShowCreate(true);
+    setLoadingConfigs(true);
   };
 
   const openEditModal = (a: SerializedExamAssignment) => {
@@ -157,6 +153,7 @@ export default function AssignmentsList({ assignments, locale, showCreateForm }:
     });
     setFormErrors({});
     setShowCreate(true);
+    setLoadingConfigs(true);
   };
 
   const validateForm = (): boolean => {
@@ -410,6 +407,7 @@ export default function AssignmentsList({ assignments, locale, showCreateForm }:
                 <div className="w-full mt-4 border-t border-border/30 pt-3">
                   <button
                     onClick={() => toggleAudit(a._id)}
+                    aria-label={`${t('auditLog')} ${a.examConfigName || ''}`}
                     className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                   >
                     <History className="w-3 h-3" />

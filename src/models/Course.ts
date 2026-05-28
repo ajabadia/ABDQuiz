@@ -38,7 +38,7 @@ const CourseSchema = new Schema<ICourse>(
 // Índice compuesto: cursos activos dentro de un mismo espacio
 CourseSchema.index({ spaceId: 1, active: 1 });
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const Course: Model<ICourse> = getTenantModel<ICourse>('Course', CourseSchema);
 

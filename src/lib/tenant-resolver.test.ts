@@ -57,7 +57,7 @@ describe('resolveTargetTenantContext', () => {
   it('should NOT call connectDB or mongoose when tenantId is empty', async () => {
     await resolveTargetTenantContext();
 
-    const connectDB = (await import('@/lib/database/mongodb')).default;
+    const connectDB = (await import('@ajabadia/satellite-sdk')).connectDB;
     expect(connectDB).not.toHaveBeenCalled();
   });
 
@@ -170,8 +170,8 @@ describe('resolveTargetTenantContext', () => {
 
   it('should return undefined when useDb throws', async () => {
     const mongoose = await import('mongoose');
-    const origUseDb = (mongoose.default.connection as { useDb: Function }).useDb;
-    (mongoose.default.connection as { useDb: Function }).useDb = vi.fn(() => {
+    const origUseDb = (mongoose.default.connection as { useDb: (...args: never[]) => unknown }).useDb;
+    (mongoose.default.connection as { useDb: (...args: never[]) => unknown }).useDb = vi.fn(() => {
       throw new Error('Invalid database');
     });
 
@@ -179,7 +179,7 @@ describe('resolveTargetTenantContext', () => {
     expect(result).toBeUndefined();
 
     // Restore
-    (mongoose.default.connection as { useDb: Function }).useDb = origUseDb;
+    (mongoose.default.connection as { useDb: (...args: never[]) => unknown }).useDb = origUseDb;
   });
 
   it('should use MONGODB_AUTH_DB env var when set', async () => {

@@ -6,9 +6,10 @@ import { SidebarNavigation } from "@/components/layout/SidebarNavigation";
 import { SystemSettings } from "@/components/ui/SystemSettings";
 import { QuizCommandPalette } from "@/components/layout/QuizCommandPalette";
 import { TenantSelector } from "@/components/ui/TenantSelector";
+import { BrandingStyles } from "@ajabadia/satellite-sdk";
 
-import { getIndustrialSession } from "@/lib/session";
-import { resolveTenantBranding } from "@/lib/tenant-branding";
+import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { resolveTenantBranding } from "@ajabadia/satellite-sdk";
 
 export default async function LocaleLayout({
   children,
@@ -24,6 +25,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
+      <BrandingStyles />
       <NextTopLoader
         color="hsl(var(--primary))"
         height={2}

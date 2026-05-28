@@ -1,13 +1,13 @@
 'use server';
 
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamConfig from '@/models/ExamConfig';
 import ExamAssignment from '@/models/ExamAssignment';
 import { revalidatePath } from 'next/cache';
-import { getIndustrialSession } from '@/lib/session';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk';
 import { type SerializedExamConfig } from '@/types/quiz';
-import { LogsClient } from '@/lib/logs-client';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { logger } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 // --- Tipos serializados ---
@@ -178,7 +178,7 @@ export async function createAssignmentAction(data: {
         auditTrail: [auditEntry('QUIZ_ASSIGNMENT_CREATE', session.user.id, session.user.email || 'system@abd.com', 'Asignación creada')],
       });
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: activeTenantId,
         action: 'QUIZ_ASSIGNMENT_CREATE',
         entityType: 'ASSIGNMENT',
@@ -268,7 +268,7 @@ export async function updateAssignmentAction(id: string, data: {
         $push: { auditTrail: auditEntry('QUIZ_ASSIGNMENT_UPDATE', session.user.id, session.user.email || 'system@abd.com', `Campos modificados: ${updatedFields}`) },
       });
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: assignment.tenantId,
         action: 'QUIZ_ASSIGNMENT_UPDATE',
         entityType: 'ASSIGNMENT',
@@ -326,7 +326,7 @@ export async function publishAssignmentAction(id: string, tenantIdParam?: string
         $push: { auditTrail: auditEntry('QUIZ_ASSIGNMENT_PUBLISHED', session.user.id, session.user.email || 'system@abd.com', 'Asignación publicada') },
       });
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: assignment.tenantId,
         action: 'QUIZ_ASSIGNMENT_PUBLISHED',
         entityType: 'ASSIGNMENT',
@@ -376,7 +376,7 @@ export async function archiveAssignmentAction(id: string, tenantIdParam?: string
         $push: { auditTrail: auditEntry('QUIZ_ASSIGNMENT_ARCHIVED', session.user.id, session.user.email || 'system@abd.com', 'Asignación archivada') },
       });
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: assignment.tenantId,
         action: 'QUIZ_ASSIGNMENT_UPDATE',
         entityType: 'ASSIGNMENT',
@@ -485,7 +485,7 @@ export async function deleteAssignmentAction(id: string, tenantIdParam?: string)
         $push: { auditTrail: auditEntry('QUIZ_ASSIGNMENT_DELETED', session.user.id, session.user.email || 'system@abd.com', 'Asignación eliminada (soft)') },
       });
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: assignment.tenantId,
         action: 'QUIZ_ASSIGNMENT_UPDATE',
         entityType: 'ASSIGNMENT',

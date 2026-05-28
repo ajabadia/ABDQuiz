@@ -1,12 +1,12 @@
-import connectDB from '@/lib/database/mongodb';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { connectDB } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { AllegationService } from '@/services/allegations/allegationService';
 import { AllegationsClientTerminal } from '@/components/admin/AllegationsClientTerminal';
 import { getTranslations } from 'next-intl/server';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
-import { AdminPageHeader } from '@abd/styles';
+import { AdminPageHeader } from '@ajabadia/styles';
 
 interface AllegationsAdminPageProps {
   params: Promise<{ locale: string }>;

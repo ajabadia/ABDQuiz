@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';
 import CorpusImportRow from '@/models/CorpusImportRow';
@@ -90,6 +90,8 @@ export class CorpusImporter {
             questionTextHash,
             optionHashes,
             contentHash,
+            spaceId: validated.spaceId,
+            courseId: validated.courseId,
             originImportId: corpusImport._id,
             active: true
           };
@@ -188,7 +190,9 @@ export class CorpusImporter {
       modulo: row.modulo || row.tema || row.category || '',
       fuente: row.fuente || row.source || '',
       difficulty: this.mapDifficulty(row.difficulty || row.dificultad || row.nivel),
-      tags: row.tags ? String(row.tags).split(',').map(t => t.trim()) : []
+      tags: row.tags ? String(row.tags).split(',').map(t => t.trim()) : [],
+      spaceId: row.spaceId ? String(row.spaceId) : undefined,
+      courseId: row.courseId ? String(row.courseId) : undefined,
     }));
 
     return this.importFromJson(userId, tenantId, fileName, mappedData);

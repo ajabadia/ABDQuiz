@@ -1,10 +1,10 @@
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
-import { AdminPageHeader } from '@abd/styles';
+import { AdminPageHeader } from '@ajabadia/styles';
 
 export default async function NewExamPage({
   params,

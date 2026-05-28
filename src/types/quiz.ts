@@ -10,12 +10,16 @@ export interface QuizQuestionSnapshot {
   correctOptionIndex: number;
   difficulty?: 'easy' | 'medium' | 'hard';
   isCancelled?: boolean;
+  type?: 'multiple_choice' | 'open_text';
+  /** §12.A — Adjuntos */
+  attachments?: { url: string; name: string; type: string; size: number }[];
 }
 
 export interface QuizAttemptQuestion {
   questionId: string;
   questionSnapshot: QuizQuestionSnapshot;
   selectedOptionIndex?: number;
+  manualTextAnswer?: string;
   isCorrect: boolean;
   timeSpentSeconds: number;
   status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
@@ -25,6 +29,7 @@ export interface QuizAttemptQuestion {
 export interface SerializedExamAttempt extends Omit<IExamAttempt, 'questions' | '_id' | 'examConfigId'> {
   _id: string;
   questions: QuizAttemptQuestion[];
+  attemptToken?: string;
   examConfigId?: SerializedExamConfig;
 }
 

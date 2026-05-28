@@ -2,7 +2,7 @@ import Course from '@/models/Course';
 import ExamAttempt from '@/models/ExamAttempt';
 import UserCourseSummary from '@/models/UserCourseSummary';
 import CourseAnalytics from '@/models/CourseAnalytics';
-import { LogsClient } from '@/lib/logs-client';
+import { logger } from '@ajabadia/satellite-sdk';
 
 export class AnalyticsSyncService {
   /**
@@ -14,7 +14,7 @@ export class AnalyticsSyncService {
     this.syncInternal(attemptId, tenantId, userId).catch((error) => {
       console.error('❌ [ANALYTICS_SYNC_ERROR]:', error);
       // Log to central audit trail via LogsClient (captures PII masking and is async)
-      LogsClient.log({
+      logger.audit({
         tenantId,
         action: 'ANALYTICS_SYNC_FAILED',
         entityType: 'SYSTEM',
@@ -37,7 +37,7 @@ export class AnalyticsSyncService {
     // 1. Find Course containing this ExamConfig in its learningPath
     const course = await Course.findOne({
       tenantId,
-      learningPath: attempt.examConfigId
+      'learningPath.examConfigId': attempt.examConfigId
     });
 
     if (!course) {
@@ -45,7 +45,8 @@ export class AnalyticsSyncService {
       return;
     }
 
-    const examConfigIds = course.learningPath;
+    // Mapear los IDs del path formativo de manera explícita
+    const examConfigIds = course.learningPath.map(item => item.examConfigId);
 
     // 2. Fetch all completed and non-invalidated attempts by this user for the course path
     const userAttempts = await ExamAttempt.find({
@@ -59,7 +60,9 @@ export class AnalyticsSyncService {
     // Calculate completed assignments (unique examConfigIds completed)
     const completedConfigs = new Set<string>();
     for (const att of userAttempts) {
-      completedConfigs.add(att.examConfigId.toString());
+      if (att.examConfigId) {
+        completedConfigs.add(att.examConfigId.toString());
+      }
     }
 
     const completedAssignments = completedConfigs.size;

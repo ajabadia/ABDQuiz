@@ -90,7 +90,7 @@ Archivo de configuración de Shadcn UI presente en la raíz.
 **Ya corregido antes de v03.** El código actual usa `data as Record<string, unknown>` en lugar de `as any`.
 
 ### 3. ✅ Dependencia `jose` en package.json
-**ELIMINADA en v03.** No había imports directos de `jose` en ABDQuiz. La funcionalidad JWT se maneja a través de `@abd/satellite-sdk`.
+**ELIMINADA en v03.** No había imports directos de `jose` en ABDQuiz. La funcionalidad JWT se maneja a través de `@ajabadia/satellite-sdk`.
 
 ### 4. ✅ `shadcn` eliminado (v04)
 **ELIMINADO en v04.** 0 imports en producción — CLI tool no usado.

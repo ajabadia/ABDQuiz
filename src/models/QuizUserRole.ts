@@ -27,7 +27,7 @@ QuizUserRoleSchema.index({ userId: 1, scopeType: 1, scopeId: 1 }, { unique: true
 // Índice de rendimiento para queries frecuentes de requireQuizScope
 QuizUserRoleSchema.index({ tenantId: 1, userId: 1, scopeId: 1 });
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const QuizUserRole: Model<IQuizUserRole> = getTenantModel<IQuizUserRole>('QuizUserRole', QuizUserRoleSchema);
 

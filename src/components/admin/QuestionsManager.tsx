@@ -7,6 +7,13 @@ import { Search, Edit2, ChevronLeft, ChevronRight, SlidersHorizontal } from 'luc
 import { useTranslations } from 'next-intl';
 import { QuestionEditorModal } from './QuestionEditorModal';
 
+interface Attachment {
+  url: string;
+  name: string;
+  type: string;
+  size: number;
+}
+
 interface QuestionItem {
   _id: string;
   questionText: string;
@@ -19,6 +26,7 @@ interface QuestionItem {
   correctOptionIndex: number;
   explanation: string;
   tags: string[];
+  attachments?: Attachment[];
 }
 
 interface QuestionsManagerProps {
@@ -58,7 +66,8 @@ export default function QuestionsManager({ tenantId }: QuestionsManagerProps) {
           options: q.options,
           correctOptionIndex: q.correctOptionIndex,
           explanation: q.explanation || '',
-          tags: q.tags || []
+          tags: q.tags || [],
+          attachments: q.attachments || []
         }));
         setQuestions(mapped);
         setPagination({ total: res.data.total, pages: res.data.pages });

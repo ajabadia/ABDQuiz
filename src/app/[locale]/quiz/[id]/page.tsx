@@ -1,10 +1,10 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose
 import { notFound } from 'next/navigation';
 import QuizInterface from '@/components/quiz/QuizInterface';
-import { withTenantContext } from '@/lib/database/tenant-model';
-import { getIndustrialSession } from '@/lib/session';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk';
 
 interface QuizPageProps {
   params: Promise<{ id: string; locale: string }>;

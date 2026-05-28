@@ -38,8 +38,8 @@
 - ✅ **5.2 Guardas de Acceso y AttemptToken**: Control de accesos multi-tenant (`scope-guard.ts`) y AttemptToken efímero criptográfico para mitigar fuerza bruta local.
 - ✅ **5.3 Algoritmo de Slicing Seguro**: Algoritmo exacto de barajado de respuestas asegurando que la opción correcta nunca se descarte.
 - ✅ **5.4 Ingesta Canónica Resiliente**: Hashing semántico enfocado en identidad y robustecimiento de transacciones Mongo con fallback compensatorio standalone.
-- ✅ **5.5 Calificación Humana**: Preguntas `'open_text'` y panel `/admin/grading` para evaluación manual.
-- ✅ **5.6 Desacoplamiento de Analíticas**: `AnalyticsSyncService` asíncrono no bloqueante (Fire & Forget) que actualiza `UserCourseSummary` y `CourseAnalytics`.
+- ✅ **5.5 Calificación Humana:** Preguntas `'open_text'` y panel `/admin/grading` para evaluación manual.
+- ✅ **5.6 Desacoplamiento de Analíticas:** `AnalyticsSyncService` asíncrono no bloqueante (Fire & Forget) que actualiza `UserCourseSummary` y `CourseAnalytics`.
 
 ## 📈 Current Status
 - **Audit Results:** **SYS_CERTIFIED (Era 11 - Zero Warnings / Zero Errors)**.
@@ -47,4 +47,4 @@
 - **Data Status:** Ecosistema de Aprendizaje Multi-Tenant completo, con control de acceso contextual, tokens de intentos efímeros, ingesta canónica con fallback de transacciones, calificación manual y sincronización analítica asíncrona.
 
 ---
-*Last Update: 2026-05-27 14:45 | Certification: SYS_CERTIFIED*
+*Last Update: 2026-05-27 15:35 | Certification: SYS_CERTIFIED*

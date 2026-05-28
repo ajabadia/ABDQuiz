@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { invalidateAttemptAction } from '@/actions/quiz';
 import { toast } from 'sonner';
-import { ConfirmDialog } from '@abd/ecosystem-widgets';
+import { ConfirmDialog } from '@ajabadia/ecosystem-widgets';
 
 interface AttemptProps {
   _id: string;

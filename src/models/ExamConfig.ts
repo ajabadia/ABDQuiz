@@ -15,6 +15,7 @@ export interface IExamConfig extends Document {
   };
   shuffleQuestions: boolean;
   shuffleOptions: boolean;
+  sliceOptionsCount: number | null; // Nº de opciones a mostrar (dynamic slicing). null = todas
   
   // --- Temporización ---
   globalTimeLimitSeconds: number | null;
@@ -68,6 +69,7 @@ const ExamConfigSchema: Schema = new Schema(
     },
     shuffleQuestions: { type: Boolean, default: true },
     shuffleOptions: { type: Boolean, default: true },
+    sliceOptionsCount: { type: Number, default: null },
     
     // --- Temporización ---
     globalTimeLimitSeconds: { type: Number, default: 600 },
@@ -109,7 +111,7 @@ const ExamConfigSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const ExamConfig: Model<IExamConfig> = getTenantModel<IExamConfig>('ExamConfig', ExamConfigSchema);
 

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import connectDB from '../src/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import { CorpusImporter } from '../src/services/corpus/CorpusImporter';
 import Question from '../src/models/Question';
 

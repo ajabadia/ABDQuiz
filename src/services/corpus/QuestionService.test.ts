@@ -183,6 +183,8 @@ describe('QuestionService', () => {
         tenantId: 'tenant-1',
         version: 2,
         active: true,
+        spaceId: 'space-abc',
+        courseId: 'course-xyz',
         originImportId: 'import-xyz',
         save: mockSave,
       };
@@ -195,6 +197,8 @@ describe('QuestionService', () => {
         ...mockInput,
         version: 3,
         active: true,
+        spaceId: 'space-abc',
+        courseId: 'course-xyz',
         originImportId: 'import-xyz',
       };
       mockCreate.mockResolvedValue(mockBranchedQuestion);
@@ -209,6 +213,8 @@ describe('QuestionService', () => {
           ...mockInput,
           version: 3,
           active: true,
+          spaceId: 'space-abc',
+          courseId: 'course-xyz',
           originImportId: 'import-xyz',
           contentHash: expect.any(String),
         })

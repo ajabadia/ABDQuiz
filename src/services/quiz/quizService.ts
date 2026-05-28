@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';
@@ -9,6 +9,27 @@ import { type IExamConfig } from '@/models/ExamConfig';
 import { type QuizAttemptQuestion } from '@/types/quiz';
 
 export class QuizService {
+  /**
+   * §12.D — Anti-clock tampering: registra un heartbeat del cliente mientras el examen está activo.
+   * Actualiza lastHeartbeatAt y renueva el attemptTokenExpiresAt si procede.
+   */
+  static async sendHeartbeat(attemptId: string, userId: string): Promise<{ success: boolean; attemptEnded?: boolean }> {
+    await connectDB();
+
+    const attempt = await ExamAttempt.findOne({ _id: attemptId, userId });
+    if (!attempt) throw new Error('Exam attempt not found or unauthorized');
+
+    // Si el intento ya terminó, informar al cliente para que detenga heartbeats
+    if (attempt.status !== 'in_progress') {
+      return { success: false, attemptEnded: true };
+    }
+
+    attempt.lastHeartbeatAt = new Date();
+    await attempt.save();
+
+    return { success: true };
+  }
+
   /**
    * Genera un nuevo intento de examen basado en una configuración técnica
    */
@@ -231,17 +252,24 @@ export class QuizService {
         let finalOptions = [...q.options];
         let newCorrectIndex = q.correctOptionIndex;
 
-        if (config.shuffleOptions) {
+        // Step 1: Dynamic slicing (reduce number of displayed options)
+        const sliceCount = (config.sliceOptionsCount != null && config.sliceOptionsCount >= 2)
+          ? config.sliceOptionsCount
+          : q.options.length;
+        if (sliceCount < q.options.length) {
+          // Always keep the correct option, select random incorrect ones
           const correctText = q.options[q.correctOptionIndex];
           const incorrectOptions = q.options.filter((_, idx) => idx !== q.correctOptionIndex);
           const shuffledIncorrect = [...incorrectOptions].sort(() => 0.5 - Math.random());
-          
-          const maxOptions = (config as any).sliceOptionsCount;
-          const sliceCount = (maxOptions && maxOptions >= 2) ? maxOptions : q.options.length;
           const selectedIncorrect = shuffledIncorrect.slice(0, sliceCount - 1);
-          
-          const mergedOptions = [correctText, ...selectedIncorrect];
-          finalOptions = mergedOptions.sort(() => 0.5 - Math.random());
+          finalOptions = [correctText, ...selectedIncorrect];
+          newCorrectIndex = 0; // Correct is at index 0 after merging
+        }
+
+        // Step 2: Shuffle (if configured)
+        if (config.shuffleOptions) {
+          const correctText = finalOptions[newCorrectIndex];
+          finalOptions = [...finalOptions].sort(() => 0.5 - Math.random());
           newCorrectIndex = finalOptions.indexOf(correctText);
         }
 
@@ -254,7 +282,10 @@ export class QuizService {
             source: q.source,
             explanation: q.explanation,
             correctOptionIndex: newCorrectIndex,
-            difficulty: q.difficulty
+            difficulty: q.difficulty,
+            type: q.type,
+            /** §12.A — Adjuntos de la pregunta original */
+            attachments: q.attachments || [],
           },
           position: index + 1,
           isCorrect: false,
@@ -280,7 +311,8 @@ export class QuizService {
     timeSpent: number,
     status: QuizAttemptQuestion['status'],
     userId: string,
-    attemptToken?: string
+    attemptToken?: string,
+    textAnswer?: string
   ): Promise<IExamAttempt> {
     await connectDB();
     
@@ -306,6 +338,9 @@ export class QuizService {
     question.timeSpentSeconds = timeSpent;
     question.status = status;
     question.isCorrect = status === 'correcta';
+    if (textAnswer !== undefined) {
+      question.manualTextAnswer = textAnswer;
+    }
 
     await attempt.save();
     return attempt;
@@ -319,6 +354,11 @@ export class QuizService {
     
     const attempt = await ExamAttempt.findOne({ _id: attemptId, userId }).populate<{ examConfigId: IExamConfig }>('examConfigId');
     if (!attempt) throw new Error('Exam attempt not found or unauthorized');
+
+    // §12.D — Double-submission guard: reject if already completed/timeout
+    if (attempt.status !== 'in_progress') {
+      throw new Error('Este intento ya ha sido finalizado. No se permite el doble envío.');
+    }
 
     // Validación temporal y token del intento
     if (attempt.attemptToken) {
@@ -362,9 +402,9 @@ export class QuizService {
     attempt.score = Math.max(0, totalScore);
     attempt.percentage = maxPossible > 0 ? (attempt.score / maxPossible) * 100 : 0;
 
-    // Por defecto, todos los intentos se gradúan automáticamente
-    // (cuando se implementen preguntas open_text, se cambiará a 'pending_manual_review' según corresponda)
-    attempt.gradingStatus = 'auto_graded';
+    // Si el intento incluye alguna pregunta de desarrollo (open_text), pasa a revisión manual pendiente.
+    const hasOpenText = attempt.questions.some(q => q.questionSnapshot?.type === 'open_text');
+    attempt.gradingStatus = hasOpenText ? 'pending_manual_review' : 'auto_graded';
 
     await attempt.save();
     // Cast necesario: tras populate(), examConfigId es IExamConfig (no ObjectId).

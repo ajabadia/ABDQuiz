@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 export interface IAuditEntry {
   action: string;

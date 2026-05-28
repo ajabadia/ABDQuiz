@@ -10,7 +10,7 @@ import { type SerializedExamConfig } from '@/types/quiz';
 import Link from 'next/link';
 import { deleteExamConfigAction, cloneExamConfigAction } from '@/actions/examConfig';
 import { toast } from 'sonner';
-import { ConfirmDialog } from '@abd/ecosystem-widgets';
+import { ConfirmDialog } from '@ajabadia/ecosystem-widgets';
 
 interface ExamsListProps {
   configs: SerializedExamConfig[];

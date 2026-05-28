@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Allegation, { type IAllegation } from '@/models/Allegation';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';

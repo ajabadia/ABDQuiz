@@ -42,6 +42,7 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
     reviewOmittedQuestions: initialData?.reviewOmittedQuestions ?? false,
     excludePreviouslyCorrect: initialData?.excludePreviouslyCorrect ?? false,
     adaptiveQuestionSelection: initialData?.adaptiveQuestionSelection ?? false,
+    sliceOptionsCount: initialData?.sliceOptionsCount ?? null,
     maxAttempts: initialData?.maxAttempts || 0,
     pointsPerCorrect: initialData?.pointsPerCorrect || 1,
     penaltyPerIncorrect: initialData?.penaltyPerIncorrect || 0,
@@ -143,6 +144,7 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
         reviewOmittedQuestions={formData.reviewOmittedQuestions}
         excludePreviouslyCorrect={formData.excludePreviouslyCorrect}
         adaptiveQuestionSelection={formData.adaptiveQuestionSelection}
+        sliceOptionsCount={formData.sliceOptionsCount}
         onChange={(fields) => setFormData(prev => ({ ...prev, ...fields }))}
         translations={{
           feedbackLabel: t('feedbackLabel'),
@@ -159,6 +161,8 @@ export default function ExamConfigForm({ initialData, locale, tenantId }: ExamCo
           excludeCorrectDesc: t('excludeCorrectDesc'),
           adaptiveLabel: t('adaptiveLabel'),
           adaptiveDesc: t('adaptiveDesc'),
+          sliceOptionsLabel: t('sliceOptionsLabel'),
+          sliceOptionsDesc: t('sliceOptionsDesc'),
         }}
       />
 

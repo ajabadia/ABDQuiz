@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import connectDB from '@/lib/database/mongodb';
-import type { TenantContext } from '@/lib/database/tenant-model';
+import { connectDB } from '@ajabadia/satellite-sdk';
+import type { TenantContext } from '@ajabadia/satellite-sdk';
 
 /**
  * Resolves a TenantContext for a target tenant by querying the central auth database.

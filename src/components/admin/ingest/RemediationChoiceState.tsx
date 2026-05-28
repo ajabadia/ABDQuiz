@@ -23,7 +23,7 @@ export function RemediationChoiceState({
   return (
     <div className="flex flex-col gap-6 animate-in fade-in">
       <div className="space-y-2">
-        <div className="flex items-center gap-3 text-yellow-500">
+        <div className="flex items-center gap-3 text-warning">
           <AlertTriangle className="w-6 h-6 animate-pulse" />
           <h2 className="text-lg font-black uppercase tracking-tight italic">
             {ap('remediationTitle')}
@@ -43,9 +43,9 @@ export function RemediationChoiceState({
           role="button"
           tabIndex={0}
           aria-label={ap('remedOption1')}
-          className="p-5 border border-white/5 hover:border-primary/30 bg-card/30 hover:bg-primary/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-primary/30"
+          className="p-5 border border-border hover:border-primary/30 bg-card/30 hover:bg-primary/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-primary/30"
         >
-          <div className="p-2.5 bg-white/5 border border-white/5 group-hover:border-primary/20 transition-all">
+          <div className="p-2.5 bg-muted border border-border group-hover:border-primary/20 transition-all">
             <Sliders className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
           <div className="space-y-1">
@@ -65,9 +65,9 @@ export function RemediationChoiceState({
           role="button"
           tabIndex={0}
           aria-label={ap('remedOption2')}
-          className="p-5 border border-white/5 hover:border-primary/30 bg-card/30 hover:bg-primary/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-primary/30"
+          className="p-5 border border-border hover:border-primary/30 bg-card/30 hover:bg-primary/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-primary/30"
         >
-          <div className="p-2.5 bg-white/5 border border-white/5 group-hover:border-primary/20 transition-all">
+          <div className="p-2.5 bg-muted border border-border group-hover:border-primary/20 transition-all">
             <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
           <div className="space-y-1">
@@ -87,13 +87,13 @@ export function RemediationChoiceState({
           role="button"
           tabIndex={0}
           aria-label={ap('remedOption3')}
-          className="p-5 border border-white/5 hover:border-red-500/30 bg-card/30 hover:bg-red-500/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-red-500/30"
+          className="p-5 border border-border hover:border-destructive/30 bg-card/30 hover:bg-destructive/5 cursor-pointer transition-all flex items-start gap-4 group focus:outline-none focus:ring-1 focus:ring-destructive/30"
         >
-          <div className="p-2.5 bg-white/5 border border-white/5 group-hover:border-red-500/20 transition-all">
-            <ShieldAlert className="w-5 h-5 text-muted-foreground group-hover:text-red-400 transition-colors" />
+          <div className="p-2.5 bg-muted border border-border group-hover:border-destructive/20 transition-all">
+            <ShieldAlert className="w-5 h-5 text-muted-foreground group-hover:text-destructive transition-colors" />
           </div>
           <div className="space-y-1">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-red-400 transition-colors">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-destructive transition-colors">
               {ap('remedOption3')}
             </h4>
             <p className="text-[10px] text-muted-foreground uppercase leading-normal">

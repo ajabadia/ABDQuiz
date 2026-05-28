@@ -71,14 +71,14 @@ const mockT = vi.fn((key: string) => {
   return labels[key] || key;
 });
 
-vi.mock('@abd/ecosystem-widgets', () => {
+vi.mock('@ajabadia/ecosystem-widgets', () => {
   const MockConfirmDialog = ({ open, onCancel, onConfirm, title, message, confirmLabel, cancelLabel }: Record<string, unknown>) =>
     open ? (
       <div data-testid="confirm-dialog">
         <p>{(title as string) || ''}</p>
         <p>{(message as string) || ''}</p>
-        <button onClick={onCancel as () => void}>{(cancelLabel as string) || ''}</button>
-        <button onClick={onConfirm as () => void}>{(confirmLabel as string) || ''}</button>
+        <button onClick={onCancel as () => void} aria-label={(cancelLabel as string) || 'Cancelar'}>{((cancelLabel as string) || '')}</button>
+        <button onClick={onConfirm as () => void} aria-label={(confirmLabel as string) || 'Confirmar'}>{((confirmLabel as string) || '')}</button>
       </div>
     ) : null;
   MockConfirmDialog.displayName = 'ConfirmDialog';

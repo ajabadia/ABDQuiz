@@ -32,7 +32,7 @@ Plataforma web multitenant de alto rendimiento para el entrenamiento de exámene
 
 ### 1. Multitenancy Industrial (Opción B)
 - **Aislamiento:** Gestión por subdominios (`academia.abdquiz.com`).
-- **Personalización Dinámica (@abd/styles):** Orquestador de estilos dinámicos (colores y logo vía variables CSS compilados en el servidor en tiempo de ejecución con evitación de parpadeo FOUC).
+- **Personalización Dinámica (@ajabadia/styles):** Orquestador de estilos dinámicos (colores y logo vía variables CSS compilados en el servidor en tiempo de ejecución con evitación de parpadeo FOUC).
 - **Jerarquía:** Soporte para Academias -> Centros -> Usuarios.
 
 ### 2. Multi-modelo de Evaluación

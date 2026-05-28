@@ -22,6 +22,7 @@ export interface IExamAttempt extends Document {
   invalidatedAt?: Date;
   attemptToken?: string; // Token de intento efímero para prevenir replay attacks / manipulación
   attemptTokenExpiresAt?: Date; // Expiración absoluta del token
+  lastHeartbeatAt?: Date; // Último heartbeat recibido (§12.D — anti-clock tampering)
   questions: {
     questionId: string | mongoose.Types.ObjectId;
     questionSnapshot: QuizQuestionSnapshot;
@@ -65,6 +66,7 @@ const ExamAttemptSchema: Schema = new Schema(
     invalidatedAt: Date,
     attemptToken: { type: String, index: true },
     attemptTokenExpiresAt: Date,
+    lastHeartbeatAt: { type: Date },
     questions: [
       {
         questionId: { type: Schema.Types.ObjectId, ref: 'Question' },
@@ -90,7 +92,7 @@ const ExamAttemptSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const ExamAttempt = getTenantModel<IExamAttempt>('ExamAttempt', ExamAttemptSchema);
 

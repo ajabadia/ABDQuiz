@@ -36,7 +36,7 @@ export function BulkRemediationState({
         </p>
       </div>
 
-      <div className="h-[1px] bg-white/5 w-full" />
+      <div className="h-[1px] bg-border w-full" />
 
       <div className="grid gap-6">
         
@@ -51,7 +51,7 @@ export function BulkRemediationState({
             onChange={(e) => onDataChange({ ...bulkData, modulo: e.target.value })}
             required
             placeholder="Ej: Redes y Protocolos"
-            className="w-full bg-background border border-white/10 h-12 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
+            className="input-console h-12"
           />
         </div>
 
@@ -66,7 +66,7 @@ export function BulkRemediationState({
             onChange={(e) => onDataChange({ ...bulkData, fuente: e.target.value })}
             required
             placeholder="Ej: Certificación Oficial 2024"
-            className="w-full bg-background border border-white/10 h-12 px-4 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
+            className="input-console h-12"
           />
         </div>
 
@@ -78,7 +78,7 @@ export function BulkRemediationState({
             id="bulk-difficulty"
             value={bulkData.difficulty}
             onChange={(e) => onDataChange({ ...bulkData, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
-            className="w-full bg-background border border-white/10 h-12 px-4 text-sm font-mono uppercase focus:outline-none focus:ring-1 focus:ring-primary/50"
+            className="input-console h-12 uppercase"
           >
             <option value="easy">{ap('diffEasy')}</option>
             <option value="medium">{ap('diffMedium')}</option>
@@ -93,7 +93,7 @@ export function BulkRemediationState({
           type="button" 
           onClick={onBack}
           aria-label={ap('btnBack')}
-          className="w-1/3 border border-white/10 hover:bg-white/5 text-[10px] uppercase font-bold tracking-widest font-mono h-12"
+          className="w-1/3 border border-border hover:bg-muted text-[10px] uppercase font-bold tracking-widest font-mono h-12"
         >
           {ap('btnBack')}
         </button>

@@ -9,6 +9,7 @@ vi.mock('@/lib/database/mongodb', () => ({
 vi.mock('@/lib/database/tenant-model', () => ({
   withTenantContext: vi.fn((fn: () => unknown) => fn()),
   getTenantModel: vi.fn((name, schema) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const mongoose = require('mongoose');
     return mongoose.models[name] || mongoose.model(name, schema);
   }),
@@ -40,9 +41,13 @@ vi.mock('@/lib/tenant-resolver', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@/lib/session', () => ({
-  getIndustrialSession: vi.fn(),
-}));
+vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
+  return {
+    ...actual,
+    getIndustrialSession: vi.fn(),
+  };
+});
 
 vi.mock('@/lib/auth/ensureQuizAccess', () => ({
   ensureAdminOrProfessor: vi.fn(),
@@ -93,7 +98,7 @@ vi.mock('next/navigation', () => ({
 
 // ── Import mock refs ───────────────────────────────────
 
-import * as SessionMod from '@/lib/session';
+import * as SessionMod from '@ajabadia/satellite-sdk';
 import * as QuizAccessMod from '@/lib/auth/ensureQuizAccess';
 import * as ResolverMod from '@/lib/tenant-resolver';
 import * as QuizServiceMod from '@/services/quiz/quizService';

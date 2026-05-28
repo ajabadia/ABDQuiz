@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Question, { type IQuestion } from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';
 import { generateQuestionHash } from '@/lib/corpus/hash';
@@ -82,6 +82,8 @@ export class QuestionService {
       module: string;
       source: string;
       tags: string[];
+      /** §12.A — Adjuntos */
+      attachments?: { url: string; name: string; type: string; size: number }[];
     }
   ): Promise<IQuestion> {
     await connectDB();
@@ -137,6 +139,8 @@ export class QuestionService {
         contentHash: newHash,
         version: oldQuestion.version + 1,
         active: true,
+        spaceId: oldQuestion.spaceId,
+        courseId: oldQuestion.courseId,
         originImportId: oldQuestion.originImportId // Mantenemos link de trazabilidad de importación
       });
 

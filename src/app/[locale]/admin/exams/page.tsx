@@ -1,13 +1,13 @@
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamsList from '@/components/admin/ExamsList';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { getExamConfigsAction } from '@/actions/examConfig';
-import { AdminPageHeader } from '@abd/styles';
-import { GlobalFooter } from '@abd/ecosystem-widgets';
+import { AdminPageHeader } from '@ajabadia/styles';
+import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
 
 export default async function AdminExamsPage({
   params,

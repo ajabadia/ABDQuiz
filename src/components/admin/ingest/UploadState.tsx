@@ -42,7 +42,7 @@ export function UploadState({
         role="button"
         tabIndex={0}
         aria-label={t('dragDrop')}
-        className="group border-2 border-dashed border-white/10 hover:border-primary/50 bg-white/5 p-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all focus:border-primary focus:outline-none"
+        className="group border-2 border-dashed border-border hover:border-primary/50 bg-muted p-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all focus:border-primary focus:outline-none"
       >
         {isUploading ? (
           <Loader2 className="w-12 h-12 text-primary animate-spin" aria-hidden="true" />
@@ -68,11 +68,11 @@ export function UploadState({
 
       {file && (
         <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2">
-          <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/5">
+          <div className="flex items-center gap-4 p-4 bg-muted border border-border">
             {sourceType === 'json' ? (
-              <FileJson className="w-8 h-8 text-yellow-500" aria-hidden="true" />
+              <FileJson className="w-8 h-8 text-warning" aria-hidden="true" />
             ) : (
-              <FileSpreadsheet className="w-8 h-8 text-green-500" aria-hidden="true" />
+              <FileSpreadsheet className="w-8 h-8 text-emerald-500" aria-hidden="true" />
             )}
             <div className="flex-1">
               <div className="text-[10px] font-bold font-mono text-muted-foreground uppercase tracking-widest">

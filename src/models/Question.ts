@@ -2,40 +2,55 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IQuestion extends Document {
   tenantId: string;
+  type: 'multiple_choice' | 'open_text';
   module: string;
   source: string;
   questionText: string;
-  options: string[];
-  correctOptionIndex: number;
+  options: string[]; // vacío si type === 'open_text'
+  correctOptionIndex: number; // -1 o ignorado si type === 'open_text'
   explanation: string;
   tags: string[];
   difficulty: 'easy' | 'medium' | 'hard';
   active: boolean;
   questionTextHash: string; // Hash del enunciado aplanado para colisiones parciales
-  optionHashes: string[]; // Hashes individuales aplanados de las opciones
+  optionHashes: string[]; // Hashes individuales aplanados de las opciones (vacío si open_text)
   contentHash: string; // Para detección de duplicados
   version: number;
+  spaceId?: string; // ID del Space al que pertenece la pregunta
+  courseId?: string; // ID del Course al que pertenece la pregunta
   originImportId?: mongoose.Types.ObjectId; // Trazabilidad al lote de importación
+  /** §12.A — Adjuntos (imágenes, documentos, audio, etc.) */
+  attachments?: { url: string; name: string; type: string; size: number }[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 const QuestionSchema = new Schema<IQuestion>({
   tenantId: { type: String, required: true, index: true },
+  type: { type: String, enum: ['multiple_choice', 'open_text'], default: 'multiple_choice', index: true },
   module: { type: String, required: true, index: true },
   source: { type: String, required: true },
   questionText: { type: String, required: true },
-  options: [{ type: String, required: true }],
-  correctOptionIndex: { type: Number, required: true },
+  options: { type: [String], default: [] },
+  correctOptionIndex: { type: Number, default: 0 },
   explanation: { type: String, default: "" },
   tags: [{ type: String }],
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
   active: { type: Boolean, default: true, index: true },
   questionTextHash: { type: String, required: true, index: true },
-  optionHashes: [{ type: String, required: true }],
+  optionHashes: { type: [String], default: [] },
   contentHash: { type: String, required: true, index: true },
   version: { type: Number, default: 1 },
-  originImportId: { type: Schema.Types.ObjectId, ref: 'CorpusImport' }
+  spaceId: { type: String },
+  courseId: { type: String },
+  originImportId: { type: Schema.Types.ObjectId, ref: 'CorpusImport' },
+  /** §12.A — Adjuntos */
+  attachments: [{
+    url: { type: String, required: true },
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    size: { type: Number, required: true },
+  }]
 }, {
   timestamps: true
 });
@@ -46,7 +61,7 @@ QuestionSchema.index(
   { unique: true, partialFilterExpression: { active: true } }
 );
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const Question: Model<IQuestion> = getTenantModel<IQuestion>('Question', QuestionSchema);
 

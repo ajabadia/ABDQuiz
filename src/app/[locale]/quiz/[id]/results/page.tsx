@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose
 import { notFound } from 'next/navigation';
@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { type QuizAttemptQuestion } from '@/types/quiz';
 import { getTranslations } from 'next-intl/server';
 import { AuditDetail } from '@/components/quiz/AuditDetail';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 
 interface ResultsPageProps {
   params: Promise<{ id: string; locale: string }>;

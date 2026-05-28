@@ -4,9 +4,9 @@ import { QuestionService, type QuestionFilters } from '@/services/corpus/Questio
 import { revalidatePath } from 'next/cache';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { type IQuestion } from '@/models/Question';
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 interface ActionResponse<T> {
@@ -81,6 +81,8 @@ export async function saveQuestionAction(
     module: string;
     source: string;
     tags: string[];
+    /** §12.A — Adjuntos */
+    attachments?: { url: string; name: string; type: string; size: number }[];
   },
   tenantIdParam?: string
 ): Promise<ActionResponse<IQuestion>> {

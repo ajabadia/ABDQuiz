@@ -44,7 +44,7 @@ const SpaceLiteSchema = new Schema<ISpaceLite>(
   { timestamps: true }
 );
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 /**
  * Modelo de solo lectura para consultar Spaces.

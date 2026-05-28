@@ -1,11 +1,11 @@
 'use server';
 
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { LogsClient } from '@/lib/logs-client';
+import { logger } from '@ajabadia/satellite-sdk';
 
 export interface SerializedGradingAttempt {
   _id: string;
@@ -131,8 +131,7 @@ export async function getAttemptDetailAction(attemptId: string, tenantIdParam?: 
       .lean();
 
     if (!attempt) return null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const a = attempt as any;
+    const a = attempt as unknown as Record<string, unknown>;
     const activeTenantId = explicitCtx?.tenantId || admin.tenantId;
     if (a.tenantId !== activeTenantId && admin.role !== 'SUPER_ADMIN') return null;
 
@@ -194,8 +193,20 @@ export async function submitManualGradingAction(
       const attempt = await ExamAttempt.findById(attemptId);
       if (!attempt) return { success: false, error: 'Intento no encontrado' };
       const activeTenantId = explicitCtx?.tenantId || admin.tenantId;
-      if (attempt.tenantId !== activeTenantId && admin.role !== 'SUPER_ADMIN') {
-        return { success: false, error: 'Acceso no autorizado' };
+      // Verify space or course permission scope before grading
+      const examConfigIdStr = attempt.examConfigId ? attempt.examConfigId.toString() : '';
+      if (examConfigIdStr) {
+        const { requireQuizScope } = await import('@/lib/auth/scope-guard');
+        const scopeCheck = await requireQuizScope(
+          admin.id,
+          activeTenantId,
+          examConfigIdStr,
+          'course',
+          'CREATOR'
+        );
+        if (!scopeCheck.granted && admin.role !== 'SUPER_ADMIN') {
+          return { success: false, error: 'Acceso denegado: Rol contextual insuficiente en el espacio formativo' };
+        }
       }
 
       // Apply grades to each question
@@ -233,7 +244,7 @@ export async function submitManualGradingAction(
 
       await attempt.save();
 
-      await LogsClient.log({
+      await logger.audit({
         tenantId: admin.tenantId,
         action: 'EXAM_ATTEMPT_MANUALLY_GRADED',
         entityType: 'EXAM',

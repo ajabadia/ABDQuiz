@@ -14,9 +14,13 @@ vi.mock('@/lib/tenant-resolver', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('@/lib/session', () => ({
-  getIndustrialSession: vi.fn(),
-}));
+vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
+  return {
+    ...actual,
+    getIndustrialSession: vi.fn(),
+  };
+});
 
 vi.mock('@/models/ExamConfig', () => {
   const mockFindById = vi.fn();
@@ -50,7 +54,7 @@ vi.mock('next/cache', () => ({
 // ── Import mock refs ───────────────────────────────────
 
 import * as ExamConfigMod from '@/models/ExamConfig';
-import * as SessionMod from '@/lib/session';
+import * as SessionMod from '@ajabadia/satellite-sdk';
 import * as ResolverMod from '@/lib/tenant-resolver';
 
 const { mockFindById, mockFindByIdAndUpdate, mockCreate } = ExamConfigMod as unknown as {

@@ -22,6 +22,12 @@ export const IngestQuestionSchema = z.object({
   fuente: z.string().optional().default(""),
   difficulty: z.enum(['easy', 'medium', 'hard']).optional().default('medium'),
   tags: z.array(z.string()).optional().default([]),
+  // --- Metadatos Jerárquicos (opcionales en lote) ---
+  spaceId: z.string().optional(),
+  courseId: z.string().optional(),
+  loadedAt: z.string().optional(),
+  generatedAt: z.string().optional(),
+  importVersion: z.string().optional(),
 }).refine(data => data.respuesta_correcta < data.opciones.length, {
   message: "El índice de respuesta_correcta está fuera de rango",
   path: ["respuesta_correcta"]

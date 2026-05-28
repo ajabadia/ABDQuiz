@@ -1,11 +1,11 @@
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowLeft, CalendarRange } from 'lucide-react';
 import { Link } from '@/i18n/routing';
-import { AdminPageHeader } from '@abd/styles';
-import { GlobalFooter } from '@abd/ecosystem-widgets';
+import { AdminPageHeader } from '@ajabadia/styles';
+import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
 import { listAssignmentsAction } from '@/actions/examAssignment';
 import AssignmentsList from './AssignmentsList';
 

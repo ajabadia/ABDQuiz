@@ -5,7 +5,7 @@ import { type SerializedExamConfig } from '@/types/quiz';
 import { getAvailableExamsAction } from '@/actions/examAssignment';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
-import { GlobalFooter } from '@abd/ecosystem-widgets';
+import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
 
 export default async function ExamsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

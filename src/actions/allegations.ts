@@ -2,10 +2,10 @@
 
 import { AllegationService } from '@/services/allegations/allegationService';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { revalidatePath } from 'next/cache';
 import { type IAllegation } from '@/models/Allegation';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 interface ActionResponse<T> {

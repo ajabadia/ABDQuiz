@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
-import { GlobalFooter } from '@abd/ecosystem-widgets';
+import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
 import { Separator } from '@/components/ui/separator';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { resolveTenantContext } from '@/lib/tenant-context';
@@ -12,10 +12,11 @@ import {
   LayoutDashboard,
   Terminal,
   CalendarRange,
-  GraduationCap
+  GraduationCap,
+  BookOpen
 } from 'lucide-react';
 import { DashboardCard } from '@/components/admin/DashboardCard';
-import { AdminPageHeader } from '@abd/styles';
+import { AdminPageHeader } from '@ajabadia/styles';
 
 /**
  * 🛰️ Central Admin Governance Portal Page (Federated Server Component)
@@ -108,7 +109,19 @@ export default async function AdminPortalPage({
                 actionText="Gestionar Impugnaciones"
               />
 
-              {/* Card 5: Exam Assignments */}
+              {/* Card 5: Courses */}
+              <DashboardCard
+                icon={BookOpen}
+                category={ap('repositorio')}
+                title={t('coursesTitle')}
+                description={t('coursesSubtitle')}
+                badgeLabel="Learning Paths"
+                badgeValue={ap('activo')}
+                actionUrl={`/${locale}/admin/courses${tenantSuffix}`}
+                actionText="Gestionar Cursos"
+              />
+
+              {/* Card 6: Exam Assignments */}
               <DashboardCard
                 icon={CalendarRange}
                 category="Calendarización"
@@ -133,18 +146,19 @@ export default async function AdminPortalPage({
                 colSpan="col-span-1 md:col-span-2"
               />
 
-              {/* Card 7: Manual Grading */}
-              <DashboardCard
-                icon={GraduationCap}
-                category={ap('algoritmos')}
-                title={ap('gradingTitle')}
-                description={ap('gradingDesc')}
-                badgeLabel={ap('gradingBadgeLabel')}
-                badgeValue={ap('gradingBadgeValue')}
-                actionUrl={`/${locale}/admin/grading${tenantSuffix}`}
-                actionText={ap('gradingActionText')}
-              />
-
+              {/* Card 7: Manual Grading (Feature Flagged) */}
+              {process.env.NEXT_PUBLIC_ENABLE_OPEN_TEXT_QUESTIONS === 'true' && (
+                <DashboardCard
+                  icon={GraduationCap}
+                  category={ap('algoritmos')}
+                  title={ap('gradingTitle')}
+                  description={ap('gradingDesc')}
+                  badgeLabel={ap('gradingBadgeLabel')}
+                  badgeValue={ap('gradingBadgeValue')}
+                  actionUrl={`/${locale}/admin/grading${tenantSuffix}`}
+                  actionText={ap('gradingActionText')}
+                />
+              )}
             </div>
           </div>
 

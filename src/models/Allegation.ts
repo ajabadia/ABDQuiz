@@ -36,7 +36,7 @@ const AllegationSchema = new Schema<IAllegation>({
   timestamps: true
 });
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const Allegation: Model<IAllegation> = getTenantModel<IAllegation>('Allegation', AllegationSchema);
 

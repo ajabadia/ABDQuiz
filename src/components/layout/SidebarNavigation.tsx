@@ -3,8 +3,8 @@
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { SmartNavbar, buildSidebarLinks } from '@abd/ecosystem-widgets';
-import { Home, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange } from 'lucide-react';
+import { SmartNavbar, buildSidebarLinks } from '@ajabadia/ecosystem-widgets';
+import { Home, LayoutDashboard, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange } from 'lucide-react';
 
 interface UserSession {
   authenticated: boolean;
@@ -33,9 +33,12 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
 
   // Leer tenantId de la URL solo en el cliente (post-hidratación)
   // para evitar hydration mismatch con window.location.search
+  // Usar startTransition para evitar setState síncrono en effect
   React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setTenantId(params.get('tenantId'));
+    React.startTransition(() => {
+      const params = new URLSearchParams(window.location.search);
+      setTenantId(params.get('tenantId'));
+    });
   }, []);
 
   const isLoggedIn = session.authenticated && !!session.user;
@@ -43,6 +46,7 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
 
   const allLinks = [
     { href: '/', label: t('welcomeMenu'), icon: <Home className="w-4 h-4" /> },
+    { href: '/dashboard', label: t('dashboardMenu'), icon: <LayoutDashboard className="w-4 h-4" />, requiresAuth: true },
     { href: '/exams', label: t('homeMenu'), icon: <BookOpen className="w-4 h-4" /> },
     { href: '/history', label: t('historyMenu'), icon: <BarChart2 className="w-4 h-4" />, requiresAuth: true },
     { href: '/admin', label: t('adminMenu'), icon: <Terminal className="w-4 h-4" />, requiresAdmin: true },

@@ -23,7 +23,7 @@ const CorpusImportRowSchema = new Schema<ICorpusImportRow>({
 
 CorpusImportRowSchema.index({ corpusImportId: 1, rowNumber: 1 });
 
-import { getTenantModel } from '@/lib/database/tenant-model';
+import { getTenantModel } from '@ajabadia/satellite-sdk';
 
 const CorpusImportRow: Model<ICorpusImportRow> = getTenantModel<ICorpusImportRow>('CorpusImportRow', CorpusImportRowSchema);
 

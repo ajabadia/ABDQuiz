@@ -3,12 +3,12 @@
 import { QuizService } from '@/services/quiz/quizService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { getIndustrialSession } from '@/lib/session';
-import { LogsClient } from '@/lib/logs-client';
-import { withTenantContext } from '@/lib/database/tenant-model';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { logger } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 import { AnalyticsSyncService } from '@/services/quiz/analyticsSyncService';
 
@@ -57,7 +57,7 @@ export async function startQuizAction(examConfigId: string) {
       attemptId = attempt._id.toString();
       
       // Log the start attempt
-      await LogsClient.log({
+      await logger.audit({
         tenantId: activeTenantId,
         action: 'EXAM_ATTEMPT_STARTED',
         entityType: 'EXAM',
@@ -91,6 +91,7 @@ export async function submitAnswerAction(formData: {
   timeSpent: number;
   status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
   attemptToken?: string;
+  textAnswer?: string;
 }) {
   return withTenantContext(async () => {
     try {
@@ -104,7 +105,8 @@ export async function submitAnswerAction(formData: {
         formData.timeSpent,
         formData.status,
         session.user.id,
-        formData.attemptToken
+        formData.attemptToken,
+        formData.textAnswer
       );
       
       revalidatePath(`/quiz/${formData.attemptId}`);
@@ -112,6 +114,26 @@ export async function submitAnswerAction(formData: {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ [SUBMIT_ANSWER_ACTION_ERROR]:', message, 'AttemptId:', formData.attemptId);
       throw new Error(`Submission failed: ${message}`);
+    }
+  });
+}
+
+/**
+ * §12.D — Heartbeat: el cliente envía un latido cada 30s mientras el examen está activo.
+ * Si el servidor detecta que el intento ya finalizó, informa al cliente para que detenga heartbeats.
+ */
+export async function heartbeatAction(attemptId: string) {
+  return withTenantContext(async () => {
+    const session = await getIndustrialSession();
+    if (!session?.user?.id) return { success: false, error: 'Unauthorized' };
+
+    try {
+      const result = await QuizService.sendHeartbeat(attemptId, session.user.id);
+      return result;
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('❌ [HEARTBEAT_ERROR]:', message);
+      return { success: false, error: message };
     }
   });
 }
@@ -134,7 +156,7 @@ export async function finishQuizAction(attemptId: string, attemptToken?: string,
       // Decoupled sync for course and user analytics (fire-and-forget)
       AnalyticsSyncService.sync(attemptId, activeTenantId, session.user.id);
       
-      await LogsClient.log({
+      await logger.audit({
         tenantId: activeTenantId,
         action: 'EXAM_ATTEMPT_COMPLETED',
         entityType: 'EXAM',
@@ -189,7 +211,7 @@ export async function invalidateAttemptAction(attemptId: string, tenantIdParam?:
       await attempt.save();
       
       // Log the invalidation event
-      await LogsClient.log({
+      await logger.audit({
         tenantId: targetTenantId,
         action: 'EXAM_ATTEMPT_INVALIDATED',
         entityType: 'EXAM',

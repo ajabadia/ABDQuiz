@@ -17,7 +17,7 @@
 | Páginas | 14 rutas |
 | Componentes | ~40 componentes |
 | Líneas i18n (es + en) | ~700 claves por idioma |
-| Dependencias externas | `@abd/satellite-sdk`, `@abd/styles`, `mongoose`, `papaparse`, `zod`, `next-intl` |
+| Dependencias externas | `@ajabadia/satellite-sdk`, `@ajabadia/styles`, `mongoose`, `papaparse`, `zod`, `next-intl` |
 | Documentación | 6 docs + LESSONS_LEARNED (11 lecciones) |
 | Fire Rules | `Max 150 lines`, `No any`, `No hardcoded styles`, `i18n 100%`, `Multitenant First` |
 
@@ -179,10 +179,10 @@ export interface FederatedSession {
 }
 ```
 
-Este tipo ya existe en `@abd/satellite-sdk`. `session.ts` correctamente re-exporta desde el SDK:
+Este tipo ya existe en `@ajabadia/satellite-sdk`. `session.ts` correctamente re-exporta desde el SDK:
 ```typescript
-export { getIndustrialSession, ensureIndustrialAccess } from '@abd/satellite-sdk';
-export type { FederatedSession } from '@abd/satellite-sdk';
+export { getIndustrialSession, ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+export type { FederatedSession } from '@ajabadia/satellite-sdk';
 ```
 
 Pero `auth-bridge.ts` redefine la interfaz, creando un fork de tipos. Si el SDK actualiza `FederatedSession`, este archivo quedará desincronizado. **Además, `auth-bridge.ts` parece ser dead code** — `session.ts` ya exporta todo lo necesario desde el SDK.
@@ -259,7 +259,7 @@ Si los callbacks `onGlobalTimeout`/`onQuestionTimeout` son funciones inline del 
 El fallback `'shared-system-token-2026'` aparece en `logs-client.ts` de ABDQuiz, ABDLogs, ABDtenantGobernance, etc. Debería estar en una variable de entorno compartida o en el SDK.
 
 ### 17. `src/app/styles/patterns.css` sin Referencia Clara
-Hay un archivo `patterns.css` en `src/app/styles/` que no he leído pero podría ser dead code si los estilos se manejan vía `@abd/styles`.
+Hay un archivo `patterns.css` en `src/app/styles/` que no he leído pero podría ser dead code si los estilos se manejan vía `@ajabadia/styles`.
 
 ### 18. `template-modal.tsx` y `TemplateModal.tsx` — Confusión de Casing
 El glob muestra `TemplateModal.tsx` en componentes admin. Conviene verificar consistencia de naming.
@@ -290,13 +290,13 @@ const attempt = await ExamAttempt.findOne({ _id: attemptId, userId });
 ```
 
 ### 4. **Centralizar Configuración de Secretos en el SDK**
-Mover `LOGS_SECRET_TOKEN`, `AUTH_CLIENT_ID`, etc. a un `ABDConfig` centralizado en `@abd/satellite-sdk` para eliminar fallbacks hardcodeados en cada satélite.
+Mover `LOGS_SECRET_TOKEN`, `AUTH_CLIENT_ID`, etc. a un `ABDConfig` centralizado en `@ajabadia/satellite-sdk` para eliminar fallbacks hardcodeados en cada satélite.
 
 ### 5. **Tests Unitarios para Scoring y Copy-On-Write**
 Las funciones `finishExam`, `resolveAllegation`, `saveQuestion` son candidatas ideales para tests unitarios con MongoDB en memoria (`mongodb-memory-server`).
 
 ### 6. **Migrar `auth-bridge.ts` → Usar Solo el SDK**
-`session.ts` ya re-exporta todo desde `@abd/satellite-sdk`. Eliminar `auth-bridge.ts` (dead code) y actualizar los pocos imports que aún lo referencien.
+`session.ts` ya re-exporta todo desde `@ajabadia/satellite-sdk`. Eliminar `auth-bridge.ts` (dead code) y actualizar los pocos imports que aún lo referencien.
 
 ---
 
@@ -398,7 +398,7 @@ Principales: `QuizInterface`, `QuizQuestion`, `QuizHeader`, `QuizFooter`, `QuizN
 | Validación | Zod |
 | i18n | next-intl (es/en) con namespaces |
 | CSV | PapaParse |
-| SDKs | `@abd/satellite-sdk`, `@abd/styles` |
+| SDKs | `@ajabadia/satellite-sdk`, `@ajabadia/styles` |
 | Build | tsc + next build |
 
 ---

@@ -1,4 +1,4 @@
-import connectDB from '@/lib/database/mongodb';
+import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';
 import CorpusImportRow from '@/models/CorpusImportRow';

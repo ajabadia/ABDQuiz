@@ -281,7 +281,7 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
 
 ---
 
-## 11. Gobernanza de Marca Blanca Dinámica (`@abd/styles`) y Conflictos de Gestores de Paquetes (NPM vs PNPM)
+## 11. Gobernanza de Marca Blanca Dinámica (`@ajabadia/styles`) y Conflictos de Gestores de Paquetes (NPM vs PNPM)
 
 > [!CRITICAL]
 > **El síntoma**: 
@@ -302,12 +302,12 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
    ```
 2. **Uso de Shorthand de GitHub**: Para evitar bugs de parseo en múltiples motores de CI/CD (incluido Vercel), la mejor práctica de producción al enlazar repositorios hermanos públicos o privados es usar la sintaxis de atajo nativa de GitHub:
    ```json
-   "@abd/styles": "github:ajabadia/ABDStyles#main"
+   "@ajabadia/styles": "github:ajabadia/ABDStyles#main"
    ```
 3. **Inyección SSR Síncrona en el Layout Raíz (Prevención de FOUC)**: La única forma de erradicar por completo el FOUC en Next.js App Router es procesar la hoja de estilos de forma síncrona en servidor antes de servir el DOM. Importando el generador CSS en el Server Component del `RootLayout` e inyectándolo directamente en la etiqueta estática `<style>` del `<head>`, el navegador recibe el HTML con las variables del Tenant ya resueltas en su primer frame:
    ```tsx
    // layout.tsx (Server Component)
-   import { generateTenantCss } from "@abd/styles";
+   import { generateTenantCss } from "@ajabadia/styles";
    import { getIndustrialSession } from "@/lib/session";
 
    export default async function RootLayout({ children }) {
@@ -442,7 +442,7 @@ Llamar a un modificador de estado (`setMounted`, `setIsLoading`) de forma síncr
 3. **Restricción de Renderizado JSX dentro de Exception Boundaries (ESLint try/catch rule)**:
    - **El Síntoma**: El linter en Fase 6 fallaba con el error: `Avoid constructing JSX within try/catch`.
    - **La Causa Raíz**: React no evalúa ni renderiza inmediatamente el marcado JSX retornado dentro del bloque `try/catch`. Por tanto, los fallos de renderizado tardíos en cliente no pueden ser interceptados de manera síncrona por este capturador, violando el diseño de arquitectura modular y flujos de render reactivos.
-   - **La Solución Industrial**: Aislar los procesos computacionales complejos que puedan lanzar excepciones (como la generación del CSS dinámico mediante `@abd/styles`) dentro del bloque `try/catch` para asignar una variable de control, y ubicar el retorno estructurado del nodo JSX fuera de los límites de la excepción.
+   - **La Solución Industrial**: Aislar los procesos computacionales complejos que puedan lanzar excepciones (como la generación del CSS dinámico mediante `@ajabadia/styles`) dentro del bloque `try/catch` para asignar una variable de control, y ubicar el retorno estructurado del nodo JSX fuera de los límites de la excepción.
 
 ---
 *Documento de Lecciones Aprendidas redactado y certificado por Antigravity | ABD Ecosystem Architecture Team.*

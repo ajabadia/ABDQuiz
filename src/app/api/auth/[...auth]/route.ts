@@ -1,4 +1,4 @@
-import { createAuthRouteHandler } from '@abd/satellite-sdk';
+import { createAuthRouteHandler } from '@ajabadia/satellite-sdk';
 
 const handler = createAuthRouteHandler({
   appId: 'quiz',

@@ -1,11 +1,11 @@
-# Handoff: Ecosistema de Aprendizaje Jerárquico en ABDQuiz (Phase 5 Complete)
+# Handoff: Ecosistema de Aprendizaje Jerárquico en ABDQuiz (Phase 5 & 7 Complete)
 
 ## 🎯 Goal
-Refactor the flat exam generator of `ABDQuiz` into a hierarchical multi-tenant Learning Ecosystem. We implemented contextual scope guards, transient attempt tokens, safe distractor slicing, transactional corpus imports with standalone fallbacks, manual grading panels for open text questions, and fully decoupled asynchronous analytics synchronization.
+Refactor the flat exam generator of `ABDQuiz` into a hierarchical multi-tenant Learning Ecosystem and implement Phase 7 manual grading flow for open text questions. We implemented contextual scope guards, transient attempt tokens, safe distractor slicing, transactional corpus imports with standalone fallbacks, manual grading panels for open text questions, and fully decoupled asynchronous analytics synchronization.
 
 ## 📊 Current State
 * **Service Status**: Active and fully integrated.
-* **Testing Status**: **136/136 unit and integration tests passing successfully**.
+* **Testing Status**: **156/156 unit and integration tests passing successfully**.
 * **Audit Certification**: Fully validated against coding standards with zero warnings.
 
 ## 🛫 Files in Flight
@@ -13,21 +13,21 @@ Refactor the flat exam generator of `ABDQuiz` into a hierarchical multi-tenant L
 
 ## 🛠️ Changed Files
 * **Server-Side Data Layer / Models**:
-  * [Course.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/Course.ts): Schema for structured courses and pre-requisites.
-  * [ExamAssignment.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/ExamAssignment.ts): Time-framed limits, visibility scope, and attempts constraints.
-  * [QuizUserRole.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/QuizUserRole.ts): Contextual roles mapping.
-  * [UserCourseSummary.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/UserCourseSummary.ts): Materialised view schema matching ABDAnalytics.
-  * [CourseAnalytics.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/CourseAnalytics.ts): Materialised view for aggregate course stats and distractors telemetry.
+  - [Question.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/Question.ts): Integrated `type` field to support `multiple_choice` and `open_text` types.
+  - [ExamAttempt.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/models/ExamAttempt.ts): Added fields for manual text answer, points awarded, and grading status.
+  - [quiz.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/types/quiz.ts): Propagated type tracking to the question snapshot schemas.
 * **Security & Access Control**:
-  * [scope-guard.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/lib/auth/scope-guard.ts): Multi-tenant context authorization guards.
+  - [scope-guard.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/lib/auth/scope-guard.ts): Contextual scope verification checks.
 * **Core Logic / Services**:
-  * [quizService.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/services/quiz/quizService.ts): Handles adaptive selection threshold and `attemptToken` validation.
-  * [analyticsSyncService.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/services/quiz/analyticsSyncService.ts): Asynchronously synchronizes progress and course telemetry in a non-blocking background promise.
+  - [quizService.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/services/quiz/quizService.ts): Calculates grading status dynamically and maps the question type to the snapshot.
+  - [analyticsSyncService.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/services/quiz/analyticsSyncService.ts): Fixed type errors and compilation checks during async sync pipelines.
 * **Server Actions**:
-  * [quiz.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/actions/quiz.ts): Injected non-blocking analytics sync trigger on exam finalization.
+  - [grading.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/actions/grading.ts): Added `requireQuizScope` check to block unauthorized grading requests.
+* **UI Components**:
+  - [page.tsx](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/app/[locale]/admin/grading/page.tsx): Feature flagged route and index view.
+  - [page.tsx](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/app/[locale]/admin/page.tsx): Wrapped manual grading dashboard cards under the open text feature flag.
 * **Unit Tests**:
-  * [quiz.test.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/actions/quiz.test.ts): Mocked model stubs for `getTenantModel` and analytics collections.
-  * [quizService.test.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/services/quiz/quizService.test.ts): Wrapped the adaptive weighted selection tests with a deterministic random spy.
+  - [grading.test.ts](file:///d:/desarrollos/ABDSuite/ABDQuiz/src/actions/grading.test.ts): Mocked scope-guard checks to cover the newly introduced authorization flow.
 
 ## ⚠️ Failed Attempts & Lessons Learned
 1. **Vitest `getTenantModel` Mock Imports**:
@@ -36,3 +36,7 @@ Refactor the flat exam generator of `ABDQuiz` into a hierarchical multi-tenant L
 2. **Adaptive Weighted Selection Flakiness**:
    - *Problem*: Weighted cumulative probability logic in adaptive question selection relied on raw `Math.random()`, triggering occasional test failures.
    - *Solution*: Spy-mocked `Math.random` to return deterministic values during the test execution block.
+3. **Mongoose model import mocks in tests**:
+   - *Problem*: Adding `requireQuizScope` dynamically inside grading actions triggered missing mock warning for `getTenantModel` inside `ExamAttempt` model imports during tests.
+   - *Solution*: Exported a mocked `getTenantModel` stub inside the `ExamAttempt` mock declaration block in `grading.test.ts`.
+

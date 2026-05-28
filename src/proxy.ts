@@ -1,4 +1,4 @@
-import { withIndustrialAuth } from '@abd/satellite-sdk';
+import { withIndustrialAuth } from '@ajabadia/satellite-sdk';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 

@@ -123,6 +123,72 @@ describe('CorpusImporter', () => {
       expect(result).toEqual(mockImportDoc);
     });
 
+    it('should pass spaceId and courseId to Question.create when present in JSON data', async () => {
+      const mockImportDoc = {
+        _id: 'import-hier',
+        status: 'processing',
+        save: vi.fn().mockResolvedValue(true),
+      };
+      mockCreateImport.mockResolvedValue(mockImportDoc);
+      mockFindQuestion.mockResolvedValue(null);
+      mockCreateQuestion.mockResolvedValue({ _id: 'hier-q-1' });
+
+      const jsonData = [
+        {
+          pregunta: '¿Cuál es la capital de Francia con jerarquía asignada?',
+          opciones: ['París', 'Londres', 'Berlín', 'Madrid'],
+          respuesta_correcta: 0,
+          modulo: 'Geografía',
+          fuente: 'Test',
+          difficulty: 'easy',
+          spaceId: 'space-abc-123',
+          courseId: 'course-xyz-456',
+        },
+      ];
+
+      await CorpusImporter.importFromJson('user-1', 'tenant-1', 'hier.json', jsonData);
+
+      expect(mockCreateQuestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spaceId: 'space-abc-123',
+          courseId: 'course-xyz-456',
+        })
+      );
+    });
+
+    it('should allow spaceId without courseId (only space-level hierarchy)', async () => {
+      const mockImportDoc = {
+        _id: 'import-space-only',
+        status: 'processing',
+        save: vi.fn().mockResolvedValue(true),
+      };
+      mockCreateImport.mockResolvedValue(mockImportDoc);
+      mockFindQuestion.mockResolvedValue(null);
+      mockCreateQuestion.mockResolvedValue({ _id: 'space-only-q' });
+
+      const jsonData = [
+        {
+          pregunta: 'Pregunta asignada solo a Space nivel superior',
+          opciones: ['Sí', 'No'],
+          respuesta_correcta: 0,
+          modulo: 'General',
+          fuente: 'Test',
+          difficulty: 'easy',
+          spaceId: 'space-solo',
+          // courseId: undefined — solo nivel space
+        },
+      ];
+
+      await CorpusImporter.importFromJson('user-1', 'tenant-1', 'space-only.json', jsonData);
+
+      expect(mockCreateQuestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spaceId: 'space-solo',
+          courseId: undefined,
+        })
+      );
+    });
+
     it('should mark row as duplicate and skip creation when semantic hash match exists', async () => {
       const mockImportDoc = {
         _id: 'import-dup',
@@ -247,6 +313,56 @@ describe('CorpusImporter', () => {
           source: 'Fuente CSV',
           difficulty: 'hard', // "Alta" maps to "hard"
           tags: ['csv', 'test'],
+        })
+      );
+    });
+
+    it('should parse spaceId and courseId from CSV headers when present', async () => {
+      const mockImportDoc = {
+        _id: 'import-csv-hier',
+        status: 'processing',
+        save: vi.fn().mockResolvedValue(true),
+      };
+      mockCreateImport.mockResolvedValue(mockImportDoc);
+      mockFindQuestion.mockResolvedValue(null);
+      mockCreateQuestion.mockResolvedValue({ _id: 'csv-hier-q' });
+
+      const csvContent = [
+        'pregunta,opcion_a,opcion_b,opcion_c,opcion_d,respuesta_correcta,modulo,fuente,difficulty,spaceId,courseId',
+        '"¿Capital de Francia?","París","Londres","Berlín","Madrid","A","Geografía","Test","Fácil","space-abc","course-xyz"'
+      ].join('\n');
+
+      await CorpusImporter.importFromCsv('user-1', 'tenant-1', 'hier.csv', csvContent);
+
+      expect(mockCreateQuestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spaceId: 'space-abc',
+          courseId: 'course-xyz',
+        })
+      );
+    });
+
+    it('should parse spaceId alone from CSV when courseId column is absent', async () => {
+      const mockImportDoc = {
+        _id: 'import-csv-space',
+        status: 'processing',
+        save: vi.fn().mockResolvedValue(true),
+      };
+      mockCreateImport.mockResolvedValue(mockImportDoc);
+      mockFindQuestion.mockResolvedValue(null);
+      mockCreateQuestion.mockResolvedValue({ _id: 'csv-space-q' });
+
+      const csvContent = [
+        'pregunta,opcion_a,opcion_b,opcion_c,opcion_d,respuesta_correcta,modulo,fuente,difficulty,spaceId',
+        '"Pregunta solo de space","A","B","C","D","A","Módulo","Fuente","Media","space-only"'
+      ].join('\n');
+
+      await CorpusImporter.importFromCsv('user-1', 'tenant-1', 'space.csv', csvContent);
+
+      expect(mockCreateQuestion).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spaceId: 'space-only',
+          courseId: undefined,
         })
       );
     });

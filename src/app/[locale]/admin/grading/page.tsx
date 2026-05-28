@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
-import { AdminPageHeader } from '@abd/styles';
-import { GlobalFooter } from '@abd/ecosystem-widgets';
-import { ensureIndustrialAccess } from '@/lib/session';
+import { AdminPageHeader } from '@ajabadia/styles';
+import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import GradingManager from '@/components/admin/GradingManager';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
@@ -14,6 +14,13 @@ export default async function AdminGradingPage({
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  // 🚩 Feature Flag check for Open Text Questions & Grading
+  const enableOpenText = process.env.NEXT_PUBLIC_ENABLE_OPEN_TEXT_QUESTIONS === 'true';
+  if (!enableOpenText) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
+
   const { locale } = await params;
   const ap = await getTranslations('adminPortal');
   const g = await getTranslations('grading');

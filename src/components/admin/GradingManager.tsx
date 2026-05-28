@@ -39,7 +39,7 @@ export default function GradingManager() {
   const c = useTranslations('common');
 
   const [attempts, setAttempts] = useState<SerializedGradingAttempt[]>([]);
-  const [loadingList, setLoadingList] = useState(true);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('pending_manual_review');
 
@@ -52,24 +52,26 @@ export default function GradingManager() {
   const [gradeForm, setGradeForm] = useState<Record<number, { points: string; feedback: string }>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Load attempts on mount and when filter changes
-  const loadAttempts = useCallback(async () => {
-    setLoadingList(true);
-    try {
-      const data = await getAttemptsForGradingAction(activeFilter);
-      setAttempts(data);
-    } catch {
-      toast.error('Error al cargar los intentos');
-    } finally {
-      setLoadingList(false);
-    }
+  // Load attempts on mount — no synchronous setState in effect body
+  useEffect(() => {
+    let cancelled = false;
+    getAttemptsForGradingAction(activeFilter)
+      .then((data) => {
+        if (!cancelled) {
+          setAttempts(data);
+          setInitialLoaded(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          toast.error('Error al cargar los intentos');
+          setInitialLoaded(true);
+        }
+      });
+    return () => { cancelled = true; };
   }, [activeFilter]);
 
-  useEffect(() => {
-    loadAttempts();
-  }, [loadAttempts]);
-
-  // Load detail when an attempt is selected
+  // Cargar detalle al seleccionar intento (event handlers only — no effect)
   const loadDetail = useCallback(async (attemptId: string) => {
     setLoadingDetail(true);
     setSelectedAttemptId(attemptId);
@@ -116,7 +118,8 @@ export default function GradingManager() {
       const result = await submitManualGradingAction(detail._id, grades);
       if (result.success) {
         toast.success('Calificación guardada con éxito');
-        loadAttempts(); // Refresh the list
+        // Refresh the list — re-fetch without loading state
+        getAttemptsForGradingAction(activeFilter).then(setAttempts);
         loadDetail(detail._id); // Refresh detail
       } else {
         toast.error(result.error || 'Error al guardar la calificación');
@@ -127,6 +130,8 @@ export default function GradingManager() {
       setSubmitting(false);
     }
   };
+
+  const loadingList = !initialLoaded;
 
   const filteredAttempts = attempts.filter((a) => {
     if (!search) return true;
@@ -306,6 +311,7 @@ export default function GradingManager() {
               <button
                 key={attempt._id}
                 onClick={() => loadDetail(attempt._id)}
+                aria-label={`${t('viewDetail')} ${attempt.userId}`}
                 className="w-full text-left p-4 bg-card/20 border border-white/5 hover:border-primary/30 hover:bg-card/40 transition-all duration-200 cursor-pointer"
               >
                 <div className="flex items-center justify-between gap-4">
@@ -370,6 +376,7 @@ function QuestionCorrectionCard({
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
+        aria-label={`${expanded ? t('collapseQuestion') : t('expandQuestion')} ${question.questionIndex + 1}`}
         className="w-full flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">

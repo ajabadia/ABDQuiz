@@ -3,33 +3,13 @@
 import { QuizService } from '@/services/quiz/quizService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext, rateLimitMongodb } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
-import { logger } from '@ajabadia/satellite-sdk';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 import { AnalyticsSyncService } from '@/services/quiz/analyticsSyncService';
 
-export interface SerializedAttempt {
-  _id: string;
-  userId: string;
-  mode: 'training' | 'mock';
-  score: number;
-  percentage: number;
-  startedAt: string;
-  endedAt?: string;
-  status: 'in_progress' | 'completed' | 'timeout';
-  isInvalidated?: boolean;
-  invalidatedBy?: string;
-  invalidatedAt?: string;
-  examConfigId?: {
-    _id: string;
-    name: string;
-    passThreshold: number;
-  };
-}
+import type { SerializedAttempt } from './quizTypes';
+import { sanitizeAttempt } from './quizHelpers';
 
 
 /**
@@ -37,6 +17,13 @@ export interface SerializedAttempt {
  */
 export async function startQuizAction(examConfigId: string) {
   return withTenantContext(async () => {
+    // 🚦 Rate limit: 10 starts per 60s per IP
+    const ip = await rateLimitMongodb.getClientIpAsync();
+    const allowed = await rateLimitMongodb.check(ip, 'submission', 10, 60);
+    if (!allowed) {
+      throw new Error('Demasiados intentos. Intenta de nuevo en un minuto.');
+    }
+
     let attemptId: string | null = null;
     
     try {
@@ -94,6 +81,13 @@ export async function submitAnswerAction(formData: {
   textAnswer?: string;
 }) {
   return withTenantContext(async () => {
+    // 🚦 Rate limit: 60 answer submissions per 60s per IP
+    const ip = await rateLimitMongodb.getClientIpAsync();
+    const allowed = await rateLimitMongodb.check(ip, 'submission', 60, 60);
+    if (!allowed) {
+      throw new Error('Demasiadas respuestas. Intenta de nuevo en un minuto.');
+    }
+
     try {
       const session = await getIndustrialSession();
       if (!session?.user?.id) throw new Error('Unauthorized');
@@ -145,6 +139,13 @@ export async function finishQuizAction(attemptId: string, attemptToken?: string,
   const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
   
   return withTenantContext(async () => {
+    // 🚦 Rate limit: 20 finishes per 60s per IP
+    const ip = await rateLimitMongodb.getClientIpAsync();
+    const allowed = await rateLimitMongodb.check(ip, 'submission', 20, 60);
+    if (!allowed) {
+      throw new Error('Demasiados intentos. Intenta de nuevo en un minuto.');
+    }
+
     try {
       const session = await getIndustrialSession();
       if (!session?.user?.id || !session?.user?.tenantId) throw new Error('Unauthorized');
@@ -256,34 +257,7 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       .sort({ createdAt: -1 })
       .lean();
       
-      // Sanitizar IDs para Server Actions
-      return (attempts as unknown as Record<string, unknown>[]).map((a) => {
-        const result: SerializedAttempt = {
-          _id: (a._id as { toString(): string }).toString(),
-          userId: (a.userId as { toString(): string })?.toString() || '',
-          mode: a.mode as 'training' | 'mock',
-          score: a.score as number,
-          percentage: a.percentage as number,
-          startedAt: (a.startedAt as Date).toISOString(),
-          status: a.status as 'in_progress' | 'completed' | 'timeout',
-        };
-
-        if (a.endedAt) result.endedAt = (a.endedAt as Date).toISOString();
-        if (a.isInvalidated) result.isInvalidated = a.isInvalidated as boolean;
-        if (a.invalidatedBy) result.invalidatedBy = a.invalidatedBy as string;
-        if (a.invalidatedAt) result.invalidatedAt = (a.invalidatedAt as Date).toISOString();
-
-        if (a.examConfigId) {
-          const config = a.examConfigId as Record<string, unknown>;
-          result.examConfigId = {
-            _id: (config._id as { toString(): string }).toString(),
-            name: config.name as string,
-            passThreshold: config.passThreshold as number,
-          };
-        }
-
-        return result;
-      });
+      return (attempts as unknown as Record<string, unknown>[]).map(sanitizeAttempt);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ Error fetching attempts:', msg);

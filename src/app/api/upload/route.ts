@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { rateLimitMongodb } from '@ajabadia/satellite-sdk';
 
 // ── Allowed MIME types ─────────────────────────────────
 const ALLOWED_TYPES = [
@@ -15,6 +16,13 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export async function POST(request: Request) {
   try {
+    // 🚦 Rate limit uploads: 10 per 60s per IP
+    const ip = rateLimitMongodb.getClientIpFromRequest(request);
+    const allowed = await rateLimitMongodb.check(ip, 'api', 10, 60);
+    if (!allowed) {
+      return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta de nuevo en un minuto.' }, { status: 429 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
 

@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { SmartNavbar, buildSidebarLinks } from '@ajabadia/ecosystem-widgets';
 import { Home, LayoutDashboard, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange } from 'lucide-react';
+import { ChatUnreadBadge } from '@/components/chat/ChatUnreadBadge';
 
 interface UserSession {
   authenticated: boolean;
@@ -91,7 +92,9 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
       transformHref={tenantId ? transformHref : undefined}
       tenantSelectorSlot={tenantSelectorSlot}
       settingsSlot={settingsSlot}
+      notificationsSlot={isLoggedIn && user?.role?.toUpperCase() !== 'USER' ? <ChatUnreadBadge /> : undefined}
       onLocaleChange={handleLocaleChange}
+      appBadge="QUIZ"
       onSearchTrigger={() => {
         window.dispatchEvent(new CustomEvent('abd-command-palette-open'));
       }}

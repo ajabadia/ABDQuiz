@@ -23,12 +23,13 @@ export default function LogoutSuccessPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-foreground font-sans">
+      <main className="min-h-screen flex items-center justify-center bg-background text-foreground font-sans" role="main" aria-label="Loading">
         <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-muted" />
-          <div className="h-4 w-32 bg-muted rounded" />
+          <div className="w-12 h-12 rounded-full bg-muted" aria-hidden="true" />
+          <h1 className="sr-only">{t('title')}</h1>
+          <div className="h-4 w-32 bg-muted rounded" aria-hidden="true" />
         </div>
-      </div>
+      </main>
     );
   }
 

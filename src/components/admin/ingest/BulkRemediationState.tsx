@@ -1,5 +1,6 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { useTranslations } from 'next-intl';
 
 interface BulkData {
@@ -40,42 +41,28 @@ export function BulkRemediationState({
 
       <div className="grid gap-6">
         
-        <div className="space-y-2">
-          <label htmlFor="bulk-module" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-            {ap('bulkLabelModule')}
-          </label>
+        <LabeledField id="bulk-module" label={ap('bulkLabelModule')} required labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
           <input 
-            id="bulk-module"
             type="text" 
             value={bulkData.modulo}
             onChange={(e) => onDataChange({ ...bulkData, modulo: e.target.value })}
-            required
             placeholder="Ej: Redes y Protocolos"
             className="input-console h-12"
           />
-        </div>
+        </LabeledField>
 
-        <div className="space-y-2">
-          <label htmlFor="bulk-source" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-            {ap('bulkLabelSource')}
-          </label>
+        <LabeledField id="bulk-source" label={ap('bulkLabelSource')} required labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
           <input 
-            id="bulk-source"
             type="text" 
             value={bulkData.fuente}
             onChange={(e) => onDataChange({ ...bulkData, fuente: e.target.value })}
-            required
             placeholder="Ej: Certificación Oficial 2024"
             className="input-console h-12"
           />
-        </div>
+        </LabeledField>
 
-        <div className="space-y-2">
-          <label htmlFor="bulk-difficulty" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-            {ap('bulkLabelDifficulty')}
-          </label>
+        <LabeledField id="bulk-difficulty" label={ap('bulkLabelDifficulty')} labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
           <select 
-            id="bulk-difficulty"
             value={bulkData.difficulty}
             onChange={(e) => onDataChange({ ...bulkData, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
             className="input-console h-12 uppercase"
@@ -84,7 +71,7 @@ export function BulkRemediationState({
             <option value="medium">{ap('diffMedium')}</option>
             <option value="hard">{ap('diffHard')}</option>
           </select>
-        </div>
+        </LabeledField>
 
       </div>
 

@@ -1,30 +1,11 @@
 'use server';
 
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { withTenantContext, resolveTargetTenantContext, connectDB, logger, rateLimitMongodb } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { logger } from '@ajabadia/satellite-sdk';
 
-export interface SerializedGradingAttempt {
-  _id: string;
-  userId: string;
-  mode: 'training' | 'mock';
-  score: number;
-  percentage: number;
-  startedAt: string;
-  endedAt?: string;
-  status: 'in_progress' | 'completed' | 'timeout';
-  gradingStatus: 'auto_graded' | 'pending_manual_review' | 'manually_graded';
-  gradedBy?: string;
-  gradedAt?: string;
-  examConfigId?: {
-    _id: string;
-    name: string;
-    passThreshold: number;
-  };
-}
+import type { SerializedGradingAttempt, AttemptDetail, QuestionGradingData } from './gradingTypes';
+import { sanitizeGradingAttempt, buildAttemptDetail } from './gradingTypes';
 
 /**
  * Retrieves all completed/timeout attempts for the grading inbox.
@@ -52,68 +33,8 @@ export async function getAttemptsForGradingAction(gradingFilter?: string, tenant
       .sort({ endedAt: -1 })
       .lean();
 
-    return (attempts as unknown as Record<string, unknown>[]).map((a) => {
-      const result: SerializedGradingAttempt = {
-        _id: (a._id as { toString(): string }).toString(),
-        userId: (a.userId as { toString(): string })?.toString() || '',
-        mode: a.mode as 'training' | 'mock',
-        score: a.score as number,
-        percentage: a.percentage as number,
-        startedAt: (a.startedAt as Date).toISOString(),
-        status: a.status as 'in_progress' | 'completed' | 'timeout',
-        gradingStatus: a.gradingStatus as 'auto_graded' | 'pending_manual_review' | 'manually_graded',
-      };
-
-      if (a.endedAt) result.endedAt = (a.endedAt as Date).toISOString();
-      if (a.gradedBy) result.gradedBy = a.gradedBy as string;
-      if (a.gradedAt) result.gradedAt = (a.gradedAt as Date).toISOString();
-
-      if (a.examConfigId) {
-        const config = a.examConfigId as Record<string, unknown>;
-        result.examConfigId = {
-          _id: (config._id as { toString(): string }).toString(),
-          name: config.name as string,
-          passThreshold: config.passThreshold as number,
-        };
-      }
-
-      return result;
-    });
+    return (attempts as unknown as Record<string, unknown>[]).map(sanitizeGradingAttempt);
   }, explicitCtx);
-}
-
-export interface QuestionGradingData {
-  questionIndex: number;
-  manualPointsAwarded: number;
-  feedback: string;
-}
-
-export interface AttemptDetailQuestion {
-  questionIndex: number;
-  questionText: string;
-  options: string[];
-  correctOptionIndex: number;
-  selectedOptionIndex?: number | null;
-  manualTextAnswer?: string;
-  manualPointsAwarded?: number;
-  feedback?: string;
-  isCorrect: boolean;
-  status: string;
-  timeSpentSeconds: number;
-  maxPoints: number;
-}
-
-export interface AttemptDetail {
-  _id: string;
-  userId: string;
-  examConfigId?: { _id: string; name: string };
-  status: string;
-  gradingStatus: string;
-  gradedBy?: string;
-  gradedAt?: string;
-  score: number;
-  percentage: number;
-  questions: AttemptDetailQuestion[];
 }
 
 /**
@@ -135,43 +56,7 @@ export async function getAttemptDetailAction(attemptId: string, tenantIdParam?: 
     const activeTenantId = explicitCtx?.tenantId || admin.tenantId;
     if (a.tenantId !== activeTenantId && admin.role !== 'SUPER_ADMIN') return null;
 
-    const questionsArr = a.questions as Array<Record<string, unknown>> | undefined;
-
-    return {
-      _id: (a._id as { toString(): string }).toString(),
-      userId: (a.userId as { toString(): string })?.toString() || '',
-      examConfigId: a.examConfigId
-        ? {
-            _id: ((a.examConfigId as Record<string, unknown>)._id as { toString(): string }).toString(),
-            name: (a.examConfigId as Record<string, unknown>).name as string,
-          }
-        : undefined,
-      status: a.status as string,
-      gradingStatus: a.gradingStatus as string,
-      gradedBy: a.gradedBy as string | undefined,
-      gradedAt: (a.gradedAt as Date)?.toISOString(),
-      score: a.score as number,
-      percentage: a.percentage as number,
-      questions: (questionsArr || []).map((q: Record<string, unknown>, i: number) => {
-        const snapshot = q.questionSnapshot as Record<string, unknown> | undefined;
-        const diff = (snapshot?.difficulty as string) || 'medium';
-        const basePoints: Record<string, number> = { easy: 1, medium: 1, hard: 1 };
-        return {
-          questionIndex: i,
-          questionText: (snapshot?.questionText as string) || '',
-          options: (snapshot?.options as string[]) || [],
-          correctOptionIndex: (snapshot?.correctOptionIndex as number) ?? 0,
-          selectedOptionIndex: q.selectedOptionIndex as number | null | undefined,
-          manualTextAnswer: q.manualTextAnswer as string | undefined,
-          manualPointsAwarded: q.manualPointsAwarded as number | undefined,
-          feedback: q.feedback as string | undefined,
-          isCorrect: q.isCorrect as boolean,
-          status: q.status as string,
-          timeSpentSeconds: q.timeSpentSeconds as number,
-          maxPoints: basePoints[diff] || 1,
-        };
-      }),
-    };
+    return buildAttemptDetail(a);
   });
 }
 
@@ -186,6 +71,13 @@ export async function submitManualGradingAction(
   const explicitCtx = await resolveTargetTenantContext(tenantIdParam);
   
   return withTenantContext(async () => {
+    // 🚦 Rate limit grading: 30 submissions per 60s per IP
+    const ip = await rateLimitMongodb.getClientIpAsync();
+    const allowed = await rateLimitMongodb.check(ip, 'submission', 30, 60);
+    if (!allowed) {
+      return { success: false, error: 'Demasiadas solicitudes. Intenta de nuevo en un minuto.' };
+    }
+
     try {
       const admin = await ensureAdminOrProfessor();
       await connectDB();

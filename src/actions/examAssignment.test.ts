@@ -3,10 +3,6 @@ import { createAssignmentAction } from './examAssignment';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@/lib/tenant-resolver', () => ({
-  resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
-}));
-
 vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
   return {
@@ -14,6 +10,13 @@ vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
     connectDB: vi.fn().mockResolvedValue(undefined),
     getIndustrialSession: vi.fn(),
     withTenantContext: vi.fn((fn: () => unknown) => fn()),
+    resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
+    logger: {
+      audit: vi.fn().mockResolvedValue(undefined),
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+    },
   };
 });
 
@@ -48,7 +51,7 @@ vi.mock('next/cache', () => ({
 import * as ExamConfigMod from '@/models/ExamConfig';
 import * as ExamAssignmentMod from '@/models/ExamAssignment';
 import * as SessionMod from '@ajabadia/satellite-sdk';
-import * as ResolverMod from '@/lib/tenant-resolver';
+import * as ResolverMod from '@ajabadia/satellite-sdk';
 
 const { mockFindOne } = ExamConfigMod as unknown as { mockFindOne: ReturnType<typeof vi.fn> };
 const { mockCreate } = ExamAssignmentMod as unknown as { mockCreate: ReturnType<typeof vi.fn> };

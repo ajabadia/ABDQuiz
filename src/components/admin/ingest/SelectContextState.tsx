@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Layers, MapPin, Database } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { getActiveSpacesAction, getCoursesBySpaceAction } from '@/actions/corpus';
+import { getActiveSpacesAction, getCoursesBySpaceAction } from '@/actions/hierarchyValidation';
 import { FloatingSelector } from './FloatingSelector';
 import { ContextSkipBanner } from './ContextSkipBanner';
 import { ContextActions } from './ContextActions';

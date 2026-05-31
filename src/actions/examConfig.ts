@@ -1,17 +1,12 @@
 'use server';
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import ExamConfig from '@/models/ExamConfig';
 import { revalidatePath } from 'next/cache';
 import { type IExamConfig } from '@/models/ExamConfig';
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
-import { logger } from '@ajabadia/satellite-sdk';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 import { type SerializedExamConfig } from '@/types/quiz';
-
-
+import { seedDefaultConfigs, serializeExamConfig } from './examConfigHelpers';
 
 /**
  * Recupera todas las configuraciones de examen activas para el tenant
@@ -37,71 +32,18 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       
       // Seed default configurations if none exist
       if (configs.length === 0) {
-        const defaultConfigs = [
-          {
-            tenantId: activeTenantId,
-            name: 'Entrenamiento Libre',
-            description: 'Feedback inmediato, explicaciones detalladas y sin presión de tiempo global. Ideal para asentar conceptos.',
-            questionCount: 10,
-            moduleFilter: [],
-            globalTimeLimitSeconds: 0,
-            questionTimeLimitSeconds: 0,
-            scoringMode: 'simple',
-            passThreshold: 70,
-            showFeedbackDuringExam: true,
-            allowSkip: true,
-            allowReviewPrevious: true,
-            autoAdvanceOnSelect: false,
-            reviewOmittedQuestions: false,
-            maxAttempts: 0,
-            sliceOptionsCount: null,
-            isDefault: true,
-            createdBy: session.user.id,
-            active: true
-          },
-          {
-            tenantId: activeTenantId,
-            name: 'Simulacro Estándar',
-            description: 'Condiciones reales. 10 minutos, 30s por tarea, sin vuelta atrás. La prueba definitiva.',
-            questionCount: 30,
-            moduleFilter: [],
-            globalTimeLimitSeconds: 600,
-            questionTimeLimitSeconds: 30,
-            scoringMode: 'simple',
-            passThreshold: 70,
-            showFeedbackDuringExam: false,
-            allowSkip: true,
-            allowReviewPrevious: false,
-            autoAdvanceOnSelect: false,
-            reviewOmittedQuestions: false,
-            maxAttempts: 0,
-            sliceOptionsCount: null,
-            isDefault: true,
-            createdBy: session.user.id,
-            active: true
-          }
-        ];
-        await ExamConfig.insertMany(defaultConfigs);
+        await seedDefaultConfigs(activeTenantId, session.user.id);
         configs = await ExamConfig.find({ 
           tenantId: activeTenantId,
           active: true 
         }).sort({ createdAt: -1 }).lean();
       }
       
-      // Convert ObjectIds to strings
-      return configs.map((c) => {
-        const doc = c as unknown as Record<string, unknown>;
-        return {
-          ...doc,
-          _id: (doc._id as { toString(): string }).toString(),
-          createdAt: (doc.createdAt as Date | undefined)?.toISOString() || '',
-          updatedAt: (doc.updatedAt as Date | undefined)?.toISOString() || ''
-        } as unknown as SerializedExamConfig;
-      });
+      return configs.map((c) => serializeExamConfig(c as unknown as Record<string, unknown>));
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
       console.error('❌ Error fetching exam configs:', msg);
-      throw new Error(msg); // Do not silence
+      throw new Error(msg);
     }
   }, explicitCtx);
 }

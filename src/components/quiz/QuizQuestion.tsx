@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { Paperclip, FileText, Image, FileAudio, FileVideo, ExternalLink } from 'lucide-react';
+import { Paperclip, FileText, Image, FileAudio, FileVideo, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
 
 interface Attachment {
   url: string;
@@ -31,6 +31,8 @@ interface QuizQuestionProps {
   onTextChange?: (text: string) => void;
   showFeedback: boolean;
   isSubmitting: boolean;
+  aiFeedback?: string;
+  aiFeedbackLoading?: boolean;
 }
 
 export default function QuizQuestion({
@@ -40,7 +42,9 @@ export default function QuizQuestion({
   textAnswer = '',
   onTextChange,
   showFeedback,
-  isSubmitting
+  isSubmitting,
+  aiFeedback,
+  aiFeedbackLoading = false
 }: QuizQuestionProps) {
   const t = useTranslations('quiz');
   const isOpenText = qs.type === 'open_text';
@@ -155,6 +159,35 @@ export default function QuizQuestion({
               <span className="pt-1 text-sm md:text-base leading-relaxed">{option}</span>
             </button>
           ))}
+        </div>
+      )}
+
+      {/* ── AI Tutor Feedback Panel ── */}
+      {showFeedback && (
+        <div className="w-full border border-primary/20 bg-primary/[0.02] p-6 md:p-8 space-y-4" role="region" aria-label="Feedback de IA">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-4 h-4 text-primary" aria-hidden="true" />
+            <h3 className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary font-bold">
+              {t('aiFeedback') || 'TUTOR IA'}
+            </h3>
+          </div>
+
+          {aiFeedbackLoading ? (
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              <span className="text-sm font-mono italic">
+                {t('aiFeedbackGenerating') || 'Generando feedback personalizado...'}
+              </span>
+            </div>
+          ) : aiFeedback ? (
+            <div className="text-sm md:text-base leading-relaxed text-foreground/90 whitespace-pre-line antialiased">
+              {aiFeedback}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground italic font-mono">
+              {t('aiFeedbackError') || 'No se pudo generar el feedback automático.'}
+            </div>
+          )}
         </div>
       )}
     </div>

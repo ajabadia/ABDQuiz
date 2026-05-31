@@ -2,11 +2,9 @@
 
 import { AllegationService } from '@/services/allegations/allegationService';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import { revalidatePath } from 'next/cache';
 import { type IAllegation } from '@/models/Allegation';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 interface ActionResponse<T> {
   success: boolean;

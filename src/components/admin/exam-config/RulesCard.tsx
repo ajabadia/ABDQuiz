@@ -1,5 +1,6 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -106,23 +107,20 @@ export function RulesCard({
 
         <Separator className="bg-border" />
 
-        <div className="flex items-center justify-between gap-4">
-          <div className="space-y-1 flex-1">
-            <Label htmlFor="maxAttempts" className="text-[10px] uppercase tracking-widest font-mono">
-              Límite de Intentos
-            </Label>
-            <p className="text-[9px] text-muted-foreground uppercase">
-              Número máximo de simulacros permitidos (0 = ilimitados).
-            </p>
-          </div>
+        <LabeledField
+          id="maxAttempts"
+          label="Límite de Intentos"
+          hint="Número máximo de simulacros permitidos (0 = ilimitados)."
+          labelClassName="text-[10px] uppercase tracking-widest font-mono"
+          className="flex-row items-center justify-between gap-4"
+        >
           <Input
-            id="maxAttempts"
             type="number"
             value={maxAttempts}
             onChange={(e) => onChange({ maxAttempts: parseInt(e.target.value) || 0 })}
             className="w-24 rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
           />
-        </div>
+        </LabeledField>
       </div>
     </Card>
   );

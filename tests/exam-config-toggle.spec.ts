@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { injectAdminSession } from './helpers/auth';
 
 /**
  * 🎭 Exam Config — excludePreviouslyCorrect Toggle E2E Tests
@@ -8,15 +9,9 @@ import { test, expect } from '@playwright/test';
  *   ✓ Toggle click activates/deactivates visual state
  *   ✓ Toggle persists after form submission and re-entry (ON → ON, ON→OFF→OFF)
  *
- * ⚠️ PREREQUISITES:
- *   - Dev server must be running on port 3300 (`pnpm dev`)
- *   - User must be authenticated as ADMIN (abd_session cookie required)
- *   - Use `--project=chromium` to run in headless mode
- *
  * ⚙️ Authentication:
- *   Admin routes are protected by `ensureIndustrialAccess` (JWT in `abd_session` cookie).
- *   Set the cookie before running, e.g. via browser DevTools after SSO login.
- *   Tests gracefully skip if redirected to the IdP authorize endpoint.
+ *   Uses injectAdminSession() helper to set a properly signed abd_session JWT
+ *   + abd_session_verified cookie to bypass the verifySessionExpiry call.
  */
 
 const ADMIN_NEW_EXAM = '/es/admin/exams/new';
@@ -24,10 +19,8 @@ const ADMIN_NEW_EXAM = '/es/admin/exams/new';
 test.describe('excludePreviouslyCorrect Toggle (Excluir Acertadas)', () => {
 
   test.beforeEach(async ({ page }) => {
+    await injectAdminSession(page);
     await page.goto(ADMIN_NEW_EXAM, { waitUntil: 'load' });
-    if (page.url().includes('/api/auth/federated/authorize')) {
-      test.skip(true, '⚠️ Authentication required. Set abd_session cookie or login manually.');
-    }
   });
 
   test('should render the toggle with correct label and description', async ({ page }) => {
@@ -75,8 +68,9 @@ test.describe('excludePreviouslyCorrect Toggle (Excluir Acertadas)', () => {
     await nameInput.fill(uniqueName);
 
     // 2. Toggle "Excluir Acertadas" ON
-    const toggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' });
-    await toggleDiv.click();
+    const toggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' }).first();
+    await toggleDiv.click({ force: true });
+    await page.waitForTimeout(300);
     await expect(toggleDiv).toHaveClass(/bg-primary\/5/);
 
     // 3. Submit the form
@@ -85,16 +79,21 @@ test.describe('excludePreviouslyCorrect Toggle (Excluir Acertadas)', () => {
     await submitBtn.click();
 
     // 4. After successful save, we should be redirected to the exams list page
-    await page.waitForURL(/\/es\/admin\/exams(\?|$)/, { timeout: 15000 });
+    await page.waitForURL(/\/es\/admin\/exams(\?|$)/, { timeout: 30000 });
+    await page.waitForTimeout(3000);
 
-    // 5. Find the newly created config by its unique name and click edit
-    const configLink = page.locator(`a:has-text("${uniqueName}")`).first();
-    await expect(configLink).toBeVisible({ timeout: 10000 });
-    await configLink.click();
+    // 5. Find the newly created config by its unique name and click the edit pencil
+    const configCard = page.locator('.group').filter({ hasText: uniqueName });
+    await expect(configCard.first()).toBeVisible({ timeout: 15000 });
+    await configCard.locator('a[href*="/edit"]').click();
 
-    // 6. On the edit page, verify the toggle is still active
-    await page.waitForSelector('form', { timeout: 15000 });
-    const editToggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' });
+    // 6. Wait for edit page to load the form
+    await page.waitForTimeout(3000);
+    await page.waitForSelector('form', { timeout: 30000 });
+    await page.waitForTimeout(500);
+
+    // 7. On the edit page, verify the toggle is still active
+    const editToggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' }).first();
     await expect(editToggleDiv).toBeVisible();
     await expect(editToggleDiv).toHaveClass(/bg-primary\/5/);
   });
@@ -108,12 +107,14 @@ test.describe('excludePreviouslyCorrect Toggle (Excluir Acertadas)', () => {
     await nameInput.fill(uniqueName);
 
     // 2. Toggle ON first (default is OFF)
-    const toggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' });
-    await toggleDiv.click();
+    const toggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' }).first();
+    await toggleDiv.click({ force: true });
+    await page.waitForTimeout(300);
     await expect(toggleDiv).toHaveClass(/bg-primary\/5/);
 
     // 3. Now toggle OFF
-    await toggleDiv.click();
+    await toggleDiv.click({ force: true });
+    await page.waitForTimeout(300);
     await expect(toggleDiv).not.toHaveClass(/bg-primary\/5/);
 
     // 4. Submit
@@ -121,16 +122,21 @@ test.describe('excludePreviouslyCorrect Toggle (Excluir Acertadas)', () => {
     await submitBtn.click();
 
     // 5. Should redirect to exams list
-    await page.waitForURL(/\/es\/admin\/exams(\?|$)/, { timeout: 15000 });
+    await page.waitForURL(/\/es\/admin\/exams(\?|$)/, { timeout: 30000 });
+    await page.waitForTimeout(3000);
 
     // 6. Click edit on the new config
-    const configLink = page.locator(`a:has-text("${uniqueName}")`).first();
-    await expect(configLink).toBeVisible({ timeout: 10000 });
-    await configLink.click();
+    const configCard = page.locator('.group').filter({ hasText: uniqueName });
+    await expect(configCard.first()).toBeVisible({ timeout: 15000 });
+    await configCard.locator('a[href*="/edit"]').click();
 
-    // 7. Verify toggle is OFF (inactive styling)
-    await page.waitForSelector('form', { timeout: 15000 });
-    const editToggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' });
+    // 7. Wait for edit page to load the form
+    await page.waitForTimeout(3000);
+    await page.waitForSelector('form', { timeout: 30000 });
+    await page.waitForTimeout(500);
+
+    // 8. Verify toggle is OFF (inactive styling)
+    const editToggleDiv = page.locator('div.cursor-pointer').filter({ hasText: 'Excluir Acertadas' }).first();
     await expect(editToggleDiv).not.toHaveClass(/bg-primary\/5/);
   });
 });

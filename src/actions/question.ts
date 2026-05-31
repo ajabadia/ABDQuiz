@@ -4,10 +4,8 @@ import { QuestionService, type QuestionFilters } from '@/services/corpus/Questio
 import { revalidatePath } from 'next/cache';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { type IQuestion } from '@/models/Question';
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 
 interface ActionResponse<T> {
   success: boolean;

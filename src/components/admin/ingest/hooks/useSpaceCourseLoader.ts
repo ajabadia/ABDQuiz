@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getActiveSpacesAction, getCoursesBySpaceAction } from '@/actions/corpus';
+import { getActiveSpacesAction, getCoursesBySpaceAction } from '@/actions/hierarchyValidation';
 import type { SpaceOption, CourseOption } from '../types';
 
 export function useSpaceCourseLoader(currentSpaceId?: string, currentCourseId?: string) {

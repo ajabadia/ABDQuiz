@@ -8,6 +8,18 @@ interface UseQuizTimerProps {
   isPaused?: boolean;
 }
 
+/**
+ * useQuizTimer
+ *
+ * Hook de temporización que maneja dos contadores simultáneamente:
+ * - globalTime: tiempo total del examen
+ * - questionTime: tiempo por pregunta
+ *
+ * Usa refs (globalTimeRef, questionTimeRef) como almacenamiento síncrono
+ * para la detección de timeouts dentro del callback de setInterval,
+ * evitando depender de la ejecución de updaters de useState que React 18
+ * puede diferir por batching.
+ */
 export function useQuizTimer({
   totalSeconds,
   questionSeconds,
@@ -17,13 +29,16 @@ export function useQuizTimer({
 }: UseQuizTimerProps) {
   const [globalTime, setGlobalTime] = useState(totalSeconds);
   const [questionTime, setQuestionTime] = useState(questionSeconds);
-  
-  const globalTimeoutRef = useRef<boolean>(false);
-  const questionTimeoutRef = useRef<boolean>(false);
 
-  // Reset del timer de la pregunta
+  // Refs para acceso síncrono desde el intervalo (evita side effects en updaters)
+  const globalTimeRef = useRef(totalSeconds);
+  const questionTimeRef = useRef(questionSeconds);
+  const globalTimeoutRef = useRef(false);
+  const questionTimeoutRef = useRef(false);
+
   const resetQuestionTimer = useCallback(() => {
     setQuestionTime(questionSeconds);
+    questionTimeRef.current = questionSeconds;
     questionTimeoutRef.current = false;
   }, [questionSeconds]);
 
@@ -39,38 +54,30 @@ export function useQuizTimer({
     if (isPaused) return;
 
     const timer = setInterval(() => {
-      let isGlobalDone = false;
-      let isQuestionDone = false;
-
-      // 1. Update state first
+      // 1. Computar siguiente valor y actualizar ref + state
       if (totalSeconds > 0) {
-        setGlobalTime((prev) => {
-          if (prev <= 1) {
-            isGlobalDone = true;
-            return 0;
-          }
-          return prev - 1;
-        });
+        const next = Math.max(0, globalTimeRef.current - 1);
+        globalTimeRef.current = next;
+        setGlobalTime(next);
       }
 
       if (questionSeconds > 0) {
-        setQuestionTime((prev) => {
-          if (prev <= 1) {
-            isQuestionDone = true;
-            return 0;
-          }
-          return prev - 1;
-        });
+        const next = Math.max(0, questionTimeRef.current - 1);
+        questionTimeRef.current = next;
+        setQuestionTime(next);
       }
 
-      // 2. Trigger side effects after state update
-      if (isGlobalDone && !globalTimeoutRef.current) {
+      // 2. Detectar timeouts — los refs ya tienen los valores actualizados.
+      //    Los guards (totalSeconds > 0 / questionSeconds > 0) evitan que
+      //    timeouts se disparen cuando el contador correspondiente es 0
+      //    (ej: totalSeconds=0 → globalTimeRef se queda en 0 inicial).
+      if (totalSeconds > 0 && globalTimeRef.current === 0 && !globalTimeoutRef.current) {
         globalTimeoutRef.current = true;
         clearInterval(timer);
         onGlobalTimeoutRef.current();
       }
 
-      if (isQuestionDone && !questionTimeoutRef.current) {
+      if (questionSeconds > 0 && questionTimeRef.current === 0 && !questionTimeoutRef.current) {
         questionTimeoutRef.current = true;
         onQuestionTimeoutRef.current();
       }
@@ -83,7 +90,7 @@ export function useQuizTimer({
     globalTime,
     questionTime,
     resetQuestionTimer,
-    isGlobalLow: totalSeconds > 0 && globalTime < 60, // Warning a falta de 1 minuto
-    isQuestionLow: questionSeconds > 0 && questionTime < 10, // Warning a falta de 10 segundos
+    isGlobalLow: totalSeconds > 0 && globalTime < 60,
+    isQuestionLow: questionSeconds > 0 && questionTime < 10,
   };
 }

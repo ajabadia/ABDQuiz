@@ -30,9 +30,16 @@ export interface IExamAttempt extends Document {
     manualTextAnswer?: string;
     manualPointsAwarded?: number;
     feedback?: string;
+    aiFeedback?: string;
     isCorrect: boolean;
     timeSpentSeconds: number;
     status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
+  }[];
+  messages?: {
+    sender: 'student' | 'professor';
+    text: string;
+    createdAt: Date;
+    read: boolean;
   }[];
 }
 
@@ -67,6 +74,14 @@ const ExamAttemptSchema: Schema = new Schema(
     attemptToken: { type: String, index: true },
     attemptTokenExpiresAt: Date,
     lastHeartbeatAt: { type: Date },
+    messages: [
+      {
+        sender: { type: String, enum: ['student', 'professor'], required: true },
+        text: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+        read: { type: Boolean, default: false },
+      },
+    ],
     questions: [
       {
         questionId: { type: Schema.Types.ObjectId, ref: 'Question' },
@@ -75,6 +90,7 @@ const ExamAttemptSchema: Schema = new Schema(
         manualTextAnswer: String,
         manualPointsAwarded: Number,
         feedback: String,
+        aiFeedback: String,
         isCorrect: { type: Boolean, default: false },
         timeSpentSeconds: { type: Number, default: 0 },
         status: {

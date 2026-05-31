@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { type QuizAttemptQuestion } from '@/types/quiz';
 import { getTranslations } from 'next-intl/server';
 import { AuditDetail } from '@/components/quiz/AuditDetail';
+import { ChatThread } from '@/components/chat/ChatThread';
 import { withTenantContext } from '@ajabadia/satellite-sdk';
 
 interface ResultsPageProps {
@@ -98,6 +99,7 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
               auditDetail: t('auditDetail'),
               viewExplanation: t('viewExplanation'),
               explanation: t('explanation'),
+              aiFeedback: t('aiFeedback'),
               module: t('module'),
               source: t('source'),
               btnCreateAllegation: ta('btnCreateAllegation'),
@@ -108,6 +110,11 @@ export default async function ResultsPage({ params }: ResultsPageProps) {
               toastError: ta('toastError')
             }}
           />
+
+          {/* Chat Alumno-Profesor */}
+          <section className="max-w-3xl mx-auto w-full" role="region" aria-label="Chat">
+            <ChatThread attemptId={serializedAttempt._id} />
+          </section>
 
           <footer className="flex justify-center gap-4 pt-12" role="contentinfo">
             <Button variant="outline" className="rounded-none font-mono text-[10px] tracking-widest uppercase px-8 h-12" asChild>

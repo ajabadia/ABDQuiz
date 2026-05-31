@@ -90,7 +90,8 @@
     "placeholderTime": "--:--",
     "module": "MODULE",
     "source": "SOURCE",
-    "explanation": "TECHNICAL_INTELLIGENCE"
+    "explanation": "TECHNICAL_INTELLIGENCE",
+    "aiFeedback": "AI TUTOR"
   },
   "admin": {
     "title": "Data Ingest",
@@ -143,6 +144,7 @@
     "importSuccess": "Import completed: {count} questions added.",
     "importError": "Ingestion failure: {error}",
     "invalidFormat": "Invalid format",
+    "techProcessing": "Processing technical ingestion...",
     "techFailure": "Technical failure during ingestion",
     "brandPart1": "ABD",
     "brandPart2": "QUIZ",
@@ -276,7 +278,45 @@
     "auditLogAction_PUBLISHED": "Published",
     "auditLogAction_ARCHIVED": "Archived",
     "auditLogAction_DELETED": "Deleted",
-    "auditLogAction_UPDATE": "Updated"
+    "auditLogAction_UPDATE": "Updated",
+    "courseActive": "ACTIVE",
+    "courseInactive": "INACTIVE",
+    "courseUpdated": "Course updated successfully",
+    "courseUpdateError": "Error updating course",
+    "courseCreated": "Course created successfully",
+    "courseCreateError": "Error creating course",
+    "courseActivated": "Course activated",
+    "courseDeactivated": "Course deactivated",
+    "courseDeleted": "Course deleted successfully",
+    "courseDeleteError": "Error deleting course",
+    "courseToggleError": "Error changing course status",
+    "noCourses": "NO COURSES DETECTED UNDER THESE PARAMETERS",
+    "editCourseTitle": "EDIT COURSE",
+    "newCourseTitle": "NEW COURSE",
+    "spaceIdLabel": "Space ID",
+    "courseNameLabel": "Course Name",
+    "descriptionLabel": "Description",
+    "tagsLabel": "Tags",
+    "courseNamePlaceholder": "E.g.: Network Fundamentals",
+    "descriptionPlaceholder": "Brief description of the course...",
+    "tagsPlaceholder": "networking, security, basics",
+    "btnSaving": "SAVING...",
+    "btnCreateCourse": "CREATE COURSE",
+    "btnSaveChanges": "SAVE CHANGES",
+    "btnDelete": "DELETE",
+    "btnConfirm": "CONFIRM",
+    "deleteCourseTitle": "DELETE COURSE",
+    "deleteCourseMessage": "Are you sure you want to delete this course? This action cannot be undone.",
+    "deactivateCourseTitle": "DEACTIVATE COURSE",
+    "deactivateCourseMessage": "Are you sure you want to deactivate this course? Associated exams may be affected.",
+    "activateCourseTitle": "ACTIVATE COURSE",
+    "activateCourseMessage": "Are you sure you want to reactivate this course?",
+    "editCourse": "Edit course",
+    "deactivateCourse": "Deactivate course",
+    "activateCourse": "Activate course",
+    "deleteCourse": "Delete course",
+    "floatingLoading": "LOADING...",
+    "floatingNoOptions": "NO OPTIONS"
   },
   "quiz": {
     "module": "MODULE",
@@ -296,7 +336,10 @@
     "yourAnswer": "Your answer",
     "openTextBadge": "OPEN TEXT",
     "openTextPlaceholder": "Write your answer here...",
-    "characters": "characters"
+    "characters": "characters",
+    "aiFeedback": "AI TUTOR",
+    "aiFeedbackGenerating": "Generating personalized feedback...",
+    "aiFeedbackError": "Could not generate automatic feedback."
   }
 ,
   "grading": {
@@ -330,7 +373,23 @@
     "viewDetail": "View detail",
     "viewDetailAttempt": "View attempt detail",
     "collapseQuestion": "Collapse question",
-    "expandQuestion": "Expand question"
+    "expandQuestion": "Expand question",
+    "openTextBadge": "OPEN TEXT",
+    "openTextStudentAnswer": "OPEN TEXT ANSWER",
+    "openTextNoCorrectAnswer": "— No predefined correct answer —"
+  },
+  "chat": {
+    "title": "Student-Professor Chat",
+    "messageCount": "messages",
+    "empty": "No messages yet",
+    "emptyStudentHint": "Ask your professor a question about your exam.",
+    "emptyProfessorHint": "Answer the student's questions about their exam.",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "collapse": "Collapse chat",
+    "expand": "Expand chat",
+    "student": "Student",
+    "professor": "Professor"
   },
   "adminPortal": {
     "gobernanza": "GOVERNANCE",
@@ -501,7 +560,17 @@
     "total": "TOTAL: {count}",
     "reset": "RESET",
     "noQuestions": "NO QUESTIONS DETECTED UNDER THESE PARAMETERS",
-    "btnUpload": "Upload files"
+    "btnUpload": "Upload files",
+    "attachmentsLabel": "ATTACHMENTS",
+    "btnUploadAction": "UPLOAD",
+    "noAttachments": "No attachments. Upload images, PDFs, audio or video.",
+    "uploadSuccess": "File uploaded: ",
+    "uploadError": "Error uploading: ",
+    "uploadConnectionError": "Connection error uploading file",
+    "optionLetter": "OPTION ",
+    "fileSizeKB": "KB",
+    "openFile": "Open ",
+    "deleteFile": "Delete "
   },
   "analytics": {
     "title": "Tactical Analytics Center",

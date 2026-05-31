@@ -1,5 +1,6 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -108,47 +109,41 @@ export function ScoringSystemCard({
 
       {/* Inputs Condicionales Dinámicos */}
       {(scoringMode === 'simple' || scoringMode === 'penalty') && (
-        <div className="flex items-center gap-6">
-          <div className="space-y-1 flex-1">
-            <Label htmlFor="pointsPerCorrect" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-              {translations.pointsPerCorrectLabel}
-            </Label>
-            <p className="text-[9px] text-muted-foreground uppercase">
-              {translations.pointsPerCorrectDesc}
-            </p>
-          </div>
+        <LabeledField
+          id="pointsPerCorrect"
+          label={translations.pointsPerCorrectLabel}
+          hint={translations.pointsPerCorrectDesc}
+          labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono"
+          className="flex-row items-center gap-6"
+        >
           <Input
-            id="pointsPerCorrect"
             type="number"
             step="0.1"
             value={pointsPerCorrect}
             onChange={(e) => onChange({ pointsPerCorrect: parseFloat(e.target.value) || 1 })}
             className="w-24 rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
           />
-        </div>
+        </LabeledField>
       )}
 
       {scoringMode === 'penalty' && (
         <>
           <Separator className="bg-border" />
-          <div className="flex items-center gap-6">
-            <div className="space-y-1 flex-1">
-              <Label htmlFor="penaltyPerIncorrect" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-                {translations.penaltyPerIncorrectLabel}
-              </Label>
-              <p className="text-[9px] text-muted-foreground uppercase">
-                {translations.penaltyPerIncorrectDesc}
-              </p>
-            </div>
+          <LabeledField
+            id="penaltyPerIncorrect"
+            label={translations.penaltyPerIncorrectLabel}
+            hint={translations.penaltyPerIncorrectDesc}
+            labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono"
+            className="flex-row items-center gap-6"
+          >
             <Input
-              id="penaltyPerIncorrect"
               type="number"
               step="0.1"
               value={penaltyPerIncorrect}
               onChange={(e) => onChange({ penaltyPerIncorrect: parseFloat(e.target.value) || 0 })}
               className="w-24 rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
             />
-          </div>
+          </LabeledField>
         </>
       )}
 
@@ -158,12 +153,8 @@ export function ScoringSystemCard({
             {translations.difficultyWeightsLabel}
           </Label>
           <div className="grid grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="weightEasy" className="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
-                {translations.weightEasy}
-              </Label>
+            <LabeledField id="weightEasy" label={translations.weightEasy} labelClassName="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
               <Input
-                id="weightEasy"
                 type="number"
                 step="0.1"
                 value={difficultyWeights.easy}
@@ -174,14 +165,10 @@ export function ScoringSystemCard({
                 }
                 className="rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
               />
-            </div>
+            </LabeledField>
 
-            <div className="space-y-2">
-              <Label htmlFor="weightMedium" className="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
-                {translations.weightMedium}
-              </Label>
+            <LabeledField id="weightMedium" label={translations.weightMedium} labelClassName="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
               <Input
-                id="weightMedium"
                 type="number"
                 step="0.1"
                 value={difficultyWeights.medium}
@@ -192,14 +179,10 @@ export function ScoringSystemCard({
                 }
                 className="rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
               />
-            </div>
+            </LabeledField>
 
-            <div className="space-y-2">
-              <Label htmlFor="weightHard" className="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
-                {translations.weightHard}
-              </Label>
+            <LabeledField id="weightHard" label={translations.weightHard} labelClassName="text-[9px] uppercase text-muted-foreground tracking-wider font-mono">
               <Input
-                id="weightHard"
                 type="number"
                 step="0.1"
                 value={difficultyWeights.hard}
@@ -210,7 +193,7 @@ export function ScoringSystemCard({
                 }
                 className="rounded-none bg-background/50 border-border text-right font-mono focus-visible:ring-primary/50 text-foreground"
               />
-            </div>
+            </LabeledField>
           </div>
         </div>
       )}

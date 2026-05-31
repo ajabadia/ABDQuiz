@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import ExamConfig from '@/models/ExamConfig';
@@ -23,8 +23,18 @@ export default async function EditExamPage({
   const isSuperAdmin = user.role === 'SUPER_ADMIN';
   const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
 
-  await connectDB();
-  const config = await ExamConfig.findById(id).lean();
+  // ── Multi-tenant awareness ─────────────────────────────────────────────
+  // ExamConfig uses getTenantModel (Proxy), which only routes queries to the
+  // tenant-specific connection/collection when called inside withTenantContext.
+  // Without it, findById() hits the default (non-prefixed) collection and
+  // returns null, causing a false 404.
+  const explicitCtx = await resolveTargetTenantContext(resolvedTenantId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let config: any = null;
+  await withTenantContext(async () => {
+    await connectDB();
+    config = await ExamConfig.findById(id).lean();
+  }, explicitCtx);
 
   if (!config || (config.tenantId !== user.tenantId && !isSuperAdmin)) {
     return notFound();

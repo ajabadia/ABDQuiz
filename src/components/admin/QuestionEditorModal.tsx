@@ -1,9 +1,11 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { useState, useEffect, useRef } from 'react';
 import { checkQuestionTraceabilityAction, saveQuestionAction } from '@/actions/question';
 import { toast } from 'sonner';
 import { X, AlertTriangle, CheckCircle, ShieldCheck, Paperclip, Upload, Loader2, Trash2, ExternalLink } from 'lucide-react';
+import { useId } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface Attachment {
@@ -36,6 +38,7 @@ interface QuestionEditorModalProps {
 
 export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEditorModalProps) {
   const t = useTranslations('questions');
+  const formId = useId();
   const [hasBeenAnswered, setHasBeenAnswered] = useState<boolean | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [form, setForm] = useState({
@@ -97,7 +100,7 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
             <h2 className="text-sm font-bold font-mono tracking-widest uppercase text-primary">{t('btnEdit')}</h2>
             <p className="text-[10px] uppercase font-mono text-muted-foreground mt-1">ID: {question._id.slice(0, 8)}... | {t('versionLabel', { version: question.version })}</p>
           </div>
-          <button type="button" onClick={onClose} aria-label={t('btnCancel')} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-5 h-5" /></button>
+          <button type="button" onClick={onClose} aria-label={t('btnCancel')} className="text-muted-foreground hover:text-foreground transition-colors"><X className="w-5 h-5" aria-hidden="true" /></button>
         </header>
 
         {/* Alerta de Trazabilidad */}
@@ -105,9 +108,9 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
           <div className="h-10 bg-white/5 animate-pulse" />
         ) : (
           <div className={`p-4 border font-mono text-[9px] uppercase tracking-wider flex gap-3 ${hasBeenAnswered ? 'bg-yellow-500/5 border-yellow-500/25 text-yellow-400' : 'bg-green-500/5 border-green-500/25 text-green-400'}`}>
-            {hasBeenAnswered ? <AlertTriangle className="w-4 h-4 shrink-0 text-yellow-500" /> : <CheckCircle className="w-4 h-4 shrink-0 text-green-500" />}
+            {hasBeenAnswered ? <AlertTriangle className="w-4 h-4 shrink-0 text-yellow-500" aria-hidden="true" /> : <CheckCircle className="w-4 h-4 shrink-0 text-green-500" aria-hidden="true" />}
             <div className="space-y-1">
-              <strong className="font-bold flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> {t(hasBeenAnswered ? 'traceCopyOnWriteTitle' : 'traceInplaceTitle')}</strong>
+              <strong className="font-bold flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" /> {t(hasBeenAnswered ? 'traceCopyOnWriteTitle' : 'traceInplaceTitle')}</strong>
               <p className="leading-relaxed text-muted-foreground">{t(hasBeenAnswered ? 'traceCopyOnWriteDesc' : 'traceInplaceDesc', { version: question.version + 1 })}</p>
             </div>
           </div>
@@ -115,14 +118,14 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
 
         {/* Campos de Formulario */}
         <div className="space-y-4 flex-1">
-          <FormGroup label={t('labelQuestionText')}><textarea className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50 min-h-[60px]" required value={form.questionText} onChange={e => setForm({ ...form, questionText: e.target.value })} /></FormGroup>
+          <LabeledField id={`${formId}-text`} label={t('labelQuestionText')} required labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><textarea className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50 min-h-[60px]" required value={form.questionText} onChange={e => setForm({ ...form, questionText: e.target.value })} /></LabeledField>
           <div className="grid grid-cols-2 gap-4">
-            <FormGroup label={t('labelModule')}><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" required value={form.module} onChange={e => setForm({ ...form, module: e.target.value })} /></FormGroup>
-            <FormGroup label={t('labelSource')}><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" required value={form.source} onChange={e => setForm({ ...form, source: e.target.value })} /></FormGroup>
+            <LabeledField id={`${formId}-module`} label={t('labelModule')} required labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" required value={form.module} onChange={e => setForm({ ...form, module: e.target.value })} /></LabeledField>
+            <LabeledField id={`${formId}-source`} label={t('labelSource')} required labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" required value={form.source} onChange={e => setForm({ ...form, source: e.target.value })} /></LabeledField>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <FormGroup label={t('labelDifficulty')}><select className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono uppercase outline-none focus:border-primary/50" value={form.difficulty} onChange={e => setForm({ ...form, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}><option value="easy">FÁCIL</option><option value="medium">MEDIO</option><option value="hard">DIFÍCIL</option></select></FormGroup>
-            <FormGroup label={t('labelCorrectOption')}><select className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono uppercase outline-none focus:border-primary/50" value={form.correctOptionIndex} onChange={e => setForm({ ...form, correctOptionIndex: Number(e.target.value) })}>{form.options.map((_, i) => <option key={i} value={i}>OPCIÓN {String.fromCharCode(65 + i)} ({i})</option>)}</select></FormGroup>
+            <LabeledField id={`${formId}-difficulty`} label={t('labelDifficulty')} labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><select className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono uppercase outline-none focus:border-primary/50" value={form.difficulty} onChange={e => setForm({ ...form, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}><option value="easy">{t('diffEasy')}</option><option value="medium">{t('diffMedium')}</option><option value="hard">{t('diffHard')}</option></select></LabeledField>
+            <LabeledField id={`${formId}-correct`} label={t('labelCorrectOption')} labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><select className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono uppercase outline-none focus:border-primary/50" value={form.correctOptionIndex} onChange={e => setForm({ ...form, correctOptionIndex: Number(e.target.value) })}>{form.options.map((_, i) => <option key={i} value={i}>{t('optionLetter')}{String.fromCharCode(65 + i)} ({i})</option>)}</select></LabeledField>
           </div>
 
           {/* Opciones */}
@@ -139,14 +142,14 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
             </div>
           </div>
 
-          <FormGroup label={t('labelExplanation')}><textarea className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50 min-h-[50px]" value={form.explanation} onChange={e => setForm({ ...form, explanation: e.target.value })} /></FormGroup>
-          <FormGroup label={t('labelTags')}><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} /></FormGroup>
+          <LabeledField id={`${formId}-explanation`} label={t('labelExplanation')} labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><textarea className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50 min-h-[50px]" value={form.explanation} onChange={e => setForm({ ...form, explanation: e.target.value })} /></LabeledField>
+          <LabeledField id={`${formId}-tags`} label={t('labelTags')} labelClassName="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold"><input type="text" className="w-full bg-white/5 border border-white/10 p-2 text-[10px] font-mono outline-none focus:border-primary/50" value={form.tags} onChange={e => setForm({ ...form, tags: e.target.value })} /></LabeledField>
 
           {/* §12.A — Attachments */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold flex items-center gap-2">
-                <Paperclip className="w-3 h-3" /> ADJUNTOS
+                <Paperclip className="w-3 h-3" aria-hidden="true" /> {t('attachmentsLabel')}
               </label>
               <button
                 type="button"
@@ -155,8 +158,8 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
                 aria-label={t('btnUpload')}
                 className="text-[8px] uppercase tracking-widest text-primary font-bold hover:underline flex items-center gap-1"
               >
-                {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                SUBIR
+                {isUploading ? <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" /> : <Upload className="w-3 h-3" aria-hidden="true" />}
+                {t('btnUploadAction')}
               </button>
             </div>
 
@@ -176,12 +179,12 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
                   const data = await res.json();
                   if (data.success) {
                     setForm({ ...form, attachments: [...form.attachments, { url: data.url, name: data.name, type: data.type, size: data.size }] });
-                    toast.success('Archivo subido: ' + data.name);
+                    toast.success(t('uploadSuccess') + data.name);
                   } else {
-                    toast.error('Error al subir: ' + (data.error || 'desconocido'));
+                    toast.error(t('uploadError') + (data.error || 'desconocido'));
                   }
                 } catch {
-                  toast.error('Error de conexión al subir el archivo');
+                  toast.error(t('uploadConnectionError'));
                 } finally {
                   setIsUploading(false);
                   if (fileInputRef.current) fileInputRef.current.value = '';
@@ -191,7 +194,7 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
 
             {form.attachments.length === 0 ? (
               <p className="text-[9px] font-mono text-muted-foreground/50 italic">
-                Sin adjuntos. Sube imágenes, PDFs, audio o video.
+                {t('noAttachments')}
               </p>
             ) : (
               <div className="space-y-1.5">
@@ -199,18 +202,18 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
                   <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 p-2 group">
                     <span className="text-[8px] font-mono uppercase text-muted-foreground w-6">{i + 1}.</span>
                     <span className="flex-1 text-[10px] font-mono truncate" title={att.name}>{att.name}</span>
-                    <span className="text-[7px] font-mono text-muted-foreground/60 uppercase">{(att.size / 1024).toFixed(0)}KB</span>
-                    <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label={`Abrir ${att.name}`}>
-                      <ExternalLink className="w-3 h-3" />
+                    <span className="text-[7px] font-mono text-muted-foreground/60 uppercase">{(att.size / 1024).toFixed(0)}{t('fileSizeKB')}</span>
+                    <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label={t('openFile') + att.name}>
+                      <ExternalLink className="w-3 h-3" aria-hidden="true" />
                     </a>
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, attachments: form.attachments.filter((_, idx) => idx !== i) })}
-                      title={`Eliminar ${att.name}`}
+                      title={`${t('deleteFile')}${att.name}`}
                       className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                      aria-label={`Eliminar ${att.name}`}
+                      aria-label={`${t('deleteFile')}${att.name}`}
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-3 h-3" aria-hidden="true" />
                     </button>
                   </div>
                 ))}
@@ -226,8 +229,4 @@ export function QuestionEditorModal({ question, onClose, onSuccess }: QuestionEd
       </form>
     </div>
   );
-}
-
-function FormGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className="flex flex-col gap-1.5"><label className="text-[8px] uppercase tracking-[0.3em] text-muted-foreground/60 font-bold">{label}</label>{children}</div>;
 }

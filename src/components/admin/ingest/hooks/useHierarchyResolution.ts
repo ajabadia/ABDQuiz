@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { validateHierarchyAction } from '@/actions/corpus';
+import { validateHierarchyAction } from '@/actions/hierarchyValidation';
 
 interface RawQuestion {
   pregunta: string;

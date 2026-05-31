@@ -32,14 +32,10 @@ import { ensureAdminOrProfessor } from './ensureQuizAccess';
 const mockEnsureIndustrialAccess = ensureIndustrialAccess as ReturnType<typeof vi.fn>;
 const mockRequireQuizScope = requireQuizScope as ReturnType<typeof vi.fn>;
 
-// ── Test fixtures ─────────────────────────────────────
-
-const ADMIN_USER = { id: 'admin-1', tenantId: 't1', email: 'admin@t1.com', role: 'ADMIN' };
-const PROFESSOR_USER = { id: 'prof-1', tenantId: 't1', email: 'prof@t1.com', role: 'PROFESSOR' };
-const SUPER_ADMIN_USER = { id: 'super-1', tenantId: 't1', email: 'super@abd.com', role: 'SUPER_ADMIN' };
-const USER_USER = { id: 'user-1', tenantId: 't1', email: 'user@t1.com', role: 'USER' };
-const AUDITOR_USER = { id: 'auditor-1', tenantId: 't1', email: 'auditor@t1.com', role: 'AUDITOR' };
-const OPERATOR_USER = { id: 'op-1', tenantId: 't1', email: 'op@t1.com', role: 'OPERATOR' };
+import {
+  ADMIN_USER, PROFESSOR_USER, SUPER_ADMIN_USER,
+  USER_USER, AUDITOR_USER, OPERATOR_USER,
+} from './ensureQuizAccess.test.fixtures';
 
 const InsufficientPrivilegesErrorClass = InsufficientPrivilegesError as unknown as new (msg?: string) => Error;
 

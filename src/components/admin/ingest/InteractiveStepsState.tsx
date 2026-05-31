@@ -1,5 +1,6 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { ChevronRight, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { InteractiveQuestionCard } from './InteractiveQuestionCard';
@@ -59,40 +60,28 @@ export function InteractiveStepsState({
         </span>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="interactive-module" className="text-[9px] uppercase text-muted-foreground font-mono">
-              {ap('labelModule')}
-            </label>
+          <LabeledField id="interactive-module" label={ap('labelModule')} labelClassName="text-[9px] uppercase text-muted-foreground font-mono">
             <input
-              id="interactive-module"
               type="text"
               value={remediationData.modulo || ''}
               onChange={(e) => onDataChange({ ...remediationData, modulo: e.target.value })}
               placeholder="Ej: Seguridad"
               className="input-console h-10"
             />
-          </div>
+          </LabeledField>
 
-          <div className="space-y-2">
-            <label htmlFor="interactive-source" className="text-[9px] uppercase text-muted-foreground font-mono">
-              {ap('labelSource')}
-            </label>
+          <LabeledField id="interactive-source" label={ap('labelSource')} labelClassName="text-[9px] uppercase text-muted-foreground font-mono">
             <input
-              id="interactive-source"
               type="text"
               value={remediationData.fuente || ''}
               onChange={(e) => onDataChange({ ...remediationData, fuente: e.target.value })}
               placeholder="Ej: Examen Oficial"
               className="input-console h-10"
             />
-          </div>
+          </LabeledField>
 
-          <div className="space-y-2 md:col-span-2">
-            <label htmlFor="interactive-difficulty" className="text-[9px] uppercase text-muted-foreground font-mono">
-              {ap('labelDifficulty')}
-            </label>
+          <LabeledField id="interactive-difficulty" label={ap('labelDifficulty')} labelClassName="text-[9px] uppercase text-muted-foreground font-mono" className="md:col-span-2">
             <select
-              id="interactive-difficulty"
               value={remediationData.difficulty || 'medium'}
               onChange={(e) => onDataChange({ ...remediationData, difficulty: e.target.value as 'easy' | 'medium' | 'hard' })}
               className="input-console h-10 uppercase"
@@ -101,7 +90,7 @@ export function InteractiveStepsState({
               <option value="medium">{ap('diffMedium')}</option>
               <option value="hard">{ap('diffHard')}</option>
             </select>
-          </div>
+          </LabeledField>
         </div>
       </div>
 

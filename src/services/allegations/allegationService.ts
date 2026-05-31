@@ -4,19 +4,13 @@ import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';
 import Question from '@/models/Question';
 import mongoose from 'mongoose';
-
-interface IAttemptQuestion {
-  questionId: mongoose.Types.ObjectId;
-  selectedOptionIndex?: number;
-  isCorrect?: boolean;
-  status?: 'correcta' | 'incorrecta' | 'no_respondida';
-  questionSnapshot: {
-    questionText: string;
-    correctOptionIndex: number;
-    difficulty?: 'easy' | 'medium' | 'hard';
-    isCancelled?: boolean;
-  };
-}
+import {
+  type IAttemptQuestion,
+  applyCorrectionShift,
+  applyCancelQuestion,
+  applyGivePoints,
+  recalculateAttemptScore,
+} from './allegationHelpers';
 
 export class AllegationService {
   /**
@@ -143,26 +137,11 @@ export class AllegationService {
 
       // Aplicar estrategia
       if (resolutionMode === 'CORRECTION_SHIFT' && typeof nextCorrectOptionIndex === 'number') {
-        qBlock.questionSnapshot.correctOptionIndex = nextCorrectOptionIndex;
-        const isCorrect = qBlock.selectedOptionIndex === nextCorrectOptionIndex;
-        qBlock.isCorrect = isCorrect;
-        qBlock.status = isCorrect 
-          ? 'correcta' 
-          : (typeof qBlock.selectedOptionIndex === 'number' ? 'incorrecta' : 'no_respondida');
+        applyCorrectionShift(qBlock, nextCorrectOptionIndex);
       } else if (resolutionMode === 'CANCEL_QUESTION') {
-        // Marcamos la pregunta como anulada dentro de su snapshot
-        if (!qBlock.questionSnapshot) {
-          qBlock.questionSnapshot = {
-            questionText: '',
-            correctOptionIndex: 0
-          };
-        }
-        qBlock.questionSnapshot.isCancelled = true;
-        qBlock.isCorrect = false;
-        qBlock.status = 'no_respondida';
+        applyCancelQuestion(qBlock);
       } else if (resolutionMode === 'GIVE_POINTS_TO_ALL') {
-        qBlock.isCorrect = true;
-        qBlock.status = 'correcta';
+        applyGivePoints(qBlock);
       }
 
       // Marcar modificación del array mixto para asegurar que Mongoose detecte cambios
@@ -171,36 +150,7 @@ export class AllegationService {
       // Si el intento ya está completado o en timeout, recalculamos sus calificaciones finales
       if (attempt.status === 'completed' || attempt.status === 'timeout') {
         const config = await ExamConfig.findById(attempt.examConfigId).lean();
-        
-        let totalScore = 0;
-        let maxPossible = 0;
-
-        for (const q of (attempt.questions as unknown as IAttemptQuestion[])) {
-          // Ignorar preguntas anuladas
-          if (q.questionSnapshot && q.questionSnapshot.isCancelled) {
-            continue;
-          }
-
-          const diff = q.questionSnapshot.difficulty || 'medium';
-          let correctPoints = 1;
-
-          if (config?.scoringMode === 'weighted' && config.difficultyWeights) {
-            correctPoints = config.difficultyWeights[diff as 'easy' | 'medium' | 'hard'] || 1;
-          } else {
-            correctPoints = config?.pointsPerCorrect || 1;
-          }
-
-          maxPossible += correctPoints;
-
-          if (q.isCorrect || q.status === 'correcta') {
-            totalScore += correctPoints;
-          } else if (q.status === 'incorrecta' && config?.scoringMode === 'penalty') {
-            totalScore -= config.penaltyPerIncorrect || 0;
-          }
-        }
-
-        attempt.score = Math.max(0, totalScore);
-        attempt.percentage = maxPossible > 0 ? (attempt.score / maxPossible) * 100 : 0;
+        await recalculateAttemptScore(attempt, config);
       }
 
       await attempt.save();

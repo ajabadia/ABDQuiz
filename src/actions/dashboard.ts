@@ -1,12 +1,9 @@
 'use server';
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB, getIndustrialSession, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamAssignment from '@/models/ExamAssignment';
 import ExamConfig from '@/models/ExamConfig';
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { resolveTargetTenantContext } from '@/lib/tenant-resolver';
 import { type SerializedExamConfig } from '@/types/quiz';
 
 // --- Tipos serializados ---

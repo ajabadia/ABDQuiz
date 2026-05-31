@@ -1,7 +1,7 @@
 'use client';
 
+import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Settings2 } from 'lucide-react';
 
@@ -31,32 +31,23 @@ export function BasicInfoCard({
       </div>
 
       <div className="grid gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-            {translations.examName}
-          </Label>
+        <LabeledField id="name" label={translations.examName} required labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
           <Input
-            id="name"
             value={name}
             onChange={(e) => onChange({ name: e.target.value })}
             className="rounded-none bg-background/50 border-border h-12 focus-visible:ring-primary/50 text-foreground"
             placeholder="Ej: Simulacro Oficial Módulo 1"
-            required
           />
-        </div>
+        </LabeledField>
 
-        <div className="space-y-2">
-          <Label htmlFor="description" className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
-            Descripción (Opcional)
-          </Label>
+        <LabeledField id="description" label="Descripción (Opcional)" labelClassName="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
           <textarea
-            id="description"
             value={description}
             onChange={(e) => onChange({ description: e.target.value })}
             className="w-full min-h-[100px] bg-background/50 border border-border p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 text-foreground"
             placeholder="Detalles adicionales sobre el propósito de esta evaluación..."
           />
-        </div>
+        </LabeledField>
       </div>
     </Card>
   );

@@ -1,367 +1,111 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useQuizTimer } from '@/hooks/useQuizTimer';
-import { submitAnswerAction, finishQuizAction, heartbeatAction } from '@/actions/quiz';
-import { toast } from 'sonner';
+import { useState, useRef } from 'react';
+import { useQuizTimeout } from '@/hooks/useQuizTimeout';
+import { useQuizFinish } from '@/hooks/useQuizFinish';
+import { useQuizTimerOrchestrator } from '@/hooks/useQuizTimerOrchestrator';
+import { useQuizQuestionState } from '@/hooks/useQuizQuestionState';
 import { QuizHeader } from './QuizHeader';
 import QuizQuestion from './QuizQuestion';
 import QuizFooter from './QuizFooter';
 import { type SerializedExamAttempt } from '@/types/quiz';
 import { useTranslations } from 'next-intl';
-
-// Import modular subcomponents
 import { QuizNavigationMap } from './QuizNavigationMap';
 import { FinishConfirmDialog } from './FinishConfirmDialog';
 import { OmittedDialog } from './OmittedDialog';
+import { useQuizHeartbeat } from './useQuizHeartbeat';
+import { useQuizNavigation } from './useQuizNavigation';
+import { useAIFeedback } from '@/hooks/useAIFeedback';
+import { formatTime } from '@/lib/format';
 
 interface QuizInterfaceProps {
   initialAttempt: SerializedExamAttempt;
 }
 
 export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
-  const router = useRouter();
   const t = useTranslations('quiz');
   const [currentIndex, setCurrentIndex] = useState(0);
-  
-  // Guardamos las respuestas de opción múltiple de forma reactiva local
-  const [answers, setAnswers] = useState<(number | null)[]>(() =>
-    initialAttempt.questions.map(q => q.selectedOptionIndex !== undefined ? q.selectedOptionIndex : null)
-  );
 
-  // Guardamos las respuestas de texto libre (open_text)
-  const [textAnswers, setTextAnswers] = useState<Record<number, string>>(() => {
-    const initial: Record<number, string> = {};
-    initialAttempt.questions.forEach((q, idx) => {
-      if (q.manualTextAnswer) {
-        initial[idx] = q.manualTextAnswer;
-      }
-    });
-    return initial;
+  // Question interaction state (answers, selectedOption, feedback, text)
+  const {
+    answers,
+    setAnswers,
+    textAnswers,
+    setTextAnswers,
+    selectedOption,
+    setSelectedOption,
+    showFeedback,
+    setShowFeedback,
+    handleTextChange,
+  } = useQuizQuestionState(initialAttempt, currentIndex);
+
+  const { aiFeedbackMap, aiFeedbackLoading } = useAIFeedback(showFeedback, currentIndex, initialAttempt._id);
+
+  // Heartbeat (anti-clock tampering)
+  useQuizHeartbeat(initialAttempt._id);
+
+  // Finish/submit state (isSubmitting, confirmFinish, finish/omitted dialogs)
+  const {
+    confirmFinish,
+    showFinishConfirm,
+    setShowFinishConfirm,
+    showOmittedConfirm,
+    setShowOmittedConfirm,
+    isSubmitting,
+    setIsSubmitting,
+  } = useQuizFinish(initialAttempt._id, initialAttempt.attemptToken);
+
+  // Ref compartido: creado AQUÍ antes de cualquier consumidor
+  const resetTimerRef = useRef<() => void>(() => {});
+
+  // Navigation logic (handleNext, handlePrevious, jumpToQuestion, etc.)
+  const {
+    jumpToQuestion,
+    handleNext,
+    handlePrevious,
+    handleOptionSelect,
+    startOmittedReview,
+    isOpenText,
+    currentQuestion,
+    textAnswer,
+  } = useQuizNavigation({
+    initialAttempt,
+    currentIndex,
+    answers,
+    textAnswers,
+    selectedOption,
+    isSubmitting,
+    setCurrentIndex,
+    setAnswers,
+    setTextAnswers,
+    setSelectedOption,
+    setIsSubmitting,
+    setShowFeedback,
+    setShowFinishConfirm,
+    setShowOmittedConfirm,
+    resetTimerRef,
   });
 
-  const [selectedOption, setSelectedOption] = useState<number | null>(() => 
-    initialAttempt.questions[0]?.selectedOptionIndex !== undefined ? initialAttempt.questions[0].selectedOptionIndex : null
+  // Timeout handlers (depend on handleNext from useQuizNavigation)
+  const { handleGlobalTimeout, handleQuestionTimeout } = useQuizTimeout(
+    initialAttempt._id,
+    initialAttempt.attemptToken,
+    showFeedback,
+    handleNext,
   );
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
-  const [showOmittedConfirm, setShowOmittedConfirm] = useState(false);
-  const [isReviewingOmitted, setIsReviewingOmitted] = useState(false);
-
-  const currentQuestion = initialAttempt.questions[currentIndex];
-  const textAnswer = textAnswers[currentIndex] ?? '';
-  const isOpenText = currentQuestion.questionSnapshot.type === 'open_text';
-
-  // §12.D — Heartbeat sender (30s interval, anti-clock tampering)
-  const heartbeatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    // Send heartbeat immediately on mount
-    heartbeatAction(initialAttempt._id).catch(() => {});
-
-    // Then every 30 seconds
-    heartbeatIntervalRef.current = setInterval(() => {
-      heartbeatAction(initialAttempt._id).then((result) => {
-        // If server reports attempt already ended, stop heartbeats
-        if (result && 'attemptEnded' in result && result.attemptEnded) {
-          if (heartbeatIntervalRef.current) {
-            clearInterval(heartbeatIntervalRef.current);
-            heartbeatIntervalRef.current = null;
-          }
-        }
-      }).catch(() => {});
-    }, 30_000);
-
-    return () => {
-      if (heartbeatIntervalRef.current) {
-        clearInterval(heartbeatIntervalRef.current);
-        heartbeatIntervalRef.current = null;
-      }
-    };
-  }, [initialAttempt._id]);
-
-  // Refs to avoid circular dependency hoisting issues
-  const resetTimerRef = useRef<() => void>(() => {});
-  const questionTimeRef = useRef<number>(0);
-
-  /** Determina el status de una pregunta según su tipo y respuesta */
-  const getQuestionStatus = useCallback((optionIdx: number | null, text: string, isTimeout: boolean): 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo' => {
-    if (isTimeout) return 'no_respondida_por_tiempo';
-    if (isOpenText) {
-      return text.trim().length > 0 ? 'correcta' : 'no_respondida';
-    }
-    return optionIdx === null 
-      ? 'no_respondida'
-      : optionIdx === currentQuestion.questionSnapshot.correctOptionIndex
-        ? 'correcta'
-        : 'incorrecta';
-  }, [isOpenText, currentQuestion]);
-
-  const handleTextChange = useCallback((text: string) => {
-    setTextAnswers(prev => ({ ...prev, [currentIndex]: text }));
-  }, [currentIndex]);
-
-  const jumpToQuestion = useCallback(async (targetIndex: number) => {
-    if (targetIndex === currentIndex || isSubmitting) return;
-    
-    setIsSubmitting(true);
-    const status = getQuestionStatus(selectedOption, textAnswer, false);
-        
-    try {
-      // Guardar respuesta actual
-      await submitAnswerAction({
-        attemptId: initialAttempt._id,
-        questionIndex: currentIndex,
-        selectedOptionIndex: isOpenText ? null : selectedOption,
-        timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-        status,
-        attemptToken: initialAttempt.attemptToken,
-        textAnswer: isOpenText ? textAnswer : undefined,
-      });
-
-      setAnswers(prev => {
-        const updated = [...prev];
-        updated[currentIndex] = isOpenText ? null : selectedOption;
-        return updated;
-      });
-
-      // Saltar a la pregunta destino
-      const targetQ = initialAttempt.questions[targetIndex];
-      const targetIsOpenText = targetQ.questionSnapshot.type === 'open_text';
-      setCurrentIndex(targetIndex);
-      setSelectedOption(targetIsOpenText ? null : answers[targetIndex]);
-      setShowFeedback(false);
-      resetTimerRef.current();
-    } catch {
-      toast.error('Error al guardar la respuesta anterior');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, currentQuestion, answers, isSubmitting, getQuestionStatus]);
-
-  const handleNext = useCallback(async (isTimeout = false) => {
-    setIsSubmitting(true);
-    
-    const status = getQuestionStatus(selectedOption, textAnswer, isTimeout);
-
-    try {
-      await submitAnswerAction({
-        attemptId: initialAttempt._id,
-        questionIndex: currentIndex,
-        selectedOptionIndex: isOpenText ? null : selectedOption,
-        timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-        status,
-        attemptToken: initialAttempt.attemptToken,
-        textAnswer: isOpenText ? textAnswer : undefined,
-      });
-
-      const updatedAnswers = [...answers];
-      updatedAnswers[currentIndex] = isOpenText ? null : selectedOption;
-      setAnswers(updatedAnswers);
-
-      if (isReviewingOmitted) {
-        const remainingOmitted = updatedAnswers
-          .map((ans, idx) => {
-            // For open_text, check textAnswers instead
-            const q = initialAttempt.questions[idx];
-            if (q.questionSnapshot.type === 'open_text') {
-              return (textAnswers[idx] ?? '').trim().length === 0 ? idx : null;
-            }
-            return ans === null ? idx : null;
-          })
-          .filter((idx): idx is number => idx !== null);
-
-        if (remainingOmitted.length > 0) {
-          const nextOmitted = remainingOmitted.find(idx => idx > currentIndex) ?? remainingOmitted[0];
-          const nextIsOpenText = initialAttempt.questions[nextOmitted].questionSnapshot.type === 'open_text';
-          setCurrentIndex(nextOmitted);
-          setSelectedOption(nextIsOpenText ? null : updatedAnswers[nextOmitted]);
-          setShowFeedback(false);
-          resetTimerRef.current();
-        } else {
-          setIsReviewingOmitted(false);
-          setShowFinishConfirm(true);
-        }
-      } else {
-        if (currentIndex < initialAttempt.questions.length - 1) {
-          const nextIdx = currentIndex + 1;
-          const nextIsOpenText = initialAttempt.questions[nextIdx].questionSnapshot.type === 'open_text';
-          setCurrentIndex(nextIdx);
-          setSelectedOption(nextIsOpenText ? null : updatedAnswers[nextIdx]);
-          setShowFeedback(false);
-          resetTimerRef.current();
-        } else {
-          const hasOmitted = updatedAnswers.some((ans, idx) => {
-            const q = initialAttempt.questions[idx];
-            if (q.questionSnapshot.type === 'open_text') {
-              return (textAnswers[idx] ?? '').trim().length === 0;
-            }
-            return ans === null;
-          });
-          if (initialAttempt.examConfigId?.reviewOmittedQuestions && hasOmitted) {
-            setShowOmittedConfirm(true);
-          } else {
-            setShowFinishConfirm(true);
-          }
-        }
-      }
-    } catch {
-      toast.error(t('errorProcess'));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, currentQuestion, answers, isReviewingOmitted, textAnswers, t, getQuestionStatus]);
-
-  const handleOptionSelect = useCallback(async (optionIndex: number) => {
-    if (isOpenText) return; // No aplica para preguntas de desarrollo
-    
-    setSelectedOption(optionIndex);
-    
-    if (initialAttempt.examConfigId?.autoAdvanceOnSelect) {
-      setIsSubmitting(true);
-      const status = optionIndex === currentQuestion.questionSnapshot.correctOptionIndex
-        ? 'correcta'
-        : 'incorrecta';
-
-      try {
-        await submitAnswerAction({
-          attemptId: initialAttempt._id,
-          questionIndex: currentIndex,
-          selectedOptionIndex: optionIndex,
-          timeSpent: initialAttempt.questionTimeLimitSeconds - questionTimeRef.current,
-          status,
-          attemptToken: initialAttempt.attemptToken,
-        });
-
-        const updatedAnswers = [...answers];
-        updatedAnswers[currentIndex] = optionIndex;
-        setAnswers(updatedAnswers);
-
-        if (isReviewingOmitted) {
-          const remainingOmitted = updatedAnswers
-            .map((ans, idx) => ans === null ? idx : null)
-            .filter((idx): idx is number => idx !== null);
-
-          if (remainingOmitted.length > 0) {
-            const nextOmitted = remainingOmitted.find(idx => idx > currentIndex) ?? remainingOmitted[0];
-            setCurrentIndex(nextOmitted);
-            setSelectedOption(updatedAnswers[nextOmitted]);
-            setShowFeedback(false);
-            resetTimerRef.current();
-          } else {
-            setIsReviewingOmitted(false);
-            setShowFinishConfirm(true);
-          }
-        } else {
-          if (currentIndex < initialAttempt.questions.length - 1) {
-            const nextIdx = currentIndex + 1;
-            const nextIsOpenText = initialAttempt.questions[nextIdx].questionSnapshot.type === 'open_text';
-            setCurrentIndex(nextIdx);
-            setSelectedOption(nextIsOpenText ? null : updatedAnswers[nextIdx]);
-            setShowFeedback(false);
-            resetTimerRef.current();
-          } else {
-            const hasOmitted = updatedAnswers.some((ans, idx) => {
-              const q = initialAttempt.questions[idx];
-              if (q.questionSnapshot.type === 'open_text') {
-                return (textAnswers[idx] ?? '').trim().length === 0;
-              }
-              return ans === null;
-            });
-            if (initialAttempt.examConfigId?.reviewOmittedQuestions && hasOmitted) {
-              setShowOmittedConfirm(true);
-            } else {
-              setShowFinishConfirm(true);
-            }
-          }
-        }
-      } catch {
-        toast.error(t('errorProcess'));
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  }, [currentIndex, isOpenText, initialAttempt, currentQuestion, answers, isReviewingOmitted, textAnswers, t]);
-
-  const handlePrevious = useCallback(async () => {
-    if (currentIndex > 0) {
-      await jumpToQuestion(currentIndex - 1);
-    }
-  }, [currentIndex, jumpToQuestion]);
-
-  const startOmittedReview = () => {
-    setShowOmittedConfirm(false);
-    setIsReviewingOmitted(true);
-    
-    const firstOmittedIdx = answers.findIndex((ans, idx) => {
-      const q = initialAttempt.questions[idx];
-      if (q.questionSnapshot.type === 'open_text') {
-        return (textAnswers[idx] ?? '').trim().length === 0;
-      }
-      return ans === null;
-    });
-    if (firstOmittedIdx !== -1) {
-      setCurrentIndex(firstOmittedIdx);
-      setSelectedOption(null);
-      setShowFeedback(false);
-      resetTimerRef.current();
-    }
-  };
-
-  const handleGlobalTimeout = useCallback(() => {
-    toast.error(t('globalTimeout'));
-    finishQuizAction(initialAttempt._id, initialAttempt.attemptToken).then(() => {
-      router.push(`/quiz/${initialAttempt._id}/results`);
-    });
-  }, [initialAttempt._id, router, t]);
-
-  const handleQuestionTimeout = useCallback(() => {
-    if (!showFeedback) {
-      toast.warning(t('questionTimeout'));
-      handleNext(true).catch(() => {});
-    }
-  }, [showFeedback, handleNext, t]);
-
-  const { globalTime, questionTime, isGlobalLow, isQuestionLow, resetQuestionTimer } = useQuizTimer({
+  const { globalTime, questionTime, isGlobalLow, isQuestionLow } = useQuizTimerOrchestrator({
     totalSeconds: initialAttempt.timeLimitSeconds,
     questionSeconds: initialAttempt.questionTimeLimitSeconds,
     onGlobalTimeout: handleGlobalTimeout,
     onQuestionTimeout: handleQuestionTimeout,
-    isPaused: showFinishConfirm || isSubmitting
+    isPaused: showFinishConfirm || isSubmitting,
+    resetTimerRef,
   });
-
-  // Sync refs with hook values on each render
-  useEffect(() => {
-    resetTimerRef.current = resetQuestionTimer;
-    questionTimeRef.current = questionTime;
-  }, [resetQuestionTimer, questionTime]);
-
-  const confirmFinish = async () => {
-    setIsSubmitting(true);
-    setShowFinishConfirm(false);
-    try {
-      const result = await finishQuizAction(initialAttempt._id, initialAttempt.attemptToken);
-      if (result.success) {
-        router.push(`/quiz/${initialAttempt._id}/results`);
-      }
-    } catch {
-      toast.error('Fallo al finalizar el examen');
-      setIsSubmitting(false);
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className="flex flex-col h-screen max-w-5xl mx-auto w-full px-6 py-4 gap-8">
-      <QuizHeader 
+      <QuizHeader
         currentIndex={currentIndex}
         totalQuestions={initialAttempt.questions.length}
         globalTime={globalTime}
@@ -371,7 +115,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         formatTime={formatTime}
       />
 
-      {/* 🧭 Non-linear Navigation Map */}
+      {/* Non-linear Navigation Map */}
       {initialAttempt.examConfigId?.allowReviewPrevious && (
         <QuizNavigationMap
           questions={initialAttempt.questions}
@@ -383,7 +127,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
       )}
 
       <main className="flex-1 overflow-y-auto">
-        <QuizQuestion 
+        <QuizQuestion
           qs={currentQuestion.questionSnapshot}
           selectedOption={isOpenText ? null : selectedOption}
           textAnswer={textAnswer}
@@ -391,10 +135,12 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
           showFeedback={showFeedback}
           isSubmitting={isSubmitting}
           onSelect={handleOptionSelect}
+          aiFeedback={aiFeedbackMap[currentIndex]}
+          aiFeedbackLoading={aiFeedbackLoading[currentIndex]}
         />
       </main>
 
-      <QuizFooter 
+      <QuizFooter
         onNext={() => handleNext(false)}
         onSkip={() => handleNext(true)}
         onShowFeedback={() => setShowFeedback(true)}

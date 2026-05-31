@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, Info, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Info, AlertTriangle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent, 
@@ -22,6 +22,7 @@ interface AuditDetailProps {
     auditDetail: string;
     viewExplanation: string;
     explanation: string;
+    aiFeedback?: string;
     module: string;
     source: string;
     btnCreateAllegation: string;
@@ -141,6 +142,21 @@ export function AuditDetail({ questions, attemptId, translations }: AuditDetailP
                  {selectedQuestion?.questionSnapshot.explanation || "No documentation available for this task."}
                </div>
             </div>
+
+            {/* ── AI Tutor Feedback ── */}
+            {selectedQuestion?.aiFeedback && (
+              <div className="border border-primary/20 bg-primary/[0.02] p-6 md:p-8 space-y-4">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-4 h-4 text-primary" aria-hidden="true" />
+                  <h4 className="font-mono text-[10px] uppercase tracking-[0.3em] text-primary font-bold">
+                    {translations.aiFeedback || 'TUTOR IA'}
+                  </h4>
+                </div>
+                <div className="text-sm md:text-base leading-relaxed text-foreground/90 whitespace-pre-line antialiased">
+                  {selectedQuestion.aiFeedback}
+                </div>
+              </div>
+            )}
 
             {/* Sección de Impugnación de Pregunta */}
             <div className="mt-8 pt-6 border-t border-white/5 space-y-4">

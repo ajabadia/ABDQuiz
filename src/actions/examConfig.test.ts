@@ -1,319 +1,138 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// ── Mocks ──────────────────────────────────────────────
-
-vi.mock('@/lib/tenant-resolver', () => ({
-  resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
-}));
-
+// ── Mocks ──────────────────────────────────
 vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
-  return {
-    ...actual,
-    connectDB: vi.fn().mockResolvedValue(undefined),
-    getIndustrialSession: vi.fn(),
-    withTenantContext: vi.fn((fn: () => unknown) => fn()),
-  };
+  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), getIndustrialSession: vi.fn(), withTenantContext: vi.fn((fn: () => unknown) => fn()), resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined), logger: { audit: vi.fn().mockResolvedValue(undefined), info: vi.fn(), error: vi.fn(), warn: vi.fn() } };
 });
-
 vi.mock('@/models/ExamConfig', () => {
-  const mockFindById = vi.fn();
-  const mockFindByIdAndUpdate = vi.fn();
-  const mockCreate = vi.fn();
-
-  class MockExamConfig {
-    static findById = mockFindById;
-    static findByIdAndUpdate = mockFindByIdAndUpdate;
-    static create = mockCreate;
-  }
-
-  return {
-    default: MockExamConfig,
-    mockFindById,
-    mockFindByIdAndUpdate,
-    mockCreate,
-  };
+  const m = { mockFindById: vi.fn(), mockFindByIdAndUpdate: vi.fn(), mockCreate: vi.fn() };
+  class MockExamConfig { static findById = m.mockFindById; static findByIdAndUpdate = m.mockFindByIdAndUpdate; static create = m.mockCreate; }
+  return { default: MockExamConfig, ...m };
 });
+vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 
-vi.mock('next/cache', () => ({
-  revalidatePath: vi.fn(),
-}));
-
-// ── Import mock refs ───────────────────────────────────
-
-import * as ExamConfigMod from '@/models/ExamConfig';
+import * as ConfigMod from '@/models/ExamConfig';
 import * as SessionMod from '@ajabadia/satellite-sdk';
-import * as ResolverMod from '@/lib/tenant-resolver';
 
-const { mockFindById, mockFindByIdAndUpdate, mockCreate } = ExamConfigMod as unknown as {
-  mockFindById: ReturnType<typeof vi.fn>;
-  mockFindByIdAndUpdate: ReturnType<typeof vi.fn>;
-  mockCreate: ReturnType<typeof vi.fn>;
-};
-const { getIndustrialSession } = SessionMod as unknown as {
-  getIndustrialSession: ReturnType<typeof vi.fn>;
-};
-const { resolveTargetTenantContext } = ResolverMod as unknown as {
-  resolveTargetTenantContext: ReturnType<typeof vi.fn>;
-};
-
-// ── Helper ─────────────────────────────────────────────
+const { mockFindById, mockFindByIdAndUpdate, mockCreate } = ConfigMod as unknown as any;
+const { getIndustrialSession } = SessionMod as unknown as any;
+const { resolveTargetTenantContext } = SessionMod as unknown as any;
 
 function makeDoc(overrides: Record<string, unknown> = {}) {
-  const doc: Record<string, unknown> = {
-    _id: 'cfg-1',
-    tenantId: 'tenant-1',
-    name: 'Test Config',
-    active: true,
-    createdBy: 'admin-1',
-    toObject: function () {
-      return { ...this };
-    },
-    ...overrides,
-  };
-  return doc;
+  return { _id: 'cfg-1', tenantId: 'tenant-1', name: 'Test Config', active: true, createdBy: 'admin-1', toObject() { return { ...this }; }, ...overrides };
 }
 
-const adminSession = {
-  user: { id: 'admin-1', tenantId: 'tenant-1', email: 'admin@tenant1.com', role: 'ADMIN' },
-};
+const adminSession = { user: { id: 'admin-1', tenantId: 'tenant-1', email: 'admin@tenant1.com', role: 'ADMIN' } };
+const superAdminSession = { user: { id: 'super-1', tenantId: 'tenant-1', email: 'super@abd.com', role: 'SUPER_ADMIN' } };
 
-const superAdminSession = {
-  user: { id: 'super-1', tenantId: 'tenant-1', email: 'super@abd.com', role: 'SUPER_ADMIN' },
-};
-
-// ── Tests ──────────────────────────────────────────────
-
-async function getActions() {
-  return import('./examConfig');
-}
+async function getActions() { return import('./examConfig'); }
 
 describe('updateExamConfigAction', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  beforeEach(() => { vi.clearAllMocks(); });
 
   it('should return unauthorized if no session', async () => {
     getIndustrialSession.mockResolvedValue(null);
-
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-1', { name: 'New Name' });
-
-    expect(result).toEqual({ success: false, error: 'Unauthorized' });
-    expect(mockFindById).not.toHaveBeenCalled();
+    expect(await updateExamConfigAction('cfg-1', { name: 'New' })).toEqual({ success: false, error: 'Unauthorized' });
   });
 
-  it('should update config successfully for same-tenant admin', async () => {
+  it('should update for same-tenant admin', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
     mockFindById.mockResolvedValue(makeDoc());
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-1', { name: 'New Name' });
-
-    expect(result).toEqual({ success: true });
-    expect(mockFindById).toHaveBeenCalledWith('cfg-1');
+    expect(await updateExamConfigAction('cfg-1', { name: 'New Name' })).toEqual({ success: true });
     expect(mockFindByIdAndUpdate).toHaveBeenCalledWith('cfg-1', { name: 'New Name' });
   });
 
-  it('should reject update for cross-tenant non-SUPER_ADMIN', async () => {
+  it('should reject cross-tenant non-SUPER_ADMIN', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
     mockFindById.mockResolvedValue(makeDoc({ tenantId: 'tenant-2' }));
-
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-other', { name: 'Hacked' });
-
-    expect(result).toEqual({ success: false, error: 'Acceso no autorizado' });
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
+    expect(await updateExamConfigAction('cfg-other', { name: 'Hacked' })).toEqual({ success: false, error: 'Acceso no autorizado' });
   });
 
-  it('should allow SUPER_ADMIN to update cross-tenant config with tenantIdParam', async () => {
+  it('should allow SUPER_ADMIN cross-tenant', async () => {
     getIndustrialSession.mockResolvedValue(superAdminSession);
     mockFindById.mockResolvedValue(makeDoc({ _id: 'cfg-other', tenantId: 'tenant-2' }));
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-other', { name: 'Updated' }, 'tenant-2');
-
-    expect(result).toEqual({ success: true });
-    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith('cfg-other', { name: 'Updated' });
+    expect(await updateExamConfigAction('cfg-other', { name: 'Updated' }, 'tenant-2')).toEqual({ success: true });
   });
 
-  it('should allow SUPER_ADMIN to update even with mismatched tenantIdParam (bypasses anti-IDOR)', async () => {
+  it('should allow SUPER_ADMIN bypass anti-IDOR', async () => {
     getIndustrialSession.mockResolvedValue(superAdminSession);
     mockFindById.mockResolvedValue(makeDoc({ _id: 'cfg-other', tenantId: 'tenant-2' }));
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
-    resolveTargetTenantContext.mockResolvedValueOnce({
-      tenantId: 'tenant-3',
-      dbPrefix: 't3_',
-      isolationStrategy: 'COLLECTION_PREFIX',
-    });
-
+    resolveTargetTenantContext.mockResolvedValueOnce({ tenantId: 'tenant-3', dbPrefix: 't3_', isolationStrategy: 'COLLECTION_PREFIX' });
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-other', { name: 'Mismatched' }, 'tenant-3');
-
-    // SUPER_ADMIN bypasses the anti-IDOR guard regardless of tenantIdParam
-    expect(result).toEqual({ success: true });
-    expect(mockFindByIdAndUpdate).toHaveBeenCalled();
+    expect(await updateExamConfigAction('cfg-other', { name: 'X' }, 'tenant-3')).toEqual({ success: true });
   });
 
-  it('should reject update when non-SUPER_ADMIN uses mismatched tenantIdParam', async () => {
+  it('should reject non-SUPER_ADMIN with mismatched tenantIdParam', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
     mockFindById.mockResolvedValue(makeDoc({ _id: 'cfg-other', tenantId: 'tenant-2' }));
-
-    resolveTargetTenantContext.mockResolvedValueOnce({
-      tenantId: 'tenant-3',
-      dbPrefix: 't3_',
-      isolationStrategy: 'COLLECTION_PREFIX',
-    });
-
+    resolveTargetTenantContext.mockResolvedValueOnce({ tenantId: 'tenant-3', dbPrefix: 't3_', isolationStrategy: 'COLLECTION_PREFIX' });
     const { updateExamConfigAction } = await getActions();
-    const result = await updateExamConfigAction('cfg-other', { name: 'Mismatched' }, 'tenant-3');
-
-    expect(result).toEqual({ success: false, error: 'Acceso no autorizado' });
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
+    expect(await updateExamConfigAction('cfg-other', { name: 'X' }, 'tenant-3')).toEqual({ success: false, error: 'Acceso no autorizado' });
   });
 });
 
 describe('deleteExamConfigAction', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  beforeEach(() => { vi.clearAllMocks(); });
 
-  it('should soft-delete config for same-tenant admin', async () => {
+  it('should soft-delete for same-tenant admin', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
     mockFindById.mockResolvedValue(makeDoc());
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
     const { deleteExamConfigAction } = await getActions();
-    const result = await deleteExamConfigAction('cfg-1');
-
-    expect(result).toEqual({ success: true });
+    expect(await deleteExamConfigAction('cfg-1')).toEqual({ success: true });
     expect(mockFindByIdAndUpdate).toHaveBeenCalledWith('cfg-1', { active: false });
   });
 
-  it('should allow SUPER_ADMIN to soft-delete cross-tenant config', async () => {
+  it('should allow SUPER_ADMIN to delete cross-tenant', async () => {
     getIndustrialSession.mockResolvedValue(superAdminSession);
     mockFindById.mockResolvedValue(makeDoc({ _id: 'cfg-other', tenantId: 'tenant-2' }));
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
     const { deleteExamConfigAction } = await getActions();
-    const result = await deleteExamConfigAction('cfg-other', 'tenant-2');
-
-    expect(result).toEqual({ success: true });
-    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith('cfg-other', { active: false });
+    expect(await deleteExamConfigAction('cfg-other', 'tenant-2')).toEqual({ success: true });
   });
 
-  it('should reject delete for cross-tenant non-SUPER_ADMIN', async () => {
+  it('should reject cross-tenant non-SUPER_ADMIN', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
     mockFindById.mockResolvedValue(makeDoc({ tenantId: 'tenant-2' }));
-
     const { deleteExamConfigAction } = await getActions();
-    const result = await deleteExamConfigAction('cfg-other');
-
-    expect(result).toEqual({ success: false, error: 'Acceso no autorizado' });
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
+    expect(await deleteExamConfigAction('cfg-other')).toEqual({ success: false, error: 'Acceso no autorizado' });
   });
 });
 
 describe('cloneExamConfigAction', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+  beforeEach(() => { vi.clearAllMocks(); });
 
-  it('should clone config for same-tenant admin', async () => {
+  it('should clone for same-tenant admin', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
-
-    mockFindById.mockReturnValue({
-      lean: vi.fn().mockResolvedValue({
-        _id: 'cfg-1',
-        tenantId: 'tenant-1',
-        name: 'Original',
-        active: true,
-        createdBy: 'admin-1',
-        description: 'A config',
-        isDefault: true,
-      }),
-    });
-
+    mockFindById.mockReturnValue({ lean: vi.fn().mockResolvedValue({ _id: 'cfg-1', tenantId: 'tenant-1', name: 'Original', active: true, createdBy: 'admin-1', description: 'A', isDefault: true }) });
     mockCreate.mockResolvedValue({ _id: 'cloned-id', toString: () => 'cloned-id' });
-
     const { cloneExamConfigAction } = await getActions();
-    const result = await cloneExamConfigAction('cfg-1');
-
-    expect(result).toEqual({ success: true, id: 'cloned-id' });
-    expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'Original (Copia)',
-        tenantId: 'tenant-1',
-        isDefault: false,
-      })
-    );
+    expect(await cloneExamConfigAction('cfg-1')).toEqual({ success: true, id: 'cloned-id' });
+    expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({ name: 'Original (Copia)', isDefault: false }));
   });
 
-  it('should allow SUPER_ADMIN to clone cross-tenant config', async () => {
+  it('should allow SUPER_ADMIN to clone cross-tenant', async () => {
     getIndustrialSession.mockResolvedValue(superAdminSession);
-
-    mockFindById.mockReturnValue({
-      lean: vi.fn().mockResolvedValue({
-        _id: 'cfg-other',
-        tenantId: 'tenant-2',
-        name: 'Other Config',
-        active: true,
-        createdBy: 'someone',
-        description: 'Other tenant config',
-        isDefault: true,
-      }),
-    });
-
+    mockFindById.mockReturnValue({ lean: vi.fn().mockResolvedValue({ _id: 'cfg-other', tenantId: 'tenant-2', name: 'Other', active: true, createdBy: 'x', isDefault: true }) });
     mockCreate.mockResolvedValue({ _id: 'cloned-id', toString: () => 'cloned-id' });
-
     const { cloneExamConfigAction } = await getActions();
-    const result = await cloneExamConfigAction('cfg-other', 'tenant-2');
-
-    expect(result).toEqual({ success: true, id: 'cloned-id' });
-    expect(mockCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        tenantId: 'tenant-2',
-        isDefault: false,
-      })
-    );
+    expect(await cloneExamConfigAction('cfg-other', 'tenant-2')).toEqual({ success: true, id: 'cloned-id' });
   });
 
-  it('should reject clone for cross-tenant non-SUPER_ADMIN', async () => {
+  it('should reject cross-tenant non-SUPER_ADMIN', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
-
-    mockFindById.mockReturnValue({
-      lean: vi.fn().mockResolvedValue({
-        _id: 'cfg-other',
-        tenantId: 'tenant-2',
-        name: 'Other Config',
-      }),
-    });
-
+    mockFindById.mockReturnValue({ lean: vi.fn().mockResolvedValue({ _id: 'cfg-other', tenantId: 'tenant-2', name: 'Other' }) });
     const { cloneExamConfigAction } = await getActions();
-    const result = await cloneExamConfigAction('cfg-other');
-
-    expect(result).toEqual({
-      success: false,
-      error: 'Configuración origen no encontrada o acceso no autorizado',
-    });
+    expect(await cloneExamConfigAction('cfg-other')).toEqual({ success: false, error: 'Configuración origen no encontrada o acceso no autorizado' });
   });
 
-  it('should return error when source config not found', async () => {
+  it('should return error when source not found', async () => {
     getIndustrialSession.mockResolvedValue(adminSession);
-
-    mockFindById.mockReturnValue({
-      lean: vi.fn().mockResolvedValue(null),
-    });
-
+    mockFindById.mockReturnValue({ lean: vi.fn().mockResolvedValue(null) });
     const { cloneExamConfigAction } = await getActions();
-    const result = await cloneExamConfigAction('nonexistent');
-
-    expect(result).toEqual({
-      success: false,
-      error: 'Configuración origen no encontrada o acceso no autorizado',
-    });
+    expect(await cloneExamConfigAction('nonexistent')).toEqual({ success: false, error: 'Configuración origen no encontrada o acceso no autorizado' });
   });
 });

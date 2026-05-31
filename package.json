@@ -17,9 +17,10 @@
     "onlyBuiltDependencies": []
   },
   "dependencies": {
-    "@ajabadia/ecosystem-widgets": "latest",
-    "@ajabadia/satellite-sdk": "latest",
-    "@ajabadia/styles": "latest",
+    "@ajabadia/ecosystem-widgets": "file:..\\ABDEcosystemWidgets",
+    "@ajabadia/satellite-sdk": "file:..\\ABDSatelliteSDK",
+    "@ajabadia/styles": "file:..\\ABDStyles",
+    "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-progress": "^1.1.8",
     "@types/papaparse": "^5.5.2",
     "class-variance-authority": "^0.7.1",
@@ -40,6 +41,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@playwright/test": "1.56.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
@@ -51,6 +53,7 @@
     "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "jose": "^6.2.3",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "typescript": "^5",

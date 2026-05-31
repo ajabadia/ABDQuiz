@@ -20,6 +20,7 @@ export interface QuizAttemptQuestion {
   questionSnapshot: QuizQuestionSnapshot;
   selectedOptionIndex?: number;
   manualTextAnswer?: string;
+  aiFeedback?: string;
   isCorrect: boolean;
   timeSpentSeconds: number;
   status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';

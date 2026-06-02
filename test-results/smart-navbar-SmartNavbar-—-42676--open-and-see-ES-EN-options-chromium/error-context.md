@@ -1,0 +1,52 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - region "ABDQuiz" [ref=e5]:
+        - link "QUIZ ABDQuiz" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]:
+            - generic [ref=e11]: QUIZ
+            - generic [ref=e12]: ABDQuiz
+      - generic [ref=e13]:
+        - button "TEMA" [ref=e15] [cursor=pointer]:
+          - img [ref=e16]
+        - button "IDIOMA" [ref=e23] [cursor=pointer]:
+          - img [ref=e24]
+    - banner [ref=e29]:
+      - generic [ref=e30]: "Estado del Sistema: Operativo"
+      - heading "ABDQUIZ" [level=1] [ref=e34]
+      - paragraph [ref=e35]: Simulador de exámenes de grado industrial. Entrenamiento de alta densidad para entornos de élite.
+    - main [ref=e36]:
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - link "ACCEDER AL SIMULADOR" [ref=e39] [cursor=pointer]:
+            - /url: /es/examinar
+            - text: ACCEDER AL SIMULADOR
+            - img [ref=e40]
+          - generic [ref=e42]: Inicie sesión con sus credenciales federadas de ABDAuth
+        - region "System Capabilities" [ref=e43]:
+          - generic [ref=e44]:
+            - img [ref=e46]
+            - heading "Motores de Simulación" [level=2] [ref=e49]
+            - paragraph [ref=e50]: Simulación táctica en tiempo real con lógicas integradas de cronómetro global y temporización específica por pregunta.
+          - generic [ref=e51]:
+            - img [ref=e53]
+            - heading "Lógicas de Evaluación" [level=2] [ref=e65]
+            - paragraph [ref=e66]: Soporte total para esquemas evaluativos simples, penalizados por fallos y con coeficientes de peso por nivel de dificultad.
+          - generic [ref=e67]:
+            - img [ref=e69]
+            - heading "Integridad del Corpus" [level=2] [ref=e74]
+            - paragraph [ref=e75]: Validación Zod estricta de esquemas de datos y deduplicación por hashes SHA-256 para preservar la pureza del banco.
+    - contentinfo [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: "Núcleo: v0.1.0-alpha"
+        - generic [ref=e81]: "Lógica: Motor OMEGA"
+        - generic [ref=e82]: "Estilo: Tech-Noir v1.2"
+    - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e88] [cursor=pointer]:
+    - img [ref=e89]
+```

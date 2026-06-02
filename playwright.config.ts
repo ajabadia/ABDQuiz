@@ -29,16 +29,8 @@ export default defineConfig({
     video: 'on-first-retry',
   },
 
-  // Ejecuta los pre-flight checks antes del webServer
-  // globalSetup corre UNA VEZ antes de TODOS los tests
-
-  webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3300',
-    reuseExistingServer: !process.env.CI,
-    timeout: 180000,
-    stderr: 'pipe',
-  },
+  // NOTA: webServer eliminado — usa scripts/run-e2e.sh para arrancar
+  // el servidor manualmente (evita problemas con cmd.exe en Windows).
 
   projects: [
     {

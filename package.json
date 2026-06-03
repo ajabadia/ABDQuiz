@@ -14,7 +14,10 @@
     "test:coverage": "vitest run --coverage"
   },
   "pnpm": {
-    "onlyBuiltDependencies": []
+    "onlyBuiltDependencies": [],
+    "overrides": {
+      "@ajabadia/ecosystem-widgets": "link:../ABDEcosystemWidgets"
+    }
   },
   "dependencies": {
     "@ajabadia/ecosystem-widgets": "^1.0.10",

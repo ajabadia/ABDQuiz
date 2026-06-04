@@ -22,7 +22,7 @@ export function IngestionLog({ imports }: IngestionLogProps) {
   return (
     <Card className="bg-card/40 border-white/5 rounded-none overflow-hidden">
       <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
-        <h3 id="audit-log-title" className="text-xs font-bold uppercase tracking-[0.2em]">{t('auditLog')}</h3>
+        <h2 id="audit-log-title" className="text-xs font-bold uppercase tracking-[0.2em]">{t('auditLog')}</h2>
         <Badge variant="outline" className="font-mono text-[9px] uppercase">{imports.length} {t('active')}</Badge>
       </div>
       <div className="overflow-x-auto">

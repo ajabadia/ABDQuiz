@@ -1,4 +1,5 @@
 import { createAuthRouteHandler } from '@ajabadia/satellite-sdk';
+import { NextRequest } from 'next/server';
 
 const handler = createAuthRouteHandler({
   appId: 'quiz',
@@ -7,4 +8,10 @@ const handler = createAuthRouteHandler({
   jwtSecret: process.env.AUTH_JWT_SECRET!,
 });
 
-export { handler as GET, handler as POST };
+export async function GET(request: NextRequest, context: { params: Promise<{ auth: string[] }> }) {
+  return handler(request as any);
+}
+
+export async function POST(request: NextRequest, context: { params: Promise<{ auth: string[] }> }) {
+  return handler(request as any);
+}

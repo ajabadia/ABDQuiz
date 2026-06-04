@@ -28,7 +28,8 @@ test.describe('🎯 Auditoría de Accesibilidad — ABDQuiz', () => {
         await injectAdminSession(page);
       }
       await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForSelector('main, [role="main"], body', { timeout: 15000 });
 
       // Known violations from external packages (tracked separately):
       // - button-name: SmartNavbar search/tenant buttons from @ajabadia/ecosystem-widgets

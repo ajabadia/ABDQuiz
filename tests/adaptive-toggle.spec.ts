@@ -32,8 +32,8 @@ test.describe('adaptiveQuestionSelection Toggle (Selección Adaptativa)', () => 
 
   test.beforeEach(async ({ page }) => {
     page.on('pageerror', (err: Error) => {
-      pageErrors.push(err.message);
-      console.log('⚠️  PAGE ERROR:', err.message);
+      pageErrors.push(`${err.message} at ${err.stack}`);
+      console.log('⚠️  PAGE ERROR:', err.message, err.stack);
     });
     await injectAdminSession(page);
     await page.goto(ADMIN_NEW_EXAM, { waitUntil: 'load' });

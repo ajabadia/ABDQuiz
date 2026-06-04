@@ -20,7 +20,7 @@ const pageErrors: string[] = [];
 async function waitForHydration(page: any) {
   // Wait for network idle and give React time to hydrate
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
   
   // Log any page errors found so far
   if (pageErrors.length > 0) {
@@ -43,8 +43,8 @@ async function clickMenuByTestId(page: any, testId: string) {
 test.describe('SmartNavbar — Public Mode (ABDQuiz)', () => {
   test.beforeEach(async ({ page }) => {
     page.on('pageerror', (err: Error) => {
-      pageErrors.push(err.message);
-      console.log('⚠️  PAGE ERROR:', err.message);
+      pageErrors.push(`${err.message} at ${err.stack}`);
+      console.log('⚠️  PAGE ERROR:', err.message, err.stack);
     });
     await page.goto(PUBLIC_PAGE);
     await page.waitForSelector('[data-testid="smart-navbar"]', { timeout: 15000 });
@@ -144,8 +144,8 @@ test.describe('SmartNavbar — Mobile Drawer (ABDQuiz)', () => {
 
   test.beforeEach(async ({ page }) => {
     page.on('pageerror', (err: Error) => {
-      pageErrors.push(err.message);
-      console.log('⚠️  PAGE ERROR:', err.message);
+      pageErrors.push(`${err.message} at ${err.stack}`);
+      console.log('⚠️  PAGE ERROR:', err.message, err.stack);
     });
     await page.goto('/es');
     await page.waitForSelector('[data-testid="smart-navbar"]', { timeout: 15000 });

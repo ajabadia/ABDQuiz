@@ -94,7 +94,7 @@ export default function CorpusDashboard({
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
         <nav className="xl:col-span-1 space-y-6" aria-label="Filters">
           <Card className="p-6 bg-card/40 border-white/5 rounded-none">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-primary">{t('ingestionControls')}</h3>
+            <h2 className="text-xs font-bold uppercase tracking-[0.2em] mb-6 text-primary">{t('ingestionControls')}</h2>
             <div className="flex flex-col gap-2 mb-6">
               <button onClick={() => setShowImportDialog(true)} className="btn-primary-console w-full" aria-label={t('importBank')}>{t('importBank')}</button>
               <button aria-label={t('downloadTemplates')} onClick={() => setShowTemplateModal(true)} className="w-full py-2 text-[9px] uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-2 border border-white/5 hover:border-primary/20">
@@ -103,7 +103,7 @@ export default function CorpusDashboard({
             </div>
             <Separator className="bg-white/5 my-6" aria-hidden="true" />
             <div className="space-y-6">
-               <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Filter className="w-3 h-3" aria-hidden="true" /> {t('filters')}</h4>
+               <h3 className="text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Filter className="w-3 h-3" aria-hidden="true" /> {t('filters')}</h3>
                <div className="space-y-4">
                  <FilterGroup label={t('dateRange')}>
                    <div className="grid grid-cols-2 gap-2">

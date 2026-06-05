@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, startTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ export function ChatThread({ attemptId, isProfessor = false, maxHeight = '320px'
   const [expanded, setExpanded] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const loadMessages = useCallback(async () => {
     setLoading(true);
@@ -36,8 +37,16 @@ export function ChatThread({ attemptId, isProfessor = false, maxHeight = '320px'
   }, [attemptId]);
 
   useEffect(() => {
-    loadMessages();
+    startTransition(() => {
+      loadMessages();
+    });
   }, [loadMessages]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.style.maxHeight = maxHeight;
+    }
+  }, [maxHeight]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -110,8 +119,8 @@ export function ChatThread({ attemptId, isProfessor = false, maxHeight = '320px'
 
           {/* Messages area */}
           <div
+            ref={containerRef}
             className="overflow-y-auto p-4 space-y-3"
-            style={{ maxHeight }}
           >
             {loading ? (
               <div className="flex items-center justify-center py-8">
@@ -138,12 +147,11 @@ export function ChatThread({ attemptId, isProfessor = false, maxHeight = '320px'
                     className={`flex ${alignRight ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[80%] p-3 ${
+                      className={`max-w-[80%] p-3 rounded-none ${
                         isFromProfessor
                           ? 'bg-primary/10 border border-primary/20'
                           : 'bg-card/40 border border-border/50'
                       }`}
-                      style={{ borderRadius: 0 }}
                     >
                       <div className="flex items-center gap-1.5 mb-1">
                         {isFromProfessor ? (

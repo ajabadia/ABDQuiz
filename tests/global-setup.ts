@@ -5,7 +5,7 @@
  * Verifica:
  *   1. .env.local existe y tiene variables requeridas
  *   2. MONGODB_URI configurada en .env.local
- *   3. ABDAuth está corriendo (localhost:3400) — warn si no
+ *   3. ABDAuth está corriendo (localhost:5001) — warn si no
  *   4. node_modules está presente
  *
  * Si algún check crítico falla, lanza error y los tests no se ejecutan.

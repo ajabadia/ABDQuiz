@@ -9,7 +9,7 @@ import { injectAdminSession } from './helpers/auth';
  * y reporta violaciones WCAG 2.2 AA con detalles precisos para corrección.
  */
 
-const BASE_URL = 'http://localhost:3300';
+const BASE_URL = 'http://localhost:5020';
 
 const PAGES = [
   { path: '/es', name: 'Landing pública' },

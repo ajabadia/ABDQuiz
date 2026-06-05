@@ -64,7 +64,7 @@ export async function sendMessageAction(attemptId: string, text: string, tenantI
     };
 
     if (!attempt.messages) attempt.messages = [];
-    attempt.messages.push(message as any);
+    attempt.messages.push(message);
     await attempt.save();
 
     return { success: true };
@@ -110,7 +110,7 @@ export async function getMessagesAction(attemptId: string, tenantIdParam?: strin
       return { success: false, error: 'No autorizado' };
     }
 
-    const rawMessages = (attempt as any).messages as Array<{ sender: string; text: string; createdAt: Date; read: boolean }> | undefined;
+    const rawMessages = attempt.messages as unknown as Array<{ sender: string; text: string; createdAt: Date; read: boolean }> | undefined;
     const messages: ChatMessage[] = (rawMessages || []).map((m) => ({
       sender: m.sender as 'student' | 'professor',
       text: m.text,
@@ -157,7 +157,7 @@ export async function markMessagesReadAction(attemptId: string, tenantIdParam?: 
       for (const m of attempt.messages) {
         // Student marks professor messages as read; professor marks student messages as read
         if ((!isProfessor && m.sender === 'professor') || (isProfessor && m.sender === 'student')) {
-          (m as any).read = true;
+          (m as unknown as { read: boolean }).read = true;
         }
       }
       await attempt.save();

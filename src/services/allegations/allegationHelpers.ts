@@ -42,9 +42,12 @@ export function applyGivePoints(qBlock: IAttemptQuestion): void {
   qBlock.status = 'correcta';
 }
 
+import { IExamAttempt } from '@/models/ExamAttempt';
+import { IExamConfig } from '@/models/ExamConfig';
+
 export async function recalculateAttemptScore(
-  attempt: any,
-  config: any
+  attempt: IExamAttempt,
+  config: IExamConfig | null
 ): Promise<void> {
   let totalScore = 0;
   let maxPossible = 0;

@@ -9,9 +9,9 @@ const handler = createAuthRouteHandler({
 });
 
 export async function GET(request: NextRequest, context: { params: Promise<{ auth: string[] }> }) {
-  return handler(request as any);
+  return handler(request as unknown as Parameters<typeof handler>[0]);
 }
 
 export async function POST(request: NextRequest, context: { params: Promise<{ auth: string[] }> }) {
-  return handler(request as any);
+  return handler(request as unknown as Parameters<typeof handler>[0]);
 }

@@ -50,7 +50,7 @@ export function mockFindOneResult(result: unknown) {
     select: vi.fn().mockReturnValue({
       lean: vi.fn().mockResolvedValue(result),
     }),
-  } as any;
+  } as unknown as never;
 }
 
 /**

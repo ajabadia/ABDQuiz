@@ -1,5 +1,5 @@
 import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
-import { requireQuizScope } from './scope-guard';
+import { assertAccess } from './abac';
 
 /**
  * Roles that have administrative privileges in the Quiz ecosystem.
@@ -24,17 +24,13 @@ export interface ScopeFallbackConfig {
  * 🛡️ Ensure the user has ADMIN, PROFESSOR, or SUPER_ADMIN privileges.
  *
  * Si se proporciona `scopeConfig`, los usuarios con rol de sistema `USER`
- * que tengan rol contextual `PROFESSOR` (o `CREATOR`) en el scope indicado
- * también serán autorizados.
+ * que tengan rol contextual autorizado en el scope indicado
+ * también serán autorizados mediante el motor central ABAC.
  *
- * This is a local wrapper around `ensureIndustrialAccess` that extends
- * the role check to include PROFESSOR (which inherits ADMIN privileges
- * in the Quiz ecosystem).
- *
- * @param scopeConfig - Configuración opcional de scope para fallback USER + PROFESSOR
+ * @param scopeConfig - Configuración opcional de scope para fallback USER
  * @returns The authenticated user's profile
  * @throws UnauthorizedAccessError if not authenticated
- * @throws InsufficientPrivilegesError if role is not ADMIN/PROFESSOR/SUPER_ADMIN
+ * @throws InsufficientPrivilegesError if role is not ADMIN/PROFESSOR/SUPER_ADMIN or denied by ABAC
  */
 export async function ensureAdminOrProfessor(scopeConfig?: ScopeFallbackConfig) {
   // First check basic authentication (no role filter)
@@ -48,15 +44,23 @@ export async function ensureAdminOrProfessor(scopeConfig?: ScopeFallbackConfig) 
 
   // USER system role → check scope fallback if scopeConfig is provided
   if (user.role === 'USER' && scopeConfig) {
-    const { granted } = await requireQuizScope(
-      user.id,
-      scopeConfig.tenantId,
-      scopeConfig.scopeId,
-      scopeConfig.scopeType ?? 'course',
-      'PROFESSOR'
-    );
-    if (granted) return user;
+    try {
+      await assertAccess({
+        userId: user.id,
+        tenantId: scopeConfig.tenantId,
+        resource: 'quiz:exam',
+        action: 'take',
+        context: {
+          scopeId: scopeConfig.scopeId,
+          scopeType: scopeConfig.scopeType ?? 'course'
+        }
+      });
+      return user;
+    } catch {
+      throw new InsufficientPrivilegesError();
+    }
   }
 
   throw new InsufficientPrivilegesError();
 }
+

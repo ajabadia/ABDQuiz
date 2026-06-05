@@ -8,7 +8,9 @@ import type { AttemptDetailQuestion } from '@/actions/gradingTypes';
 // ── Mocks ──────────────────────────────────────────────
 
 vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
+  useTranslations: () => (...args: unknown[]) => {
+    const key = args[0] as string;
+    const params = args[1] as Record<string, unknown> | undefined;
     const translations: Record<string, string> = {
       correct: 'CORRECT',
       incorrect: 'INCORRECT',

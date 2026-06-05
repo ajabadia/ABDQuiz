@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { injectAdminSession } from './helpers/auth';
 
-const QUIZ_URL = 'http://localhost:3300';
+const QUIZ_URL = 'http://localhost:5020';
 
 test.describe('🏗️ TenantSelector – mega menú contextual', () => {
   test('opens mega menu, shows organization data, and supports dismiss interactions', async ({ page }) => {

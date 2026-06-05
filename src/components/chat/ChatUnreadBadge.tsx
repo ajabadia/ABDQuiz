@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, startTransition } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { getUnreadChatCountAction } from '@/actions/chat';
 import { useRouter, usePathname } from '@/i18n/routing';
@@ -28,12 +28,20 @@ export function ChatUnreadBadge() {
   }, []);
 
   useEffect(() => {
-    fetchCount();
-    const interval = setInterval(fetchCount, POLL_INTERVAL_MS);
+    startTransition(() => {
+      fetchCount();
+    });
+    const interval = setInterval(() => {
+      startTransition(() => {
+        fetchCount();
+      });
+    }, POLL_INTERVAL_MS);
 
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        fetchCount();
+        startTransition(() => {
+          fetchCount();
+        });
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);

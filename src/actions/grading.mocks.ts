@@ -23,9 +23,8 @@ vi.mock('@/lib/auth/ensureQuizAccess', () => ({
   ensureAdminOrProfessor: vi.fn(),
 }));
 
-vi.mock('@/lib/auth/scope-guard', () => ({
-  requireQuizScope: vi.fn().mockResolvedValue({ granted: true, roleType: 'CREATOR' }),
-  assertQuizScope: vi.fn().mockResolvedValue(undefined),
+vi.mock('@/lib/auth/abac', () => ({
+  assertAccess: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/models/ExamAttempt', () => {
@@ -50,7 +49,7 @@ vi.mock('@/models/ExamAttempt', () => {
 import * as SessionMod from '@/lib/auth/ensureQuizAccess';
 import * as ResolverMod from '@ajabadia/satellite-sdk';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
-import * as ScopeGuardMod from '@/lib/auth/scope-guard';
+import * as AbacMod from '@/lib/auth/abac';
 
 export const { ensureAdminOrProfessor } = SessionMod as unknown as {
   ensureAdminOrProfessor: ReturnType<typeof vi.fn>;
@@ -62,8 +61,8 @@ export const { mockFind, mockFindById } = ExamAttemptMod as unknown as {
   mockFind: ReturnType<typeof vi.fn>;
   mockFindById: ReturnType<typeof vi.fn>;
 };
-export const { requireQuizScope } = ScopeGuardMod as unknown as {
-  requireQuizScope: ReturnType<typeof vi.fn>;
+export const { assertAccess } = AbacMod as unknown as {
+  assertAccess: ReturnType<typeof vi.fn>;
 };
 
 // ── Types ──────────────────────────────────────────────

@@ -88,16 +88,22 @@ export async function submitManualGradingAction(
       // Verify space or course permission scope before grading
       const examConfigIdStr = attempt.examConfigId ? attempt.examConfigId.toString() : '';
       if (examConfigIdStr) {
-        const { requireQuizScope } = await import('@/lib/auth/scope-guard');
-        const scopeCheck = await requireQuizScope(
-          admin.id,
-          activeTenantId,
-          examConfigIdStr,
-          'course',
-          'CREATOR'
-        );
-        if (!scopeCheck.granted && admin.role !== 'SUPER_ADMIN') {
-          return { success: false, error: 'Acceso denegado: Rol contextual insuficiente en el espacio formativo' };
+        const { assertAccess } = await import('@/lib/auth/abac');
+        try {
+          await assertAccess({
+            userId: admin.id,
+            tenantId: activeTenantId,
+            resource: 'quiz:attempt',
+            action: 'grade',
+            context: {
+              examConfigId: examConfigIdStr,
+              attemptId
+            }
+          });
+        } catch {
+          if (admin.role !== 'SUPER_ADMIN') {
+            return { success: false, error: 'Acceso denegado: Rol contextual insuficiente en el espacio formativo' };
+          }
         }
       }
 

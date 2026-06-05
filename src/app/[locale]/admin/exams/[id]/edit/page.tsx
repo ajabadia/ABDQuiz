@@ -29,11 +29,9 @@ export default async function EditExamPage({
   // Without it, findById() hits the default (non-prefixed) collection and
   // returns null, causing a false 404.
   const explicitCtx = await resolveTargetTenantContext(resolvedTenantId);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let config: any = null;
-  await withTenantContext(async () => {
+  const config = await withTenantContext(async () => {
     await connectDB();
-    config = await ExamConfig.findById(id).lean();
+    return await ExamConfig.findById(id).lean();
   }, explicitCtx);
 
   if (!config || (config.tenantId !== user.tenantId && !isSuperAdmin)) {

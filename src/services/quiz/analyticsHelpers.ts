@@ -19,7 +19,16 @@ export async function getUserAttemptsForCourse(tenantId: string, userId: string,
   });
 }
 
-export function calculateModuleCorrectMap(attempts: Array<{ questions?: Array<{ timeSpentSeconds?: number; questionSnapshot?: { module?: string }; status?: string; selectedOptionIndex?: number | null }> }>): {
+export function calculateModuleCorrectMap(attempts: Array<{
+  percentage?: number;
+  endedAt?: Date | string;
+  questions?: Array<{
+    timeSpentSeconds?: number;
+    questionSnapshot?: { module?: string };
+    status?: string;
+    selectedOptionIndex?: number | null;
+  }>;
+}>): {
   totalGradeSum: number;
   totalSeconds: number;
   lastAttemptAt: Date;
@@ -31,9 +40,9 @@ export function calculateModuleCorrectMap(attempts: Array<{ questions?: Array<{ 
   const moduleCorrect: Record<string, { correct: number; total: number }> = {};
 
   for (const att of attempts) {
-    totalGradeSum += (att as any).percentage || 0;
-    if ((att as any).endedAt && new Date((att as any).endedAt) > lastAttemptAt) {
-      lastAttemptAt = new Date((att as any).endedAt);
+    totalGradeSum += att.percentage || 0;
+    if (att.endedAt && new Date(att.endedAt) > lastAttemptAt) {
+      lastAttemptAt = new Date(att.endedAt);
     }
     if (att.questions) {
       for (const q of att.questions) {
@@ -102,7 +111,7 @@ export function buildLearningCurve(courseAttempts: Array<{ endedAt?: Date; perce
   }));
 }
 
-export function buildDistractorTelemetry(courseAttempts: Array<{ questions?: Array<{ questionId: any; questionSnapshot?: { questionText?: string }; status?: string; selectedOptionIndex?: number | null }> }>) {
+export function buildDistractorTelemetry(courseAttempts: Array<{ questions?: Array<{ questionId: { toString(): string }; questionSnapshot?: { questionText?: string }; status?: string; selectedOptionIndex?: number | null }> }>) {
   const telemetryMap: Record<string, {
     questionText: string;
     attempts: number;

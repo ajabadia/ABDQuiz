@@ -1,6 +1,6 @@
 import Course from '@/models/Course';
 import ExamAttempt from '@/models/ExamAttempt';
-import UserCourseSummary from '@/models/UserCourseSummary';
+import UserCourseSummary, { IUserCourseSummary } from '@/models/UserCourseSummary';
 import CourseAnalytics from '@/models/CourseAnalytics';
 import { logger } from '@ajabadia/satellite-sdk';
 import {
@@ -41,7 +41,7 @@ export class AnalyticsSyncService {
     const course = await getCourseByExamConfig(tenantId, examConfigIdStr);
     if (!course) return;
 
-    const examConfigIds = course.learningPath.map((item: any) => item.examConfigId);
+    const examConfigIds = course.learningPath.map((item) => item.examConfigId.toString());
     const userAttempts = await getUserAttemptsForCourse(tenantId, userId, examConfigIds);
 
     // Calculate completed assignments
@@ -77,10 +77,10 @@ export class AnalyticsSyncService {
     // Update CourseAnalytics
     const summaries = await getCourseAnalyticsData(tenantId, course._id.toString());
     const totalStudentsEnrolled = summaries.length;
-    const completedStudents = summaries.filter((s: any) => s.status === 'completed').length;
+    const completedStudents = (summaries as unknown as IUserCourseSummary[]).filter((s) => s.status === 'completed').length;
     const completionRate = totalStudentsEnrolled > 0 ? Math.round((completedStudents / totalStudentsEnrolled) * 100) : 0;
 
-    const courseAvgGradeSum = summaries.reduce((sum: number, s: any) => sum + s.averageGrade, 0);
+    const courseAvgGradeSum = (summaries as unknown as IUserCourseSummary[]).reduce((sum: number, s) => sum + s.averageGrade, 0);
     const courseAverageGrade = totalStudentsEnrolled > 0 ? courseAvgGradeSum / totalStudentsEnrolled : 0;
     const gradeDistribution = computeGradeDistribution(summaries);
 

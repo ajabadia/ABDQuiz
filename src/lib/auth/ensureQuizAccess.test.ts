@@ -17,20 +17,20 @@ vi.mock('@ajabadia/satellite-sdk', () => {
   };
 });
 
-vi.mock('@/lib/auth/scope-guard', () => ({
-  requireQuizScope: vi.fn(),
+vi.mock('@/lib/auth/abac', () => ({
+  assertAccess: vi.fn(),
 }));
 
 // ── Import deps under test ────────────────────────────
 
 import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
-import { requireQuizScope } from '@/lib/auth/scope-guard';
+import { assertAccess } from '@/lib/auth/abac';
 import { ensureAdminOrProfessor } from './ensureQuizAccess';
 
 // ── Typed mock refs ───────────────────────────────────
 
 const mockEnsureIndustrialAccess = ensureIndustrialAccess as ReturnType<typeof vi.fn>;
-const mockRequireQuizScope = requireQuizScope as ReturnType<typeof vi.fn>;
+const mockAssertAccess = assertAccess as ReturnType<typeof vi.fn>;
 
 import {
   ADMIN_USER, PROFESSOR_USER, SUPER_ADMIN_USER,
@@ -54,7 +54,7 @@ describe('ensureAdminOrProfessor — Autorización por rol de sistema', () => {
     const result = await ensureAdminOrProfessor();
 
     expect(result).toEqual(ADMIN_USER);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   it('debe autorizar a PROFESSOR (rol de sistema)', async () => {
@@ -63,7 +63,7 @@ describe('ensureAdminOrProfessor — Autorización por rol de sistema', () => {
     const result = await ensureAdminOrProfessor();
 
     expect(result).toEqual(PROFESSOR_USER);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   it('debe autorizar a SUPER_ADMIN (bypass total)', async () => {
@@ -72,7 +72,7 @@ describe('ensureAdminOrProfessor — Autorización por rol de sistema', () => {
     const result = await ensureAdminOrProfessor();
 
     expect(result).toEqual(SUPER_ADMIN_USER);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   // ── System role: failure cases ─────────────────────
@@ -81,7 +81,7 @@ describe('ensureAdminOrProfessor — Autorización por rol de sistema', () => {
     mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
 
     await expect(ensureAdminOrProfessor()).rejects.toThrow(InsufficientPrivilegesErrorClass);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   it('debe denegar a AUDITOR', async () => {
@@ -100,20 +100,20 @@ describe('ensureAdminOrProfessor — Autorización por rol de sistema', () => {
     mockEnsureIndustrialAccess.mockRejectedValue(new Error('Not authenticated'));
 
     await expect(ensureAdminOrProfessor()).rejects.toThrow('Not authenticated');
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 });
 
-describe('ensureAdminOrProfessor — Scope fallback (USER + PROFESSOR scope)', () => {
+describe('ensureAdminOrProfessor — Scope fallback (USER + ABAC central check)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  // ── USER + PROFESSOR scope: success ────────────────
+  // ── USER + ABAC Central check: success ────────────────
 
-  it('debe autorizar a USER con scope PROFESSOR en un course', async () => {
+  it('debe autorizar a USER si ABAC permite el acceso', async () => {
     mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'PROFESSOR' });
+    mockAssertAccess.mockResolvedValue(undefined); // allowed
 
     const result = await ensureAdminOrProfessor({
       tenantId: 't1',
@@ -122,85 +122,51 @@ describe('ensureAdminOrProfessor — Scope fallback (USER + PROFESSOR scope)', (
     });
 
     expect(result).toEqual(USER_USER);
-    expect(mockRequireQuizScope).toHaveBeenCalledWith(
-      'user-1', 't1', 'course-abc', 'course', 'PROFESSOR'
-    );
-  });
-
-  it('debe autorizar a USER con scope PROFESSOR en un space', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'PROFESSOR' });
-
-    const result = await ensureAdminOrProfessor({
+    expect(mockAssertAccess).toHaveBeenCalledWith({
+      userId: 'user-1',
       tenantId: 't1',
-      scopeId: 'space-xyz',
-      scopeType: 'space',
+      resource: 'quiz:exam',
+      action: 'take',
+      context: {
+        scopeId: 'course-abc',
+        scopeType: 'course',
+      },
     });
-
-    expect(result).toEqual(USER_USER);
-    expect(mockRequireQuizScope).toHaveBeenCalledWith(
-      'user-1', 't1', 'space-xyz', 'space', 'PROFESSOR'
-    );
   });
 
   it('debe usar scopeType "course" por defecto si no se especifica', async () => {
     mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'PROFESSOR' });
+    mockAssertAccess.mockResolvedValue(undefined);
 
     await ensureAdminOrProfessor({
       tenantId: 't1',
       scopeId: 'course-def',
     });
 
-    expect(mockRequireQuizScope).toHaveBeenCalledWith(
-      'user-1', 't1', 'course-def', 'course', 'PROFESSOR'
-    );
-  });
-
-  it('debe autorizar a USER con scope CREATOR (bypass jerárquico superior)', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'CREATOR' });
-
-    const result = await ensureAdminOrProfessor({
+    expect(mockAssertAccess).toHaveBeenCalledWith({
+      userId: 'user-1',
       tenantId: 't1',
-      scopeId: 'course-admin',
+      resource: 'quiz:exam',
+      action: 'take',
+      context: {
+        scopeId: 'course-def',
+        scopeType: 'course',
+      },
     });
-
-    expect(result).toEqual(USER_USER);
   });
 
-  // ── USER + PROFESSOR scope: failure ────────────────
+  // ── USER + ABAC Central check: failure ────────────────
 
-  it('debe denegar a USER con scope RECIPIENT (rol contextual insuficiente)', async () => {
+  it('debe denegar a USER si ABAC deniega el acceso (throws error)', async () => {
     mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: false, roleType: 'RECIPIENT' });
+    mockAssertAccess.mockRejectedValue(new InsufficientPrivilegesErrorClass('ABAC Denied'));
 
     await expect(ensureAdminOrProfessor({
       tenantId: 't1',
       scopeId: 'course-abc',
     })).rejects.toThrow(InsufficientPrivilegesErrorClass);
 
-    expect(mockRequireQuizScope).toHaveBeenCalled();
-  });
-
-  it('debe denegar a USER sin mapping de scope (no existe QuizUserRole)', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: false, roleType: null });
-
-    await expect(ensureAdminOrProfessor({
-      tenantId: 't1',
-      scopeId: 'course-abc',
-    })).rejects.toThrow(InsufficientPrivilegesErrorClass);
-  });
-
-  it('debe denegar a USER con scope AUDITOR (rol inferior al requerido)', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: false, roleType: 'AUDITOR' });
-
-    await expect(ensureAdminOrProfessor({
-      tenantId: 't1',
-      scopeId: 'course-abc',
-    })).rejects.toThrow(InsufficientPrivilegesErrorClass);
+    expect(mockAssertAccess).toHaveBeenCalled();
   });
 
   // ── Super ADMIN bypass incluso con scopeConfig ─────
@@ -214,8 +180,7 @@ describe('ensureAdminOrProfessor — Scope fallback (USER + PROFESSOR scope)', (
     });
 
     expect(result).toEqual(SUPER_ADMIN_USER);
-    // No debe llamar a requireQuizScope porque SUPER_ADMIN bypassa todo
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   // ── ADMIN/PROFESSOR no deben pasar por scope check ─
@@ -229,7 +194,7 @@ describe('ensureAdminOrProfessor — Scope fallback (USER + PROFESSOR scope)', (
     });
 
     expect(result).toEqual(ADMIN_USER);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 
   it('debe autorizar a PROFESSOR directamente aunque se pase scopeConfig', async () => {
@@ -241,46 +206,6 @@ describe('ensureAdminOrProfessor — Scope fallback (USER + PROFESSOR scope)', (
     });
 
     expect(result).toEqual(PROFESSOR_USER);
-    expect(mockRequireQuizScope).not.toHaveBeenCalled();
-  });
-
-  // ── Edge cases ─────────────────────────────────────
-
-  it('debe denegar a USER si scopeConfig es inválido (tenantId/scopeId undefined)', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: false, roleType: null });
-
-    // Pasar objeto vacío → scopeConfig es truthy pero tenantId/scopeId son undefined
-    // requireQuizScope se llama con undefined, retorna granted:false, y se lanza InsufficientPrivilegesError
-    await expect(ensureAdminOrProfessor({} as any)).rejects.toThrow(InsufficientPrivilegesErrorClass);
-  });
-
-  it('debe pasar el tenantId correcto al scope check', async () => {
-    mockEnsureIndustrialAccess.mockResolvedValue(USER_USER);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'PROFESSOR' });
-
-    await ensureAdminOrProfessor({
-      tenantId: 'custom-tenant-id',
-      scopeId: 'course-1',
-    });
-
-    expect(mockRequireQuizScope).toHaveBeenCalledWith(
-      'user-1', 'custom-tenant-id', 'course-1', 'course', 'PROFESSOR'
-    );
-  });
-
-  it('debe usar el id del usuario para el scope check', async () => {
-    const customUser = { id: 'custom-id-123', tenantId: 't1', role: 'USER' };
-    mockEnsureIndustrialAccess.mockResolvedValue(customUser);
-    mockRequireQuizScope.mockResolvedValue({ granted: true, roleType: 'PROFESSOR' });
-
-    await ensureAdminOrProfessor({
-      tenantId: 't1',
-      scopeId: 'course-1',
-    });
-
-    expect(mockRequireQuizScope).toHaveBeenCalledWith(
-      'custom-id-123', 't1', 'course-1', 'course', 'PROFESSOR'
-    );
+    expect(mockAssertAccess).not.toHaveBeenCalled();
   });
 });

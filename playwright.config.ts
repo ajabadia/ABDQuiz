@@ -23,7 +23,7 @@ export default defineConfig({
   reporter: 'list',
   timeout: 90000,
   use: {
-    baseURL: 'http://localhost:3300',
+    baseURL: 'http://localhost:5020',
     trace: 'on-first-retry',
     screenshot: 'on',
     video: 'on-first-retry',

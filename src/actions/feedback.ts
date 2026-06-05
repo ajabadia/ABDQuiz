@@ -36,7 +36,7 @@ export async function generateQuestionFeedbackAction(attemptId: string, question
     }
 
     // Return cached feedback if already generated
-    const cached = (question as any).aiFeedback as string | undefined;
+    const cached = question.aiFeedback;
     if (cached) {
       return { success: true as const, feedback: cached };
     }
@@ -51,7 +51,7 @@ export async function generateQuestionFeedbackAction(attemptId: string, question
     // Build student answer text
     let studentAnswer: string;
     if (snapshot.type === 'open_text') {
-      studentAnswer = (question as any).manualTextAnswer || '(No respondió)';
+      studentAnswer = question.manualTextAnswer || '(No respondió)';
     } else if (question.selectedOptionIndex !== undefined && question.selectedOptionIndex !== null) {
       studentAnswer = snapshot.options[question.selectedOptionIndex] || '(Opción inválida)';
     } else {
@@ -69,7 +69,7 @@ export async function generateQuestionFeedbackAction(attemptId: string, question
     });
 
     // Cache feedback in the DB
-    (question as any).aiFeedback = result.feedback;
+    question.aiFeedback = result.feedback;
     await attempt.save();
 
     return { success: true as const, feedback: result.feedback };

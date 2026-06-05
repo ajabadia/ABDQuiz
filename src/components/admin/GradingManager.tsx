@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
@@ -12,6 +12,7 @@ import { getAttemptsForGradingAction, getAttemptDetailAction, submitManualGradin
 import { QuestionCorrectionCard } from './QuestionCorrectionCard';
 import { ChatThread } from '@/components/chat/ChatThread';
 import { type FilterTab, getFilterTabs, formatDate, getStatusBadge } from './gradingConstants';
+import { SerializedGradingAttempt, AttemptDetail } from '@/actions/gradingTypes';
 
 const TAB_ICONS: Record<string, React.ReactNode> = {
   Clock: <Clock className="w-3.5 h-3.5" />,
@@ -28,7 +29,7 @@ function CorrectionView({
   onGradeChange,
   onSubmit,
 }: {
-  detail: any;
+  detail: AttemptDetail;
   gradeForm: Record<number, { points: string; feedback: string }>;
   submitting: boolean;
   onBack: () => void;
@@ -45,7 +46,7 @@ function CorrectionView({
         <Button onClick={onBack} variant="outline" className="h-8 w-8 rounded-none border-border p-0"><ArrowLeft className="w-4 h-4" /></Button>
         <div className="flex-1">
           <h2 className="text-sm font-bold uppercase tracking-widest font-mono">{t('correctionTitle')}</h2>
-          <p className="text-[10px] text-muted-foreground font-mono">{detail.userId} • {detail.examConfigId?.name || '—'} • {getStatusBadge(detail.gradingStatus, t)}</p>
+          <p className="text-[10px] text-muted-foreground font-mono">{detail.userId} • {detail.examConfigId?.name || '—'} • {getStatusBadge(detail.gradingStatus, t).label}</p>
         </div>
         <div className="text-right">
           <p className="text-xs font-mono text-muted-foreground">{t('scoreLabel')}</p>
@@ -54,7 +55,7 @@ function CorrectionView({
       </div>
       <Separator className="bg-border" />
       <div className="flex flex-col gap-4">
-        {detail.questions.map((q: any) => (
+        {detail.questions.map((q) => (
           <QuestionCorrectionCard
             key={q.questionIndex}
             question={q}
@@ -83,29 +84,29 @@ function CorrectionView({
 export default function GradingManager() {
   const t = useTranslations('grading');
   const c = useTranslations('common');
-  const [attempts, setAttempts] = useState<any[]>([]);
+  const [attempts, setAttempts] = useState<SerializedGradingAttempt[]>([]);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('pending_manual_review');
   const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(null);
-  const [detail, setDetail] = useState<any>(null);
+  const [detail, setDetail] = useState<AttemptDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [gradeForm, setGradeForm] = useState<Record<number, { points: string; feedback: string }>>({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    getAttemptsForGradingAction(activeFilter).then(d => { if (!cancelled) { setAttempts(d); setInitialLoaded(true); } }).catch(() => { if (!cancelled) { toast.error('Error loading attempts'); setInitialLoaded(true); } });
+    getAttemptsForGradingAction(activeFilter).then(d => { if (!cancelled) { setAttempts(d as unknown as SerializedGradingAttempt[]); setInitialLoaded(true); } }).catch(() => { if (!cancelled) { toast.error('Error loading attempts'); setInitialLoaded(true); } });
     return () => { cancelled = true; };
   }, [activeFilter]);
 
   const loadDetail = useCallback(async (attemptId: string) => {
     setLoadingDetail(true); setSelectedAttemptId(attemptId); setGradeForm({});
     try {
-      const data = await getAttemptDetailAction(attemptId); setDetail(data);
+      const data = await getAttemptDetailAction(attemptId); setDetail(data as unknown as AttemptDetail);
       if (data) {
         const form: Record<number, { points: string; feedback: string }> = {};
-        data.questions.forEach((q: any) => { form[q.questionIndex] = { points: q.manualPointsAwarded !== undefined ? String(q.manualPointsAwarded) : '', feedback: q.feedback || '' }; });
+        data.questions.forEach((q) => { form[q.questionIndex] = { points: q.manualPointsAwarded !== undefined ? String(q.manualPointsAwarded) : '', feedback: q.feedback || '' }; });
         setGradeForm(form);
       }
     } catch { toast.error('Error loading detail'); } finally { setLoadingDetail(false); }
@@ -120,7 +121,7 @@ export default function GradingManager() {
     try {
       const grades = Object.entries(gradeForm).filter(([_, v]) => v.points !== '').map(([idx, v]) => ({ questionIndex: parseInt(idx), manualPointsAwarded: parseInt(v.points) || 0, feedback: v.feedback }));
       const result = await submitManualGradingAction(detail._id, grades);
-      if (result.success) { toast.success('Grade saved'); getAttemptsForGradingAction(activeFilter).then(setAttempts); loadDetail(detail._id); }
+      if (result.success) { toast.success('Grade saved'); getAttemptsForGradingAction(activeFilter).then(d => setAttempts(d as unknown as SerializedGradingAttempt[])); loadDetail(detail._id); }
       else toast.error(result.error || 'Error saving');
     } catch { toast.error('Communication error'); } finally { setSubmitting(false); }
   };
@@ -160,9 +161,9 @@ export default function GradingManager() {
           {filteredAttempts.map(attempt => {
             const threshold = attempt.examConfigId?.passThreshold ?? 70;
             const isPassed = attempt.percentage >= threshold;
-            const hasOpenPreview = attempt.openTextPreview?.length > 0;
+            const hasOpenPreview = attempt.openTextPreview && attempt.openTextPreview.length > 0;
             return (
-              <button key={attempt._id} onClick={() => loadDetail(attempt._id)} className="w-full text-left p-4 bg-card/20 border border-white/5 hover:border-primary/30 hover:bg-card/40 transition-all duration-200 cursor-pointer">
+              <button key={attempt._id} onClick={() => loadDetail(attempt._id)} className="w-full text-left p-4 bg-card/20 border border-white/5 hover:border-primary/30 hover:bg-card/40 transition-all duration-200 cursor-pointer" aria-label={t('viewDetailAttempt')}>
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="p-2 bg-white/[0.02] border border-border shrink-0"><User className="w-4 h-4 text-muted-foreground" /></div>
@@ -177,7 +178,7 @@ export default function GradingManager() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </div>
-                {hasOpenPreview && (
+                {attempt.openTextPreview && attempt.openTextPreview.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-amber-500/10">
                     {attempt.openTextPreview.map((preview: { questionText: string; answerSnippet: string }, i: number) => (
                       <div key={i} className="flex items-start gap-2 py-1.5 first:pt-0 last:pb-0">

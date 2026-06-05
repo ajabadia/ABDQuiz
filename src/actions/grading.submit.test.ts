@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import './grading.mocks';
-import { ensureAdminOrProfessor, resolveTargetTenantContext, requireQuizScope, mockFindById, makeMongooseDoc, adminSession, superAdminSession } from './grading.mocks';
+import { ensureAdminOrProfessor, resolveTargetTenantContext, assertAccess, mockFindById, makeMongooseDoc, adminSession, superAdminSession } from './grading.mocks';
 
 async function getActions() {
   return import('./grading');
@@ -50,7 +50,7 @@ describe('submitManualGradingAction', () => {
 
   it('should reject cross-tenant grading for ADMIN (anti-IDOR)', async () => {
     ensureAdminOrProfessor.mockResolvedValue(adminSession);
-    requireQuizScope.mockResolvedValueOnce({ granted: false, roleType: null });
+    assertAccess.mockRejectedValueOnce(new Error('ABAC Denied'));
 
     const doc = makeMongooseDoc({ tenantId: 'tenant-2' });
     mockFindById.mockResolvedValue(doc);

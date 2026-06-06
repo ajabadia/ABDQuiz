@@ -99,7 +99,7 @@
     "optionalLabel": "optional",
     "ingestionControls": "Ingestion Controls",
     "importBank": "Import New Bank",
-    "auditLog": "Audit Log: Ingestion Cycles",
+    "auditLog": "Change History",
     "totalQuestions": "Total Questions",
     "active": "Active",
     "modules": "Modules",
@@ -192,10 +192,11 @@
     "reviewOmittedLabel": "Review Omitted",
     "reviewOmittedDesc": "Presents a review loop at the end to answer blank questions.",
     "excludeCorrectLabel": "Exclude Correct",
-    "excludeCorrectDesc": "Filters out previously answered questions to focus on weak areas and maximize learning efficiency.",            "adaptiveLabel": "Adaptive Selection",
-            "adaptiveDesc": "Prioritizes questions from modules and difficulties with lowest historical success rates to reinforce weak areas.",
-            "sliceOptionsLabel": "Visible Options",
-            "sliceOptionsDesc": "Reduce the number of options shown per question. 0 = all, 2+ = only that many options (including the correct one).",
+    "excludeCorrectDesc": "Filters out previously answered questions to focus on weak areas and maximize learning efficiency.",
+    "adaptiveLabel": "Adaptive Selection",
+    "adaptiveDesc": "Prioritizes questions from modules and difficulties with lowest historical success rates to reinforce weak areas.",
+    "sliceOptionsLabel": "Visible Options",
+    "sliceOptionsDesc": "Reduce the number of options shown per question. 0 = all, 2+ = only that many options (including the correct one).",
     "defaultBadge": "[DEFAULT]",
     "scoringSystem": "Scoring System",
     "scoringSimple": "Simple",
@@ -212,7 +213,6 @@
     "weightEasy": "Easy (Fácil)",
     "weightMedium": "Medium (Medio)",
     "weightHard": "Hard (Difícil)",
-
     "assignmentsTitle": "Exam Assignments",
     "assignmentsSubtitle": "Scheduling of exam calls, time windows, and access control.",
     "newAssignment": "New Assignment",
@@ -263,7 +263,6 @@
     "assignmentFilteredCount": "{filtered} of {total}",
     "editAssignment": "Edit",
     "tagsSeparatorHint": "(comma separated, optional)",
-
     "coursesTitle": "Courses",
     "coursesSubtitle": "Manage courses, subjects and learning modules by Space.",
     "newCourse": "New Course",
@@ -272,7 +271,6 @@
     "assignmentUpdated": "Assignment updated successfully",
     "assignmentUpdateError": "Error updating assignment",
     "publishedFieldLocked": "Field locked because the assignment is already published",
-    "auditLog": "Change History",
     "auditLogEmpty": "No events recorded",
     "auditLogAction_CREATE": "Assignment created",
     "auditLogAction_PUBLISHED": "Published",
@@ -340,8 +338,7 @@
     "aiFeedback": "AI TUTOR",
     "aiFeedbackGenerating": "Generating personalized feedback...",
     "aiFeedbackError": "Could not generate automatic feedback."
-  }
-,
+  },
   "grading": {
     "title": "Manual Grading",
     "subtitle": "Manual correction and evaluation of open-text questions and attempt review.",
@@ -497,7 +494,6 @@
     "diffEasy": "EASY",
     "diffMedium": "MEDIUM",
     "diffHard": "HARD",
-    "btnBack": "Back",
     "btnApply": "APPLY & INGEST",
     "manualRemedTitle": "Manual Remediation",
     "manualRemedSubtitle": "Question {index} of {total} incomplete",
@@ -598,11 +594,13 @@
   },
   "logoutSuccess": {
     "title": "Logged Out Successfully",
-    "subtitle": "You have been successfully signed out of ABDQuiz.",
+    "subtitle": "You have been successfully signed out.",
     "message": "Your session has been securely revoked at both the satellite and the central Identity Provider.",
     "button": "Sign In Again",
     "home_button": "Return to Welcome Screen",
-    "shield_badge": "Session Revoked"
+    "shield_badge": "Session Revoked",
+    "tenantNotFoundTitle": "Organization Not Found",
+    "tenantNotFoundDesc": "The specified organization does not exist or is not registered in the ecosystem."
   },
   "allegations": {
     "title": "Challenged Questions & Claims",

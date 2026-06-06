@@ -2,5 +2,6 @@
 @import "tw-animate-css";
 @import "@ajabadia/styles/dist/styles/industrial-core.css";
 
+@source "../../../node_modules/@ajabadia/ecosystem-widgets/dist/**/*.js";
 
 @custom-variant dark (&:is(.dark *));

@@ -1,15 +1,18 @@
 import { getRequestConfig } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-
-const locales = ['es', 'en'];
+import { routing } from './routing';
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  const locale = await requestLocale;
-  
-  if (!locale || !locales.includes(locale)) notFound();
+  let locale = await requestLocale;
+ 
+  if (!locale || !routing.locales.includes(locale as typeof routing.locales[number])) {
+    locale = routing.defaultLocale;
+  }
+ 
+  const { locales: allMessages } = await import('@abd/i18n');
+  const messages = allMessages[locale as 'es' | 'en'];
 
   return {
-    locale, // Requerido en la versión actual de next-intl
-    messages: (await import(`../../messages/${locale}.json`)).default
+    locale,
+    messages
   };
 });

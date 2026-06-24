@@ -9,6 +9,7 @@
  */
 
 export interface FeedbackParams {
+  tenantId: string;
   questionText: string;
   studentAnswer: string;
   options?: string[];

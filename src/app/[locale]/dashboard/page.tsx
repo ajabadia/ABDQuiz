@@ -4,13 +4,14 @@
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:8,sig:15auaks
- * @lastUpdated 2026-06-23T16:49:46.514Z
+ * @fingerprint exports:1,imports:9,sig:17v1b1l
+ * @lastUpdated 2026-06-24T10:55:07.789Z
  */
 
 import { getTranslations } from 'next-intl/server';
 import { getIndustrialSession } from '@ajabadia/satellite-sdk';
 import { getStudentDashboardAction } from '@/actions/dashboard';
+import { getStudentCourseProgressAction } from '@/actions/course-progress';
 import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -36,6 +37,10 @@ export default async function DashboardPage({
   // Fetch dashboard data
   const result = await getStudentDashboardAction();
   const data = result.success && result.data ? result.data : null;
+
+  // Fetch course progress data
+  const progressResult = await getStudentCourseProgressAction();
+  const progressData = progressResult.success && progressResult.data ? progressResult.data : null;
 
   if (!data) {
     return (
@@ -80,7 +85,7 @@ export default async function DashboardPage({
         </div>
 
         {/* Student Dashboard */}
-        <StudentDashboard data={data} />
+        <StudentDashboard data={data} progressData={progressData} />
 
         {/* Footer */}
         <GlobalFooter

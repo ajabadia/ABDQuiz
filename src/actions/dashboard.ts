@@ -1,16 +1,16 @@
 /**
- * @purpose Gestiona el recuperado y la agregación de datos para la consola del estudiante, incluyendo exámenes disponibles, intentos recientes, total de intentos, intentos completados y puntuación media.
+ * @purpose Gestiona el recuperar y agrupar datos para la consola del estudiante, incluyendo exámenes disponibles, intentos recientes, total intentos, intentos completados y puntuación media.
  * @purpose_en Manages the retrieval and aggregation of data for the student's dashboard, including available exams, recent attempts, total attempts, completed attempts, and average score.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:3,imports:5,sig:1xjq0q4
- * @lastUpdated 2026-06-23T23:07:18.098Z
+ * @fingerprint exports:3,imports:5,sig:1nbm30t
+ * @lastUpdated 2026-06-24T10:32:04.911Z
  */
 
 'use server';
 
-import { connectDB, getIndustrialSession, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamAssignment from '@/models/ExamAssignment';
 import ExamConfig from '@/models/ExamConfig';
@@ -146,6 +146,15 @@ export async function getStudentDashboardAction(tenantIdParam?: string) {
       };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'FETCH_STUDENT_DASHBOARD_ERROR',
+        entityType: 'EXAM',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error fetching student dashboard data:', msg);
       return { success: false, error: msg };
     }

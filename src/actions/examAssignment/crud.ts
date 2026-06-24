@@ -4,8 +4,8 @@
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:5,imports:7,sig:1xad9qu
- * @lastUpdated 2026-06-23T16:27:24.092Z
+ * @fingerprint exports:5,imports:7,sig:646g6t
+ * @lastUpdated 2026-06-24T10:32:10.012Z
  */
 
 'use server';
@@ -70,6 +70,15 @@ export async function createAssignmentAction(data: CreateAssignmentData, tenantI
       return { success: true, id: newAssignment._id.toString() };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'CREATE_ASSIGNMENT_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error creating assignment:', msg);
       return { success: false, error: msg };
     }
@@ -150,6 +159,15 @@ export async function updateAssignmentAction(id: string, data: UpdateAssignmentD
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'UPDATE_ASSIGNMENT_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error updating assignment:', msg);
       return { success: false, error: msg };
     }
@@ -205,6 +223,15 @@ export async function publishAssignmentAction(id: string, tenantIdParam?: string
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'PUBLISH_ASSIGNMENT_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error publishing assignment:', msg);
       return { success: false, error: msg };
     }
@@ -250,6 +277,15 @@ export async function archiveAssignmentAction(id: string, tenantIdParam?: string
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'ARCHIVE_ASSIGNMENT_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error archiving assignment:', msg);
       return { success: false, error: msg };
     }
@@ -295,6 +331,15 @@ export async function deleteAssignmentAction(id: string, tenantIdParam?: string)
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'DELETE_ASSIGNMENT_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error deleting assignment:', msg);
       return { success: false, error: msg };
     }

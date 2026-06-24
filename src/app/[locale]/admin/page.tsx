@@ -24,6 +24,7 @@ import {
   CalendarRange,
   GraduationCap,
   BookOpen,
+  Brain,
   ArrowLeft
 } from 'lucide-react';
 import { DashboardCard } from '@/components/admin/DashboardCard';
@@ -180,6 +181,18 @@ export default async function AdminPortalPage({
                   actionText={ap('gradingActionText')}
                 />
               )}
+
+              {/* Card 8: Prompt Templates */}
+              <DashboardCard
+                icon={Brain}
+                category={ap('algoritmos')}
+                title={ap('promptsTitle')}
+                description={ap('promptsDesc')}
+                badgeLabel={ap('promptsBadgeLabel')}
+                badgeValue={ap('activo')}
+                actionUrl={`/${locale}/admin/prompts${tenantSuffix}`}
+                actionText={ap('promptsActionText')}
+              />
             </div>
           </div>
 

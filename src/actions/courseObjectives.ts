@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona el recuperar y actualizar los objetivos del curso para un curso determinado en el proyecto ABDSuite.
+ * @purpose Gestiona el recuperar y actualizar los objetivos del curso para un curso específico en el proyecto ABDSuite.
  * @purpose_en Manages the retrieval and updating of course objectives for a given course in the ABDSuite project.
  * @refactorable false
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:2,imports:3,sig:12cbkv9
- * @lastUpdated 2026-06-24T08:18:08.739Z
+ * @fingerprint exports:2,imports:3,sig:1b6j0pp
+ * @lastUpdated 2026-06-24T10:31:57.690Z
  */
 
 'use server';
@@ -29,6 +29,15 @@ export async function getCourseObjectivesAction(courseId: string, tenantIdParam?
       return (course.objectives as ICourseObjective[]) || [];
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'GET_COURSE_OBJECTIVES_ERROR',
+        entityType: 'COURSE',
+        entityId: courseId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('Error getting course objectives:', msg);
       return [];
     }
@@ -73,6 +82,15 @@ export async function setCourseObjectivesAction(
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'SET_COURSE_OBJECTIVES_ERROR',
+        entityType: 'COURSE',
+        entityId: courseId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('Error setting course objectives:', msg);
       return { success: false, error: msg };
     }

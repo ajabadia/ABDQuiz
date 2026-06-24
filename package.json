@@ -16,8 +16,8 @@
     "test:e2e": "powershell -ExecutionPolicy Bypass -File scripts/run-e2e.ps1"
   },
   "dependencies": {
-    "@ajabadia/i18n": "^1.0.0",
     "@ajabadia/ecosystem-widgets": "^1.0.10",
+    "@ajabadia/i18n": "^1.0.0",
     "@ajabadia/satellite-sdk": "^1.0.11",
     "@ajabadia/styles": "^1.0.15",
     "@google/generative-ai": "^0.24.1",
@@ -32,6 +32,7 @@
     "next-themes": "0.4.6",
     "nextjs-toploader": "3.9.17",
     "papaparse": "^5.5.3",
+    "pdf-lib": "^1.17.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.6",
     "react-dom": "19.2.6",

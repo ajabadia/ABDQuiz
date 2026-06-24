@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona configuraciones de exámenes para los inquilinos, incluyendo la recuperación, creación y clonación de configuraciones.
+ * @purpose Gestiona configuraciones de exámenes para inquilinos, incluyendo la recuperación, creación y clonación de configuraciones.
  * @purpose_en Manages exam configurations for tenants, including fetching, creating, and cloning configurations.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:5,imports:6,sig:1sdjgcs
- * @lastUpdated 2026-06-23T23:07:32.438Z
+ * @fingerprint exports:5,imports:6,sig:1pyhdcn
+ * @lastUpdated 2026-06-24T10:32:20.782Z
  */
 
 'use server';
@@ -52,6 +52,15 @@ export async function getExamConfigsAction(tenantIdParam?: string) {
       return configs.map((c) => serializeExamConfig(c as unknown as Record<string, unknown>));
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'FETCH_EXAM_CONFIGS_ERROR',
+        entityType: 'CONFIG',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error fetching exam configs:', msg);
       throw new Error(msg);
     }
@@ -98,6 +107,15 @@ export async function createExamConfigAction(data: Partial<IExamConfig>, tenantI
       return { success: true, id: newConfig._id.toString() };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'CREATE_EXAM_CONFIG_ERROR',
+        entityType: 'CONFIG',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error creating exam config:', msg);
       return { success: false, error: msg };
     }
@@ -150,6 +168,15 @@ export async function updateExamConfigAction(id: string, data: Partial<IExamConf
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'UPDATE_EXAM_CONFIG_ERROR',
+        entityType: 'CONFIG',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error updating exam config:', msg);
       return { success: false, error: msg };
     }
@@ -202,6 +229,15 @@ export async function deleteExamConfigAction(id: string, tenantIdParam?: string)
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'DELETE_EXAM_CONFIG_ERROR',
+        entityType: 'CONFIG',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error deleting exam config:', msg);
       return { success: false, error: msg };
     }
@@ -262,6 +298,15 @@ export async function cloneExamConfigAction(id: string, tenantIdParam?: string) 
       return { success: true, id: cloned._id.toString() };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'CLONE_EXAM_CONFIG_ERROR',
+        entityType: 'CONFIG',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error cloning exam config:', msg);
       return { success: false, error: msg };
     }

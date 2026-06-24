@@ -10,7 +10,7 @@
 
 'use server';
 
-import { withTenantContext, connectDB, getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { withTenantContext, connectDB, getIndustrialSession, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { createAIProvider } from '@/services/ai/clientFactory';
 
@@ -68,8 +68,9 @@ export async function generateQuestionFeedbackAction(attemptId: string, question
       studentAnswer = '(No respondió)';
     }
 
-    const provider = createAIProvider();
+    const provider = createAIProvider(attempt.tenantId);
     const result = await provider.generateFeedback({
+      tenantId: attempt.tenantId,
       questionText: snapshot.questionText,
       studentAnswer,
       options: snapshot.options,

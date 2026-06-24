@@ -1,16 +1,16 @@
 /**
- * @purpose Gestiona el recuperado y serializado de asignaciones de examenes activas para un inquilino, aplicando filtros opcionales.
+ * @purpose Gestiona el recuperar y serializar las asignaciones de examenes activas para un inquilino, aplicando filtros opcionales.
  * @purpose_en Manages the retrieval and serialization of active exam assignments for a tenant, applying optional filters.
  * @refactorable true (contains multiple functions with distinct responsibilities)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:2,imports:5,sig:3eik98
- * @lastUpdated 2026-06-23T23:07:22.881Z
+ * @fingerprint exports:2,imports:5,sig:u9q0ma
+ * @lastUpdated 2026-06-24T10:32:15.213Z
  */
 
 'use server';
 
-import { connectDB, getIndustrialSession, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import ExamAssignment from '@/models/ExamAssignment';
 import { type SerializedExamConfig } from '@/types/quiz';
 import { serializeAssignment } from './utils';
@@ -47,6 +47,15 @@ export async function listAssignmentsAction(filters?: ListAssignmentsFilters, te
       return docs.map((d) => serializeAssignment(d as unknown as Record<string, unknown>));
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'LIST_ASSIGNMENTS_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error listing assignments:', msg);
       throw new Error(msg);
     }
@@ -106,6 +115,15 @@ export async function getAvailableExamsAction(tenantIdParam?: string, _userId?: 
       return Array.from(configMap.values());
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'FETCH_AVAILABLE_EXAMS_ERROR',
+        entityType: 'ASSIGNMENT',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error fetching available exams:', msg);
       throw new Error(msg);
     }

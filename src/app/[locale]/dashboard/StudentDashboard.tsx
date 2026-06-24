@@ -6,8 +6,8 @@
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Low
- * @fingerprint exports:1,imports:9,sig:1or7lsr
- * @lastUpdated 2026-06-23T16:49:51.534Z
+ * @fingerprint exports:1,imports:11,sig:lxxsoy
+ * @lastUpdated 2026-06-24T10:55:14.758Z
  */
 
 import React from 'react';
@@ -16,15 +16,18 @@ import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { Activity, BookOpen, BarChart3 } from 'lucide-react';
 import { type DashboardData } from '@/actions/dashboard';
+import { type CourseProgressResult } from '@/actions/course-progress';
 import { KPISection } from '@/components/dashboard/KPISection';
 import { AvailableExamsSection } from '@/components/dashboard/AvailableExamsSection';
 import { RecentAttemptsSection } from '@/components/dashboard/RecentAttemptsSection';
+import { CourseProgressSection } from '@/components/dashboard/CourseProgressSection';
 
 interface StudentDashboardProps {
   data: DashboardData;
+  progressData: CourseProgressResult | null;
 }
 
-export function StudentDashboard({ data }: StudentDashboardProps) {
+export function StudentDashboard({ data, progressData }: StudentDashboardProps) {
   const t = useTranslations('common');
   const d = useTranslations('dashboard');
   const locale = useLocale();
@@ -48,6 +51,11 @@ export function StudentDashboard({ data }: StudentDashboardProps) {
 
       {/* KPI Scorecards */}
       <KPISection data={data} />
+
+      {/* Course Objective Progress */}
+      {progressData && progressData.courses.length > 0 && (
+        <CourseProgressSection courses={progressData.courses} />
+      )}
 
       {/* Available Exams */}
       <div className="flex flex-col gap-6">

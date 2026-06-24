@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona operaciones de calificación para intentos de exámenes en la aplicación ABDQuiz, incluyendo la recuperación de intentos para calificar y la calificación manual de intentos individuales.
+ * @purpose Gestiona operaciones de calificación para intentos de exámenes en la aplicación ABDQuiz, incluyendo la recuperación de intentos para la calificación y la calificación manual de intentos individuales.
  * @purpose_en Manages grading operations for exam attempts in the ABDQuiz application, including fetching attempts for grading and manually grading individual attempts.
  * @refactorable true (contains multiple functions with distinct responsibilities)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:3,imports:5,sig:5ts3n6
- * @lastUpdated 2026-06-23T23:07:44.319Z
+ * @fingerprint exports:3,imports:5,sig:1hawz2q
+ * @lastUpdated 2026-06-24T10:32:29.032Z
  */
 
 'use server';
@@ -171,6 +171,15 @@ export async function submitManualGradingAction(
       return { success: true };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'GRADING_ERROR',
+        entityType: 'EXAM',
+        entityId: attemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, attemptId },
+      });
       console.error('❌ [GRADING_ERROR]:', message);
       return { success: false, error: message };
     }

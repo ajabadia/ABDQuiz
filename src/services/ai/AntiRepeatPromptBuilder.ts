@@ -1,14 +1,15 @@
 /**
- * @purpose Gestiona instrucciones del sistema para que los profesores eviten respuestas duplicadas en el contenido generado por inteligencia artificial.
- * @purpose_en Generates system instructions for teachers to prevent duplicate prompts in AI-generated content.
+ * @purpose Gestiona instrucciones del sistema para evitar respuestas duplicadas en contenido generado por IA, usando plantillas configurables.
+ * @purpose_en Generates system instructions to prevent duplicate prompts in AI-generated content, using configurable templates.
  * @refactorable false
  * @classification Business Service
  * @complexity Low
- * @fingerprint exports:1,imports:1,sig:1ccbjtt
- * @lastUpdated 2026-06-23T23:23:29.554Z
+ * @fingerprint exports:1,imports:2,sig:2dd8zt
+ * @lastUpdated 2026-06-24T11:30:00.000Z
  */
 
 import Question from '../../models/Question';
+import { getActivePrompt, renderPromptTemplate } from '@/services/ai/promptService';
 
 interface BuildAntiRepeatPromptParams {
   tenantId: string;
@@ -42,20 +43,27 @@ export class AntiRepeatPromptBuilder {
       .limit(limit)
       .lean();
 
-    if (questions.length === 0) {
-      return `INSTRUCCIONES ANTI-REPETICIÓN: No hay preguntas previas cargadas en este bloque/módulo. Puedes generar libremente cualquier reactivo correspondiente al temario.`;
-    }
+    const resolved = await getActivePrompt(tenantId, 'anti_repeat');
 
-    const listText = questions
-      .map((q, idx) => `${idx + 1}. "${q.questionText}"`)
-      .join('\n');
+    const listText = questions.length > 0
+      ? questions.map((q, idx) => `${idx + 1}. "${q.questionText}"`).join('\n')
+      : 'No hay preguntas previas cargadas en este bloque/módulo.';
 
-    return `INSTRUCCIONES DE EXCLUSIÓN ANTI-REPETICIÓN (MUY IMPORTANTE):
+    const instructionsText = questions.length === 0
+      ? `INSTRUCCIONES ANTI-REPETICIÓN: No hay preguntas previas cargadas en este bloque/módulo. Puedes generar libremente cualquier reactivo correspondiente al temario.`
+      : `INSTRUCCIONES DE EXCLUSIÓN ANTI-REPETICIÓN (MUY IMPORTANTE):
 Ya existen las siguientes preguntas en el banco de exámenes. Debes generar reactivos completamente nuevos, tanto en su planteamiento conceptual como en su redacción.
 Queda ESTRICTAMENTE PROHIBIDO repetir o parafrasear los siguientes enunciados:
 
 ${listText}
 
 Genera únicamente preguntas con enfoques alternativos, distractores diferentes y escenarios prácticos no cubiertos en la lista anterior.`;
+
+    return renderPromptTemplate(resolved.userPromptTemplate, {
+      instructions: instructionsText,
+      listText,
+      module,
+      questionCount: String(questions.length),
+    });
   }
 }

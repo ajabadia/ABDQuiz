@@ -4,8 +4,8 @@
  * @refactorable true (contains multiple business logic functions)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:6,imports:4,sig:1q94pr0
- * @lastUpdated 2026-06-23T23:07:11.325Z
+ * @fingerprint exports:6,imports:4,sig:xcgylz
+ * @lastUpdated 2026-06-24T10:31:52.724Z
  */
 
 'use server';
@@ -49,6 +49,15 @@ export async function listCoursesAction(spaceId?: string, tenantIdParam?: string
       return docs.map((d) => serializeCourse(d as unknown as Record<string, unknown>));
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'LIST_COURSES_ERROR',
+        entityType: 'COURSE',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error listing courses:', msg);
       throw new Error(msg);
     }
@@ -109,6 +118,15 @@ export async function createCourseAction(
       return { success: true, id: newCourse._id.toString() };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'CREATE_COURSE_ERROR',
+        entityType: 'COURSE',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg, name: data.name },
+      });
       console.error('❌ Error creating course:', msg);
       return { success: false, error: msg };
     }
@@ -175,6 +193,15 @@ export async function updateCourseAction(
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'UPDATE_COURSE_ERROR',
+        entityType: 'COURSE',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error updating course:', msg);
       return { success: false, error: msg };
     }
@@ -222,6 +249,15 @@ export async function toggleCourseActiveAction(id: string, tenantIdParam?: strin
       return { success: true, active: newActive };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'TOGGLE_COURSE_ERROR',
+        entityType: 'COURSE',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error toggling course:', msg);
       return { success: false, error: msg };
     }
@@ -268,6 +304,15 @@ export async function deleteCourseAction(id: string, tenantIdParam?: string) {
       return { success: true };
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'DELETE_COURSE_ERROR',
+        entityType: 'COURSE',
+        entityId: id,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error deleting course:', msg);
       return { success: false, error: msg };
     }

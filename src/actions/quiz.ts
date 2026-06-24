@@ -4,8 +4,8 @@
  * @refactorable true (contains multiple actions and business logic)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:6,imports:9,sig:tca85u
- * @lastUpdated 2026-06-23T23:08:01.385Z
+ * @fingerprint exports:6,imports:9,sig:xi5jlu
+ * @lastUpdated 2026-06-24T10:32:32.973Z
  */
 
 'use server';
@@ -67,6 +67,15 @@ export async function startQuizAction(examConfigId: string) {
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: 'unknown',
+        action: 'START_QUIZ_ERROR',
+        entityType: 'EXAM',
+        entityId: examConfigId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, examConfigId },
+      });
       console.error('❌ Failed to start quiz:', message);
       throw new Error(`Critical Error: ${message}`);
     }
@@ -116,6 +125,15 @@ export async function submitAnswerAction(formData: {
       revalidatePath(`/quiz/${formData.attemptId}`);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: 'unknown',
+        action: 'SUBMIT_ANSWER_ERROR',
+        entityType: 'EXAM',
+        entityId: formData.attemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, attemptId: formData.attemptId },
+      });
       console.error('❌ [SUBMIT_ANSWER_ACTION_ERROR]:', message, 'AttemptId:', formData.attemptId);
       throw new Error(`Submission failed: ${message}`);
     }
@@ -136,6 +154,15 @@ export async function heartbeatAction(attemptId: string) {
       return result;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: 'unknown',
+        action: 'HEARTBEAT_ERROR',
+        entityType: 'EXAM',
+        entityId: attemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, attemptId },
+      });
       console.error('❌ [HEARTBEAT_ERROR]:', message);
       return { success: false, error: message };
     }
@@ -185,6 +212,15 @@ export async function finishQuizAction(attemptId: string, attemptToken?: string,
       return { success: true };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'FINISH_QUIZ_ERROR',
+        entityType: 'EXAM',
+        entityId: attemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, attemptId },
+      });
       console.error('Failed to finish quiz:', message);
       throw new Error('Finalization failed: ' + message);
     }
@@ -241,6 +277,15 @@ export async function invalidateAttemptAction(attemptId: string, tenantIdParam?:
       return { success: true };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'INVALIDATE_ATTEMPT_ERROR',
+        entityType: 'EXAM',
+        entityId: attemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, attemptId },
+      });
       console.error('❌ [INVALIDATE_ATTEMPT_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }
@@ -270,8 +315,17 @@ export async function getAttemptsAction(tenantIdParam?: string) {
       return (attempts as unknown as Record<string, unknown>[]).map(sanitizeAttempt);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'FETCH_ATTEMPTS_ERROR',
+        entityType: 'EXAM',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: msg },
+      });
       console.error('❌ Error fetching attempts:', msg);
-      throw new Error(msg); // No silenciar errores
+      throw new Error(msg);
     }
   }, explicitCtx);
 }

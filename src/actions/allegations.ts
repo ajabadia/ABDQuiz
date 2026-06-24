@@ -1,18 +1,18 @@
 /**
- * @purpose Gestiona el envío y resolución de acusaciones técnicas dentro de una prueba, asegurando la autorización adecuada y revalidando caminos.
+ * @purpose Gestiona y resuelve las acusaciones técnicas dentro de un quiz, asegurando una autorización adecuada y validando caminos.
  * @purpose_en Manages the submission and resolution of technical allegations within a quiz, ensuring proper authorization and revalidating paths.
  * @refactorable true (contains multiple actions with similar structures)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:4,imports:5,sig:9gkz2t
- * @lastUpdated 2026-06-23T23:06:56.677Z
+ * @fingerprint exports:4,imports:5,sig:3h0qiw
+ * @lastUpdated 2026-06-24T10:31:47.919Z
  */
 
 'use server';
 
 import { AllegationService } from '@/services/allegations/allegationService';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { ensureIndustrialAccess, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import { revalidatePath } from 'next/cache';
 import { type IAllegation } from '@/models/Allegation';
 
@@ -53,6 +53,15 @@ export async function submitAllegationAction(formData: {
       return { success: true, data: allegation };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: 'unknown',
+        action: 'SUBMIT_ALLEGATION_ERROR',
+        entityType: 'ALLEGATION',
+        entityId: formData.examAttemptId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, examAttemptId: formData.examAttemptId },
+      });
       console.error('❌ [SUBMIT_ALLEGATION_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }
@@ -94,6 +103,15 @@ export async function resolveAllegationAction(formData: {
       return { success: true, data: allegation };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'RESOLVE_ALLEGATION_ERROR',
+        entityType: 'ALLEGATION',
+        entityId: formData.allegationId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, allegationId: formData.allegationId },
+      });
       console.error('❌ [RESOLVE_ALLEGATION_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }
@@ -124,6 +142,15 @@ export async function rejectAllegationAction(formData: {
       return { success: true, data: allegation };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'REJECT_ALLEGATION_ERROR',
+        entityType: 'ALLEGATION',
+        entityId: formData.allegationId,
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message, allegationId: formData.allegationId },
+      });
       console.error('❌ [REJECT_ALLEGATION_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }
@@ -144,6 +171,15 @@ export async function getTenantAllegationsAction(tenantIdParam?: string): Promis
       return { success: true, data: allegations };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
+      await logger.audit({
+        tenantId: explicitCtx?.tenantId || 'unknown',
+        action: 'GET_TENANT_ALLEGATIONS_ERROR',
+        entityType: 'ALLEGATION',
+        entityId: 'unknown',
+        userId: 'system',
+        userEmail: 'system@abd.com',
+        changedFields: { error: message },
+      });
       console.error('❌ [GET_TENANT_ALLEGATIONS_ACTION_ERROR]:', message);
       return { success: false, error: message };
     }

@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el esquema y modelo para asignaciones de exámenes en el proyecto ABDSuite.
+ * @purpose_en Manages the schema and model for exam assignments in the ABDSuite project.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:2,imports:2,sig:10fq433
+ * @lastUpdated 2026-06-23T19:52:16.347Z
+ */
+
 import mongoose, { Schema, Document } from 'mongoose';
 import { getTenantModel } from '@ajabadia/satellite-sdk';
 

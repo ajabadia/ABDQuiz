@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página de dashboard del estudiante con guardia de autenticación y manejo de errores.
+ * @purpose_en Renders the student dashboard page with authentication guard and error handling.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:15auaks
+ * @lastUpdated 2026-06-23T16:49:46.514Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { getIndustrialSession } from '@ajabadia/satellite-sdk';
 import { getStudentDashboardAction } from '@/actions/dashboard';

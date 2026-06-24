@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la creación y validación de intentos de prueba basados en asignaciones de exámenes y configuraciones.
+ * @purpose_en Manages the creation and validation of quiz attempts based on exam assignments and configurations.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:z28u35
+ * @lastUpdated 2026-06-23T19:53:34.991Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';

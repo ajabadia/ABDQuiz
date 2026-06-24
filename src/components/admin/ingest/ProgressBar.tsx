@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un progreso con una anchura dinámica basada en los valores actuales y totales.
+ * @purpose_en Renders a progress bar with dynamic width based on the current and total values.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:0,sig:1uknwzf
+ * @lastUpdated 2026-06-23T23:21:46.403Z
+ */
+
 interface ProgressBarProps {
   current: number;
   total: number;

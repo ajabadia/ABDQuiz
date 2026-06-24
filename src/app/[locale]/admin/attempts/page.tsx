@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página de intentos administrativos con un encabezado, componente gerenciador de intentos y pie de página.
+ * @purpose_en Renders the admin attempts page with a header, attempts manager component, and footer.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:12frwgn
+ * @lastUpdated 2026-06-23T16:48:38.734Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { AdminPageHeader } from '@ajabadia/styles';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';

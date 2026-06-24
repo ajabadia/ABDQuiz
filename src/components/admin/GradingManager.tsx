@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * @purpose Gestiona el proceso de calificación de intentos de quiz en la aplicación ABDQuiz, incluyendo la renderización de vistas de corrección manual y el manejo de correcciones.
+ * @purpose_en Manages the grading process for quiz attempts in the ABDQuiz application, including rendering correction views and handling manual grading.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:13,sig:1p9hbiz
+ * @lastUpdated 2026-06-23T17:40:54.387Z
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Search, AlertCircle, ChevronRight, ArrowLeft, User, Clock, CheckCircle2, Star, FileText } from 'lucide-react';

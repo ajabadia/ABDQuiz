@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona configuraciones de exámenes para los inquilinos, incluyendo la recuperación, creación y clonación de configuraciones.
+ * @purpose_en Manages exam configurations for tenants, including fetching, creating, and cloning configurations.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:5,imports:6,sig:1sdjgcs
+ * @lastUpdated 2026-06-23T23:07:32.438Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

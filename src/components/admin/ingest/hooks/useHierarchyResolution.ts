@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Valida y resuelve conflictos en el espacio de jerarquía spaceId/courseId de cada pregunta contra el backend.
+ * @purpose_en Validates the hierarchy spaceId/courseId of each question against the backend and resolves conflicts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:2,imports:2,sig:1xadsco
+ * @lastUpdated 2026-06-23T23:21:36.608Z
+ */
+
 import { useState } from 'react';
 import { validateHierarchyAction } from '@/actions/hierarchyValidation';
 

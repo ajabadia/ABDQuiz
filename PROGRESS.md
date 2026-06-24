@@ -48,10 +48,24 @@
 - ✅ **5.10 i18n Completo:** Traducción de strings hardcodeados en `CoursesList.tsx`, `FloatingSelector.tsx`, y `QuestionEditorModal.tsx`.
 - ✅ **5.11 Seguridad:** Fix a fallback hardcodeado en `SecurityService.ts`, 7 `|| ''` silenciosos, y token GitHub expuesto.
 
+## 🚀 Phase 6: Curricular Coverage & Objective Management (2026-06-24)
+- ✅ **6.1 Modelo de Currículum (`Course.objectives`):** Nuevo campo `objectives: ICourseObjective[]` en `Course.ts` con schema Mongoose (módulo, bloque, objetivos[]). Permite almacenar el temario completo por curso.
+- ✅ **6.2 Refactor `ExamAuditorService`:** Eliminado `DEFAULT_OBJECTIVES` hardcodeado. El servicio ahora localiza el curso vinculado al examen (vía `ExamConfig.courseId` o `Course.learningPath`) y lee los objetivos desde MongoDB. Si no hay curso vinculado o no tiene objetivos, retorna `null` en lugar de fallback a datos embebidos.
+- ✅ **6.3 Server Actions de Currículum:** `getCourseObjectivesAction` y `setCourseObjectivesAction` para CRUD de objetivos por curso, con auditoría y control multi-tenant.
+- ✅ **6.4 Vinculación Examen↔Curso:** Nuevo componente `ExamCourseLink` en la página de edición de examen. Selector de curso con guardado directo vía `updateExamConfigAction` (aprovechando el campo `courseId` existente en `ExamConfig`).
+- ✅ **6.5 Panel de Auditoría Enlazado:** `ExamAuditSection` wrappea el `ExamAuditPanel` en sección colapsable dentro de la edición del examen. Muestra cobertura curricular (suficiente/escaso/faltante) o enlaces contextuales si falta el vínculo o los objetivos.
+- ✅ **6.6 Página de Edición de Currículum:** `/admin/courses/[id]/curriculum` con `CurriculumEditor` — editor visual completo: añadir/editar/eliminar módulos, bloques y objetivos de aprendizaje individuales.
+- ✅ **6.7 Navegación a Currículum:** Botón `ClipboardList` en cada tarjeta de curso (`CourseCard`) que enlaza a la página de currículum.
+- ✅ **6.8 Tests Actualizados:** `ExamAuditorLeitner.test.ts` actualizado con mocks de `Course.findOne()` y casos de prueba para curso sin objetivos y con objetivos completos (9 tests pasan).
+- ⬜ **6.9 Plantillas de Prompts:** Pendiente — modelo `PromptTemplate`, seed de presets, admin CRUD.
+- ⬜ **6.10 Objetivos Visibles para el Alumno:** Pendiente — dashboard con progreso por objetivo.
+- ⬜ **6.11 Integración con Generación IA:** Pendiente — conectar templates al pipeline de feedback/generación.
+
 ## 📈 Current Status
 - **Audit Results:** **SYS_CERTIFIED (Era 11 — Zero Warnings / Zero Errors)**.
 - **Rules Enforced:** Max 150 lines per file, No Hardcoded Strings, No Local CSS, No Embedded Scripts.
 - **Data Status:** Ecosistema de Aprendizaje Multi-Tenant completo con control de acceso contextual, tokens de intentos efímeros, ingesta canónica con fallback de transacciones, calificación manual, sincronización analítica asíncrona, y todos los módulos bajo el límite de pureza arquitectónica (150 líneas).
+- **Curricular Coverage:** `DEFAULT_OBJECTIVES` hardcodeado eliminado. Todos los objetivos ahora residen en `Course.objectives` (MongoDB). Nuevo flujo: Curso → Objetivos → Examen vinculado → Auditoría de cobertura.
 
 ---
-*Last Update: 2026-05-28 | Certification: SYS_CERTIFIED | Refactor: Phase 5.7–5.11*
+*Last Update: 2026-06-24 | Certification: SYS_CERTIFIED | Phase 6.1–6.8: Curricular Coverage | Tests: 350 (31 test files)*

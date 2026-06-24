@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona retroalimentación semántica AI para una pregunta específica en un intento de examen, almacenando el resultado para evitar recálculo.
+ * @purpose_en Generates AI-powered semantic feedback for a specific question in an exam attempt, caching the result to avoid re-computation.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:ydpxbq
+ * @lastUpdated 2026-06-23T23:07:37.935Z
+ */
+
 'use server';
 
 import { withTenantContext, connectDB, getIndustrialSession } from '@ajabadia/satellite-sdk';

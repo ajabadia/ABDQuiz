@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página de resultados para una prueba de quiz, mostrando el rendimiento del usuario, su estatus de aprobación y opciones para intentarlo de nuevo o regresar a la casa.
+ * @purpose_en Renders the results page for a quiz attempt, displaying the user's performance, passing status, and options to retry or return home.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:14,sig:1uacj57
+ * @lastUpdated 2026-06-23T16:50:22.530Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose

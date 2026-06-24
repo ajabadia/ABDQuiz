@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente tarjeta para configurar reglas de examen con campos de entrada para contar preguntas, establecer umbral de puntuación, límite de tiempo global y máximo intentos.
+ * @purpose_en Renders a card component for configuring exam rules with input fields for question count, pass threshold, global time limit, and max attempts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:6,sig:17heddv
+ * @lastUpdated 2026-06-23T17:40:23.034Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';

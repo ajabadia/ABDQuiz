@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza una página que muestra los exámenes disponibles para el usuario, incluyendo detalles de examen y botones de lanzamiento.
+ * @purpose_en Renders a page displaying available exams for the user to launch, including exam details and launch buttons.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:214rd6
+ * @lastUpdated 2026-06-23T16:50:01.090Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';

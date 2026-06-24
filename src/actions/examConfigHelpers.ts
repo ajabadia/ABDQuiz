@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona las configuraciones de exámenes por defecto y las serializa para almacenamiento o transmisión.
+ * @purpose_en Manages default exam configurations and serializes them for storage or transmission.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:3,imports:2,sig:1kitba5
+ * @lastUpdated 2026-06-23T16:27:57.653Z
+ */
+
 import ExamConfig from '@/models/ExamConfig';
 import type { SerializedExamConfig } from '@/types/quiz';
 

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona un conjunto de botones para administrar acciones de contexto en una interfaz de administración, incluyendo aplicar cambios, saltar pasos y activar modo de salto.
+ * @purpose_en Renders a set of buttons for managing context actions in an admin interface, including applying changes, skipping steps, and toggling skip mode.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1b8s5uz
+ * @lastUpdated 2026-06-23T17:41:23.164Z
+ */
+
 import { Upload, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

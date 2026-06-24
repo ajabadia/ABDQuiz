@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona acciones relacionadas con los cursos, como listar, crear, actualizar y eliminar cursos dentro de un inquilino.
+ * @purpose_en Manages course-related actions such as listing, creating, updating, and deleting courses within a tenant.
+ * @refactorable true (contains multiple business logic functions)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:6,imports:4,sig:1q94pr0
+ * @lastUpdated 2026-06-23T23:07:11.325Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

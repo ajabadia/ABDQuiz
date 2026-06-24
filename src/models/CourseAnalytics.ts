@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona un esquema de mongoose y modelo para rastrear análisis de cursos dentro de un inquilino.
+ * @purpose_en Defines a Mongoose schema and model for tracking analytics of courses within a tenant.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:zgh6ou
+ * @lastUpdated 2026-06-23T19:52:13.357Z
+ */
+
 import mongoose, { Schema, Document } from 'mongoose';
 import { getTenantModel } from '@ajabadia/satellite-sdk';
 

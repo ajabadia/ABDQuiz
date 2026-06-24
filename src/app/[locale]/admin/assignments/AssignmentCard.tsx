@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente de tarjeta para mostrar y gestionar una asignación en la aplicación ABDQuiz, incluyendo detalles como estado, fechas, usuarios asignados, registros de auditoría y acciones como editar, publicar, archivar y eliminar.
+ * @purpose_en Renders a card component for displaying and managing an assignment in the ABDQuiz application, including details like status, dates, assigned users, audit logs, and actions like edit, publish, archive, and delete.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:1ta8m6p
+ * @lastUpdated 2026-06-23T23:08:09.163Z
+ */
+
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';

@@ -1,3 +1,13 @@
+/**
+ * @purpose Proporciona datos analíticos para intentos de examen del usuario.
+ * @purpose_en Calculates and returns analytics data for user exam attempts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:5,sig:123fy8q
+ * @lastUpdated 2026-06-22T06:34:39.954Z
+ */
+
 'use server';
 
 import { connectDB } from '@ajabadia/satellite-sdk';

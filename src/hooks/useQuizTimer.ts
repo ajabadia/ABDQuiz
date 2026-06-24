@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y sigue el tiempo global y de preguntas para un quiz, reiniciando el temporizador de pregunta cuando sea necesario y desencadenando llamadas de callback en tiempos de vencimiento.
+ * @purpose_en Manages and tracks the global and question timers for a quiz, resetting the question timer when necessary and triggering callbacks on timeouts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:1,sig:13ahonk
+ * @lastUpdated 2026-06-23T23:22:19.837Z
+ */
+
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseQuizTimerProps {

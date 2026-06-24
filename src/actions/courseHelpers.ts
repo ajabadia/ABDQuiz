@@ -1,4 +1,14 @@
-import Course from '@/models/Course';
+/**
+ * @purpose Gestiona la serialización de datos del curso y proporciona una función para encontrar un curso por ID.
+ * @purpose_en Manages the serialization of course data and provides a function to find a course by ID.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:3,imports:1,sig:19wxvr6
+ * @lastUpdated 2026-06-24T08:20:38.043Z
+ */
+
+import Course, { type ICourseObjective } from '@/models/Course';
 
 export interface SerializedCourse {
   _id: string;
@@ -8,6 +18,7 @@ export interface SerializedCourse {
   description?: string;
   tags: string[];
   learningPath: { examConfigId: string; prerequisites: string[] }[];
+  objectives?: ICourseObjective[];
   active: boolean;
   createdBy: string;
   createdAt: string;
@@ -23,6 +34,7 @@ export function serializeCourse(doc: Record<string, unknown>): SerializedCourse 
     name: doc.name as string,
     description: doc.description as string | undefined,
     tags: (doc.tags as string[]) || [],
+    objectives: (doc.objectives as ICourseObjective[]) || undefined,
     learningPath: (rawLP || []).map((entry) => ({
       examConfigId: (entry.examConfigId as { toString(): string })?.toString() || '',
       prerequisites: ((entry.prerequisites as unknown[]) || []).map(

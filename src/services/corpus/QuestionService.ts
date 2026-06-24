@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y recupera preguntas para un inquilino, verifica la rastreabilidad de las preguntas y guarda o divide preguntas con versionado.
+ * @purpose_en Manages and retrieves questions for a tenant, checks question traceability, and saves or forks questions with versioning.
+ * @refactorable true (contains multiple business logic functions)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:2,imports:4,sig:14dpo5w
+ * @lastUpdated 2026-06-23T23:23:52.323Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import Question, { type IQuestion } from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';

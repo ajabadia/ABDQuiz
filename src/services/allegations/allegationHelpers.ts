@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y calcula puntuaciones para intentos de exámenes según respuestas del usuario, configuraciones de preguntas y reglas de puntuación.
+ * @purpose_en Manages and calculates scores for exam attempts based on user responses, question configurations, and scoring rules.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:5,imports:5,sig:1m2oak3
+ * @lastUpdated 2026-06-23T19:52:55.303Z
+ */
+
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';
 import mongoose from 'mongoose';

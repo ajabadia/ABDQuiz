@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el rendimiento y la funcionalidad de un diálogo modal para crear o editar cursos, incluyendo validación de formularios y envío.
+ * @purpose_en Manages the rendering and functionality of a modal dialog for creating or editing courses, including form validation and submission.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:13,sig:1x33nzw
+ * @lastUpdated 2026-06-23T16:48:56.259Z
+ */
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';

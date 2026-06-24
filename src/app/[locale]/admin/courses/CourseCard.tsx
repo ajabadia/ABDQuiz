@@ -1,9 +1,20 @@
 'use client';
 
+/**
+ * @purpose Renders a un componente de tarjeta para mostrar y gestionar cursos, incluyendo acciones como editar, activar o desactivar el estado y eliminar.
+ * @purpose_en Renders a card component for displaying and managing courses, including actions like editing, toggling active status, and deleting.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:6,sig:x8y7cd
+ * @lastUpdated 2026-06-24T08:20:42.807Z
+ */
+
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Pencil, EyeOff, Eye, Trash2, Tags } from 'lucide-react';
+import { BookOpen, Pencil, EyeOff, Eye, Trash2, Tags, ClipboardList } from 'lucide-react';
+import { Link } from '@/i18n/routing';
 import { type SerializedCourse } from '@/actions/course';
 
 /** Helper: formato de fecha legible */
@@ -38,12 +49,13 @@ function ActiveBadge({ active, t }: { active: boolean; t: (key: string) => strin
 interface CourseCardProps {
   course: SerializedCourse;
   t: (key: string) => string;
+  locale?: string;
   onEdit: (course: SerializedCourse) => void;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
-export default function CourseCard({ course, t, onEdit, onToggle, onDelete }: CourseCardProps) {
+export default function CourseCard({ course, t, locale, onEdit, onToggle, onDelete }: CourseCardProps) {
   return (
     <Card
       className="group relative bg-card/40 border-white/5 hover:border-primary/40 transition-all duration-500 rounded-none p-6 flex flex-col gap-4"
@@ -93,6 +105,18 @@ export default function CourseCard({ course, t, onEdit, onToggle, onDelete }: Co
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 rounded-none hover:bg-primary/10 hover:text-primary"
+            asChild
+            title={t('curriculum') || 'Currículum'}
+            aria-label={t('curriculum') || 'Currículum'}
+          >
+            <Link href={`/${locale || 'es'}/admin/courses/${course._id}/curriculum`}>
+              <ClipboardList className="w-4 h-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <Button
             variant="ghost"
             size="icon"

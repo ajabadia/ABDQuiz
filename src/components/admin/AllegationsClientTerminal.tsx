@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona una interfaz de terminal para administrar denuncias con tablas para casos pendientes y resueltos, mostrando detalles y ofreciendo opciones para resolver casos pendientes.
+ * @purpose_en Renders a terminal interface for managing allegations with tabs for pending and resolved cases, displaying details and providing options to resolve pending allegations.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:2,imports:7,sig:16sj5nj
+ * @lastUpdated 2026-06-23T19:48:04.227Z
+ */
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';

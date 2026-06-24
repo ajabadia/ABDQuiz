@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza el pie de página para un componente de quiz, incluyendo botones de navegación y acciones según el modo y estado del quiz.
+ * @purpose_en Renders the footer for a quiz component, including navigation buttons and action buttons based on the quiz mode and state.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:k41kb8
+ * @lastUpdated 2026-06-23T19:49:43.256Z
+ */
+
 import { SkipForward, Activity, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';

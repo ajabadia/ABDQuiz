@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una pantalla de finalización con un icono, título, descripción y botones de acción.
+ * @purpose_en Renders a completion screen with an icon, title, description, and action buttons.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:jbvfey
+ * @lastUpdated 2026-06-23T17:42:33.013Z
+ */
+
 import { Check } from 'lucide-react';
 
 interface RemediationCompleteProps {

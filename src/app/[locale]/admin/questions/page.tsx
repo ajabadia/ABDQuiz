@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la página administrativa para el manejo de preguntas, incluyendo una cabecera con navegación y botones, y un componente para gestionar preguntas.
+ * @purpose_en Renders the admin page for managing questions, including a header with navigation and buttons, and a component to manage questions.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:5glk3v
+ * @lastUpdated 2026-06-23T23:21:09.667Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import QuestionsManager from '@/components/admin/QuestionsManager';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';

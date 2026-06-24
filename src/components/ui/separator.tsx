@@ -1,5 +1,15 @@
 "use client"
 
+/**
+ * @purpose Renderiza un componente separador personalizable utilizando Radix UI.
+ * @purpose_en Renders a customizable separator component using Radix UI.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:0,imports:3,sig:mn2xsk
+ * @lastUpdated 2026-06-23T19:50:33.132Z
+ */
+
 import * as React from "react"
 import { Separator as SeparatorPrimitive } from "radix-ui"
 

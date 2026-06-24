@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página corporal del administrador con un encabezado, una consola de control y un pie de página.
+ * @purpose_en Renders the admin corpus page with a header, dashboard, and footer.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:18sem0a
+ * @lastUpdated 2026-06-23T23:08:13.481Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { AdminPageHeader } from '@ajabadia/styles';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';

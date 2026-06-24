@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona fijuras de usuario mock para pruebas de acceso a autenticación en la aplicación ABDQuiz.
+ * @purpose_en Defines mock user fixtures for testing authentication access in the ABDQuiz application.
+ * @refactorable false
+ * @classification Data/Constants
+ * @complexity Low
+ * @fingerprint exports:6,imports:1,sig:x8sakx
+ * @lastUpdated 2026-06-23T19:51:17.159Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock user fixtures ───────────────────────

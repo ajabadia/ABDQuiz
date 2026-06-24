@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la creación y caché de un proveedor de inteligencia artificial basado en variables ambientales disponibles.
+ * @purpose_en Manages the creation and caching of an AI provider based on available environment variables.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:2,imports:2,sig:b2czf5
+ * @lastUpdated 2026-06-23T23:23:34.102Z
+ */
+
 import type { AIProvider } from './types';
 import { GeminiProvider } from './providers/gemini';
 

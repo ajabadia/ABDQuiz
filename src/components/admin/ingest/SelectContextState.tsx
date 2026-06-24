@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el estado y la renderización de una interfaz de selección de contexto para espacios y cursos, incluyendo manejo de interacciones del usuario y visualización de componentes UI relevantes.
+ * @purpose_en Manages the state and rendering of a context selection interface for spaces and courses, including handling user interactions and displaying relevant UI components.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:13d2ori
+ * @lastUpdated 2026-06-23T19:48:09.869Z
+ */
+
 import { useState, useEffect } from 'react';
 import { Layers, MapPin, Database } from 'lucide-react';
 import { useTranslations } from 'next-intl';

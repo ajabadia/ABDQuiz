@@ -55,6 +55,16 @@
   - [ ] Dashboards de KPIs para Academias y Facturación.
   - [ ] Seguimiento avanzado de progreso del alumno.
 
+## 📍 Fase 6: Cobertura Curricular y Gestión de Temarios (EN PROGRESO)
+- [x] **Modelo de Currículum por Curso**: Campo `objectives[]` en `Course.ts` con interfaz `ICourseObjective` (módulo, bloque, lista de objetivos).
+- [x] **Servicio de Auditoría de Cobertura Refactorizado**: `ExamAuditorService` ahora lee objetivos desde `Course.objectives` (MongoDB) en lugar de `DEFAULT_OBJECTIVES` hardcodeado. Sin fallback a datos embebidos.
+- [x] **Panel de Auditoría Enlazado**: Vista de cobertura curricular integrada en la página de edición de examen, mostrando objetivos cubiertos/escasos/faltantes.
+- [x] **Vinculación Examen↔Curso**: Selector de curso en la edición del examen con guardado vía `updateExamConfigAction`.
+- [x] **Editor de Currículum**: Página `/admin/courses/[id]/curriculum` con editor visual de objetivos (CRUD de módulos, bloques y objetivos de aprendizaje).
+- [ ] **Plantillas de Prompts (Prompt Templates)**: Modelo `PromptTemplate` en MongoDB + seed de presets desde `El_Konstructo` + admin CRUD.
+- [ ] **Objetivos Visibles para el Alumno**: Dashboard de alumno con progreso por objetivo (dominio por módulo/bloque).
+- [ ] **Integración de Prompts con Generación de Preguntas IA**: Conectar templates al pipeline de generación/feedback.
+
 ---
 
-*Sincronizado con [ESPECIFICACIONES_ECOSISTEMA_APRENDIZAJE.md](../ABD-Suite-DOCS/01_active_specs/ESPECIFICACIONES_ECOSISTEMA_APRENDIZAJE.md) v6 — 27/05/2026. 122 tests totales (108 unitarios + 14 UI). 24 Server Actions refactorizadas con context shift. Pipeline transaccional con fallback standalone.*
+*Sincronizado con [ESPECIFICACIONES_ECOSISTEMA_APRENDIZAJE.md](../ABD-Suite-DOCS/01_active_specs/ESPECIFICACIONES_ECOSISTEMA_APRENDIZAJE.md) v6 — 24/06/2026. 350 tests totales en 31 test files. Pipeline transaccional con fallback standalone. Cobertura curricular migrada de hardcode a MongoDB.*

@@ -1,3 +1,13 @@
+/**
+ * @purpose Valida la jerarquía de espacios y cursos dentro de un inquilino, asegurando que los cursos pertenezcan a espacios activos.
+ * @purpose_en Validates the hierarchy of spaces and courses within a tenant, ensuring that courses belong to active spaces.
+ * @refactorable true (contains multiple functions with distinct responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:4,imports:5,sig:6zhge9
+ * @lastUpdated 2026-06-23T23:07:49.756Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

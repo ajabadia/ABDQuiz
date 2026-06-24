@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona un esquema de Mongoose y modelo para la entidad Pregunta en la aplicación ABDQuiz, incluyendo campos para detalles de pregunta, metadatos y archivos adjuntos.
+ * @purpose_en Defines a Mongoose schema and model for the Question entity in the ABDQuiz application, including fields for question details, metadata, and attachments.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1jlzjan
+ * @lastUpdated 2026-06-23T23:23:12.858Z
+ */
+
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IQuestion extends Document {
@@ -19,6 +29,8 @@ export interface IQuestion extends Document {
   spaceId?: string; // ID del Space al que pertenece la pregunta
   courseId?: string; // ID del Course al que pertenece la pregunta
   originImportId?: mongoose.Types.ObjectId; // Trazabilidad al lote de importación
+  objective?: number; // Número identificador de objetivo del bloque
+  uid?: string; // Identidad inmutable de la pregunta heredada del importador
   /** §12.A — Adjuntos (imágenes, documentos, audio, etc.) */
   attachments?: { url: string; name: string; type: string; size: number }[];
   createdAt: Date;
@@ -44,6 +56,8 @@ const QuestionSchema = new Schema<IQuestion>({
   spaceId: { type: String },
   courseId: { type: String },
   originImportId: { type: Schema.Types.ObjectId, ref: 'CorpusImport' },
+  objective: { type: Number, index: true },
+  uid: { type: String, index: true },
   /** §12.A — Adjuntos */
   attachments: [{
     url: { type: String, required: true },

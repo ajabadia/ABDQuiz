@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página de administración central para usuarios con privilegios ADMIN, proporcionando acceso a diversas características administrativas y un enlace a la plataforma de gobernanza.
+ * @purpose_en Renders the central admin governance portal page for users with ADMIN privileges, providing access to various administrative features and a link to the governance portal.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:10,sig:dxsh8y
+ * @lastUpdated 2026-06-23T23:21:04.048Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';

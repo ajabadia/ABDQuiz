@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza un componente de badge personalizable con diferentes estilos y variantes.
+ * @purpose_en Renders a customizable badge component with various styles and variants.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:0,imports:4,sig:1holz91
+ * @lastUpdated 2026-06-23T19:50:12.407Z
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"

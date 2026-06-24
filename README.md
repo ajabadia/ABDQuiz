@@ -1,5 +1,7 @@
 # ABDQuiz - Portal Web y Simulador de Exámenes de Grado Industrial
 
+[![ERA 11 Certified](https://img.shields.io/badge/ERA%2011-CERTIFIED-brightgreen?style=for-the-badge&logo=shield)](../.github/workflows/audit.yml)
+
 Este es el núcleo de la aplicación web de **ABDQuiz**, un portal de entrenamiento y gobernanza de exámenes tipo test de alto rendimiento técnico, construido con Next.js 16, Tailwind CSS 4 y MongoDB.
 
 ---
@@ -21,11 +23,11 @@ Para iniciar el servidor de desarrollo local de la aplicación directamente desd
 # 1. Instala las dependencias necesarias con pnpm
 pnpm install
 
-# 2. Arranca el servidor de desarrollo con soporte Turbopack en el puerto asignado (3300)
-pnpm run dev -p 3300
+# 2. Arranca el servidor de desarrollo con soporte Turbopack en el puerto asignado (5020)
+pnpm run dev -p 5020
 ```
 
-El servidor estará disponible en **[http://localhost:3300](http://localhost:3300)**.
+El servidor estará disponible en **[http://localhost:5020](http://localhost:5020)**.
 *(O bien puedes utilizar el script automatizado de un solo clic: `start.bat`)*.
 
 ---
@@ -48,7 +50,7 @@ Para mantener la **Pureza de Diseño**, el directorio de desarrollo está estric
 *   `src/actions/`: Acciones de servidor seguras (`'use server'`) para interacción transaccional con la base de datos (Ej: `corpus.ts`, `examConfig.ts`).
 *   `src/components/`: Componentes modulares de UI.
     *   `src/components/admin/ingest/`: Subcomponentes modulares del Ingestador que respetan el límite de **150 líneas**.
-    *   `src/components/common/`: Widgets globales reutilizables como [UserProfileWidget](file:///d:/desarrollos/ABDQuiz/src/components/common/UserProfileWidget.tsx).
+    *   `src/components/common/`: Widgets globales reutilizables como `UserProfileWidget`.
 *   `src/services/`: Capa lógica de negocio (Ej: `CorpusService`, `QuizService`).
 *   `src/models/`: Esquemas físicos inmutables de Mongoose (Ej: `Question.ts`, `CorpusImport.ts`).
 *   `src/lib/`: Controladores de infraestructura y bases de datos (Ej: `mongodb.ts`).
@@ -67,8 +69,8 @@ pnpm run full-audit
 ---
 
 ## 📖 Documentación Relacionada (Disco Local)
-*   [Especificación Técnica de Exámenes](file:///d:/desarrollos/ABDQuiz/docs/SPEC.md)
-*   [Manual de Parametrización y Tiempos](file:///d:/desarrollos/ABDQuiz/docs/EXAM_PARAMETRIZATION.md)
-*   [Manual de Lecciones Aprendidas (React 19 / Next.js 16)](file:///d:/desarrollos/ABDQuiz/docs/LESSONS_LEARNED.md)
-*   [Hoja de Ruta del Proyecto](file:///d:/desarrollos/ABDQuiz/ROADMAP.md)
-*   [Registro de Avances y Certificaciones](file:///d:/desarrollos/ABDQuiz/PROGRESS.md)
+*   [Especificación Técnica de Exámenes](./docs/SPEC.md)
+*   [Manual de Parametrización y Tiempos](./docs/EXAM_PARAMETRIZATION.md)
+*   [Manual de Lecciones Aprendidas (React 19 / Next.js 16)](./docs/LESSONS_LEARNED.md)
+*   [Hoja de Ruta del Proyecto](./ROADMAP.md)
+*   [Registro de Avances y Certificaciones](./PROGRESS.md)

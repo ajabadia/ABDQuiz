@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la página administrativa para el manejo de exámenes, incluyendo una lista de exámenes y opciones para crear nuevos.
+ * @purpose_en Renders the admin page for managing exams, including a list of exams and options to create new ones.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:10,sig:9edym1
+ * @lastUpdated 2026-06-23T16:49:16.892Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';

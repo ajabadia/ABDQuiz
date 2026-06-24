@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y procesa datos de análisis de preguntas.
+ * @purpose_en Calculates and processes quiz analytics data.
+ * @refactorable true (contains multiple functions with distinct responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:8,imports:3,sig:1el0n37
+ * @lastUpdated 2026-06-23T19:53:22.546Z
+ */
+
 import ExamAttempt from '@/models/ExamAttempt';
 import UserCourseSummary from '@/models/UserCourseSummary';
 import Course from '@/models/Course';

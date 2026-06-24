@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la creación, actualización y eliminación de asignaciones de exámenes dentro del contexto de un inquilino.
+ * @purpose_en Manages the creation, updating, and deletion of exam assignments within a tenant context.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:5,imports:7,sig:1xad9qu
+ * @lastUpdated 2026-06-23T16:27:24.092Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente UI para subir y parsear archivos en el panel administrativo de ABDQuiz.
+ * @purpose_en Renders a UI component for file upload and parsing in the admin panel of ABDQuiz.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:17nalxv
+ * @lastUpdated 2026-06-23T19:48:17.168Z
+ */
+
 import { FileJson, FileSpreadsheet, Upload, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { RefObject } from 'react';

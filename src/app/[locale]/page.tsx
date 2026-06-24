@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página principal del aplicativo ABDQuiz, incluyendo un encabezado heroico, botones CTA y información de versión.
+ * @purpose_en Renders the home page of the ABDQuiz application, including a hero header, CTA buttons, and version information.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:5,sig:1uz6jn8
+ * @lastUpdated 2026-06-23T16:50:14.124Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { BrainCircuit, Timer, FileCode2, History, ArrowRight } from 'lucide-react';
 import { HeroHeader } from '@ajabadia/styles';

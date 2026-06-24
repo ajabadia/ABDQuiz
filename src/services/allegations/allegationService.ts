@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la creación, rechazo y recuperación de acusaciones para intentos de examen.
+ * @purpose_en Manages the creation, rejection, and retrieval of allegations for exam attempts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:m6xzyw
+ * @lastUpdated 2026-06-23T23:23:38.819Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import Allegation, { type IAllegation } from '@/models/Allegation';
 import ExamAttempt from '@/models/ExamAttempt';

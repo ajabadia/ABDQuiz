@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el estado interativo del pregunta actual de quiz, incluyendo opciones seleccionadas y respuestas de texto.
+ * @purpose_en Manages the interactive state of the current quiz question, including selected options and text answers.
+ * @refactorable false
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:2,sig:140bikh
+ * @lastUpdated 2026-06-23T23:22:12.757Z
+ */
+
 import { useState, useCallback } from 'react';
 import { type SerializedExamAttempt } from '@/types/quiz';
 

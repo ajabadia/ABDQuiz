@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona fijuras de pruebas para operaciones relacionadas con quizzes en la aplicación ABDQuiz.
+ * @purpose_en Manages mock fixtures for quiz-related operations in the ABDQuiz application.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:10,imports:1,sig:vhi28r
+ * @lastUpdated 2026-06-23T19:53:38.138Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock function refs ────────────────────────

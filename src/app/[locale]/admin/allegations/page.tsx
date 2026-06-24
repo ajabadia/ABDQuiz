@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página administrativa para gestionar acusaciones, incluyendo la recuperación y visualización de datos de acusaciones.
+ * @purpose_en Renders the administrative page for managing allegations, including fetching and displaying allegation data.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:1prcnt3
+ * @lastUpdated 2026-06-23T16:48:06.966Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';

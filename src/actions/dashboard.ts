@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el recuperado y la agregación de datos para la consola del estudiante, incluyendo exámenes disponibles, intentos recientes, total de intentos, intentos completados y puntuación media.
+ * @purpose_en Manages the retrieval and aggregation of data for the student's dashboard, including available exams, recent attempts, total attempts, completed attempts, and average score.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:3,imports:5,sig:1xjq0q4
+ * @lastUpdated 2026-06-23T23:07:18.098Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

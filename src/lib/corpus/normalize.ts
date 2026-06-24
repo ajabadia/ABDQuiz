@@ -1,4 +1,14 @@
 /**
+ * @purpose Proporciona una función utilidad para normalizar texto eliminando espacios, puntuaciones, acentos y convirtiendo a mayúsculas para comparación semántica.
+ * @purpose_en Provides a utility function to normalize text by removing spaces, punctuation, accents, and converting to uppercase for semantic comparison.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:1,imports:0,sig:gm8g11
+ * @lastUpdated 2026-06-23T23:22:51.034Z
+ */
+
+/**
  * Utilidades para normalizar contenido semántico antes de generar el hash
  */
 

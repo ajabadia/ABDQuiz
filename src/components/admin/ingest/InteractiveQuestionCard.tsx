@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta de pregunta interactiva para ingestión administrativa.
+ * @purpose_en Renders an interactive question card for admin ingestion.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1sqz0hp
+ * @lastUpdated 2026-06-23T17:42:11.741Z
+ */
+
 import { useTranslations } from 'next-intl';
 import type { RawQuestion } from './types';
 

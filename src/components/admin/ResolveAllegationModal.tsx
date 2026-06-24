@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una dialogo modal para resolver acusaciones con opciones para aprobado o rechazado, proporcionando retroalimentación y seleccionando modos de resolucion.
+ * @purpose_en Renders a modal dialog for resolving allegations with options to approve or reject, providing feedback and selecting resolution modes.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:6,sig:12sagzh
+ * @lastUpdated 2026-06-23T19:48:47.203Z
+ */
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';

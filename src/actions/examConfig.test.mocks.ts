@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona mock functions y fijuras para pruebas de configuración de examen.
+ * @purpose_en Manages mock functions and fixtures for exam configuration tests.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:8,imports:1,sig:1xaqg4
+ * @lastUpdated 2026-06-23T16:27:48.562Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock function refs ────────────────────────

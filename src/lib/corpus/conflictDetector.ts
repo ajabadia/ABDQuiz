@@ -1,4 +1,14 @@
 /**
+ * @purpose Gestiona conflictos semánticos dentro de una batch de preguntas para el asistente de ingestión, clasificándolas en niveles de similitud.
+ * @purpose_en Detects semantic conflicts within a batch of questions for the ingestion wizard, classifying them into levels of similarity.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:3,imports:1,sig:9rn6ge
+ * @lastUpdated 2026-06-23T23:22:40.348Z
+ */
+
+/**
  * Detector de colisiones semánticas intra-lote para el wizard de ingesta.
  *
  * Niveles de colisión:

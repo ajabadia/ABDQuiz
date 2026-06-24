@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una sección que muestra indicadores clave de rendimiento (KPIs) como intentos totales, completados, puntuación media y actividad reciente.
+ * @purpose_en Renders a section displaying key performance indicators (KPIs) such as total attempts, completed attempts, average score, and recent activity.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:5,sig:163zzhs
+ * @lastUpdated 2026-06-23T19:49:15.546Z
+ */
+
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';

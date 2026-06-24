@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el estado del hechizo de ingestión y maneja lógica de archivo, validación de preguntas y envío para la aplicación ABDQuiz.
+ * @purpose_en Manages the ingestion wizard state and handles file parsing, question validation, and submission logic for the ABDQuiz application.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:4,imports:6,sig:zrq59l
+ * @lastUpdated 2026-06-23T23:21:42.162Z
+ */
+
 import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';

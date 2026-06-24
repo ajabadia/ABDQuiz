@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la interfaz del quiz para una intentona de examen específica.
+ * @purpose_en Renders the quiz interface for a specific exam attempt.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:10wdyiw
+ * @lastUpdated 2026-06-23T23:21:19.053Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose

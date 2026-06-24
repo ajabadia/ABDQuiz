@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona intentos de pruebas y configuraciones de exámenes.
+ * @purpose_en Manages quiz attempts and exam configurations.
+ * @refactorable true (contains multiple actions and business logic)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:6,imports:9,sig:tca85u
+ * @lastUpdated 2026-06-23T23:08:01.385Z
+ */
+
 'use server';
 
 import { QuizService } from '@/services/quiz/quizService';

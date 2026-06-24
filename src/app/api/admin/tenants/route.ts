@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona solicitudes GET para recuperar una lista de inquilinos, asegurando el acceso solo para usuarios SUPER_ADMIN.
+ * @purpose_en Handles GET requests to retrieve a list of tenants, ensuring access for only SUPER_ADMIN users.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:2,imports:4,sig:17kxdd6
+ * @lastUpdated 2026-06-23T16:47:41.756Z
+ */
+
 import { NextResponse } from 'next/server';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { getGlobalModel } from '@ajabadia/satellite-sdk';

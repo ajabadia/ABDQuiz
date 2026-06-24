@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona subidas de archivos para la aplicación ABDQuiz, incluyendo validación de tipos MIME y tamaño de archivo, generación de nombres únicos y guardado de archivos en una carpeta designada.
+ * @purpose_en Handles file uploads for the ABDQuiz application, including validation of MIME types and file size, generating unique filenames, and saving files to a designated directory.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:1dwr8qo
+ * @lastUpdated 2026-06-23T16:47:54.910Z
+ */
+
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';

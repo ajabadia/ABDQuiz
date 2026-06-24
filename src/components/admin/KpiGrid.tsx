@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza un cuadro de herramientas de indicadores clave de desempeño (KPI) para fines administrativos, mostrando estadísticas como total preguntas, preguntas activas, módulos, fuentes, duplicados y salud de ingestión.
+ * @purpose_en Renders a grid of Key Performance Indicators (KPIs) for administrative purposes, displaying statistics such as total questions, active questions, modules, sources, duplicates, and ingestion health.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:3,sig:1djgjuy
+ * @lastUpdated 2026-06-23T19:48:30.769Z
+ */
+
 import { Card } from '@/components/ui/card';
 import { Database, CheckCircle2, Filter, Search, AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';

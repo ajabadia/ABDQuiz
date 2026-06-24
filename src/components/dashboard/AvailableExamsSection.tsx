@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una sección que muestra los exámenes disponibles con opciones para lanzarlos.
+ * @purpose_en Renders a section displaying available exams with options to launch them.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:7,sig:17yx25j
+ * @lastUpdated 2026-06-23T19:49:11.421Z
+ */
+
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';

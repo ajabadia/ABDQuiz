@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un diálogo para preguntas de auditoría de quiz, permitiendo a los usuarios enviar acusaciones y ver explicaciones.
+ * @purpose_en Renders a dialog for auditing quiz questions, allowing users to submit allegations and view explanations.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:1uocbiy
+ * @lastUpdated 2026-06-23T19:49:34.281Z
+ */
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

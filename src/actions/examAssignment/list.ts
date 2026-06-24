@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el recuperado y serializado de asignaciones de examenes activas para un inquilino, aplicando filtros opcionales.
+ * @purpose_en Manages the retrieval and serialization of active exam assignments for a tenant, applying optional filters.
+ * @refactorable true (contains multiple functions with distinct responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:2,imports:5,sig:3eik98
+ * @lastUpdated 2026-06-23T23:07:22.881Z
+ */
+
 'use server';
 
 import { connectDB, getIndustrialSession, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

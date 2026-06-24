@@ -1,4 +1,14 @@
 /**
+ * @purpose Gestiona mock data y utilidades para probar el asistente de ingestión en ABDQuiz.
+ * @purpose_en Manages mock data and utilities for testing the ingestion wizard in ABDQuiz.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:6,imports:1,sig:x2q09p
+ * @lastUpdated 2026-06-23T23:23:46.843Z
+ */
+
+/**
  * Tipos, fixtures y helpers compartidos para ingestionWizard.integration.test.ts
  *
  * NOTA: Los vi.mock() globales deben permanecer en el archivo de test

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza el panel de control del estudiante con puntuaciones de KPI, exámenes disponibles y intentos recientes.
+ * @purpose_en Renders the student dashboard with KPI scores, available exams, and recent attempts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:9,sig:1or7lsr
+ * @lastUpdated 2026-06-23T16:49:51.534Z
+ */
+
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';

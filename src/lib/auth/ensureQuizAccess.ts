@@ -1,3 +1,13 @@
+/**
+ * @purpose Valida el acceso del usuario a las operaciones de quiz según roles y, opcionalmente, una configuración de escopo.
+ * @purpose_en Validates user access to quiz operations based on roles and optionally a scope configuration.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:2,imports:2,sig:3imhc4
+ * @lastUpdated 2026-06-23T23:22:34.281Z
+ */
+
 import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
 import { assertAccess } from './abac';
 

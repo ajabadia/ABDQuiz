@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una bandera con un icono y texto para saltar la selección de contexto en el portal administrativo.
+ * @purpose_en Renders a banner with an icon and text to skip context selection in the admin portal.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1c4tr5k
+ * @lastUpdated 2026-06-23T17:41:27.509Z
+ */
+
 import { SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

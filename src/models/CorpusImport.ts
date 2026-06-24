@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona un esquema de Mongoose y modelo para administrar datos de importación de corpus, incluyendo información de inquilino, detalles de fuente, seguimiento del estado y conteo de filas.
+ * @purpose_en Defines a Mongoose schema and model for managing corpus import data, including tenant information, source details, status tracking, and row counts.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:zspud9
+ * @lastUpdated 2026-06-23T19:51:58.592Z
+ */
+
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface ICorpusImport extends Document {

@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página administrativa para gestionar tareas, incluyendo un encabezado, lista de tareas y botón para crear nuevas tareas.
+ * @purpose_en Renders the admin page for managing assignments, including a header, list of assignments, and a button to create new assignments.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:10,sig:2pr4rg
+ * @lastUpdated 2026-06-23T16:48:28.209Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';

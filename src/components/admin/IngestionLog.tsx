@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza una tarjeta que muestra un registro de los procesos de ingesta, incluyendo detalles como fecha y hora, nombre del origen, estado y conteo de filas.
+ * @purpose_en Renders a card displaying a log of ingestion processes, including details such as timestamp, source name, status, and row counts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:3,sig:16w4al3
+ * @lastUpdated 2026-06-23T19:48:24.077Z
+ */
+
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';

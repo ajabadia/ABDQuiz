@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona intentos de quiz manejando latidos, creando nuevos intentos, enviando respuestas y calificando exámenes.
+ * @purpose_en Manages quiz attempts by handling heartbeats, creating new attempts, submitting answers, and grading exams.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:6,sig:7qnlsj
+ * @lastUpdated 2026-06-23T23:24:07.219Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { type IExamAttempt } from '@/models/ExamAttempt';

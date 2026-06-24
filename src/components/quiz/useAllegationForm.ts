@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la presentación de acusaciones para un intento de prueba, maneja la entrada del usuario y muestra mensajes de éxito o error.
+ * @purpose_en Manages the submission of allegations for a quiz attempt, handling user input and displaying success/error messages.
+ * @refactorable false
+ * @classification Custom Hook
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:049d2v
+ * @lastUpdated 2026-06-23T19:49:58.582Z
+ */
+
 import { toast } from 'sonner';
 import { submitAllegationAction } from '@/actions/allegations';
 

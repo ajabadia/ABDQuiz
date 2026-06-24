@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona y resuelve conflictos de contenido para una batch de preguntas.
+ * @purpose_en Manages and resolves content conflicts for a batch of questions.
+ * @refactorable false
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:1wiz6ye
+ * @lastUpdated 2026-06-23T23:21:31.665Z
+ */
+
 import { useState } from 'react';
 import type { ConflictPair } from '../types';
 import { detectBatchConflicts } from '@/lib/corpus/conflictDetector';

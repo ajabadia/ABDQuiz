@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el rendimiento y la funcionalidad de un modal para editar preguntas de quiz, incluyendo manejo del estado de formulario, subidas de archivos y guardado de cambios.
+ * @purpose_en Manages the rendering and functionality of a modal for editing quiz questions, including form state management, file uploads, and saving changes.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:159s47m
+ * @lastUpdated 2026-06-23T19:48:39.297Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { useState, useEffect, useRef } from 'react';
 import { checkQuestionTraceabilityAction, saveQuestionAction } from '@/actions/question';

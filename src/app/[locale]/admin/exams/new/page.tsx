@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza una página para crear nuevos exámenes con componentes de navegación y forma.
+ * @purpose_en Renders a page for creating new exams with navigation and form components.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:07eie5
+ * @lastUpdated 2026-06-23T16:49:10.656Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';

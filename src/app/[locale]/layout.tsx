@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza el layout para una página específica del local en ABDQuiz, incluyendo navegación, marca y componentes de interfaz.
+ * @purpose_en Renders the layout for a locale-specific page in ABDQuiz, including navigation, branding, and UI components.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:11,sig:177ugp3
+ * @lastUpdated 2026-06-23T19:47:59.661Z
+ */
+
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Toaster } from "sonner";

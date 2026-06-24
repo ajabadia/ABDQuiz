@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una notificacion emergente que indica el nivel de conflicto y proporciona información adicional basada en la puntuación de similitud.
+ * @purpose_en Renders a badge indicating the level of conflict and providing additional information based on the similarity score.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:3,sig:63s6gc
+ * @lastUpdated 2026-06-23T17:41:11.098Z
+ */
+
 import { AlertTriangle, CopyPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ConflictPair } from './types';

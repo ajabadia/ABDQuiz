@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el importación de datos corporales al sistema, validando y procesando datos JSON para crear o actualizar preguntas.
+ * @purpose_en Manages the import of corpus data into the system, validating and processing JSON data to create or update questions.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:18m4m9p
+ * @lastUpdated 2026-06-23T19:53:07.729Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';

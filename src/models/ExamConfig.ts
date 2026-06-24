@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el modelo de datos y la estructura de la base de datos para las configuraciones de exámenes utilizando Mongoose, incluyendo propiedades como tenantId, preguntaCount, límites de tiempo, modos de puntuación y comportamientos de interfaz.
+ * @purpose_en Defines the data model and schema for exam configurations using Mongoose, including properties like tenantId, questionCount, time limits, scoring modes, and UI behaviors.
+ * @refactorable false (contains only static declarations/types/constants)
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1foe96m
+ * @lastUpdated 2026-06-23T19:52:28.768Z
+ */
+
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IExamConfig extends Document {

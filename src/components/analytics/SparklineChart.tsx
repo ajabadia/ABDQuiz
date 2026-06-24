@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un gráfico de línea de encendido basado en los datos proporcionados, incluyendo título y valores porcentuales.
+ * @purpose_en Renders a sparkline chart based on provided data, including title and percentage values.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:ikeval
+ * @lastUpdated 2026-06-23T19:49:00.315Z
+ */
+
 import React from 'react';
 
 interface SparklineChartProps {

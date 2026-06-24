@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona y renderiza una lista de cursos con opciones para activar o desactivar, eliminarlos y crear/editar nuevos cursos.
+ * @purpose_en Manages and renders a list of courses with options to toggle their active status, delete them, and create/edit new courses.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:12,sig:110tl1e
+ * @lastUpdated 2026-06-24T08:20:46.780Z
+ */
+
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -107,6 +117,7 @@ export default function CoursesList({ courses, locale, showCreateForm }: Courses
               key={c._id}
               course={c}
               t={t}
+              locale={locale}
               onEdit={openEditModal}
               onToggle={setToggleId}
               onDelete={setDeleteId}

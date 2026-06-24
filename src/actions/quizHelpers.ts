@@ -1,3 +1,13 @@
+/**
+ * @purpose Sanitiza y serializa datos de intento de quiz.
+ * @purpose_en Sanitizes and serializes quiz attempt data.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:1m38we5
+ * @lastUpdated 2026-06-23T16:47:23.813Z
+ */
+
 import type { SerializedAttempt } from './quizTypes';
 
 export function sanitizeAttempt(raw: Record<string, unknown>): SerializedAttempt {

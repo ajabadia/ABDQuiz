@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente de navegación lateral con soporte para autenticación del usuario y localización.
+ * @purpose_en Renders a sidebar navigation component with user authentication and localization support.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:6,sig:1fbfo7g
+ * @lastUpdated 2026-06-23T19:49:25.976Z
+ */
+
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';

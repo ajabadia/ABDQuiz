@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta para configuración básica del examen con campos para nombre y descripción.
+ * @purpose_en Renders a card for basic exam configuration with fields for name and description.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:4,sig:11u6d9r
+ * @lastUpdated 2026-06-23T17:40:15.891Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

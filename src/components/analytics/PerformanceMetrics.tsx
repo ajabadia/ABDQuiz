@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta de métricas de rendimiento que muestra intentos totales, completados, puntuación media y nivel de dificultad.
+ * @purpose_en Renders a performance metrics card displaying total attempts, completed attempts, average score, and difficulty level performance.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:4,sig:tdfric
+ * @lastUpdated 2026-06-23T19:48:56.676Z
+ */
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';

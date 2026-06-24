@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el esquema y modelo de intentos de exámenes en la aplicación ABDQuiz, incluyendo detalles del usuario, configuración del examen, respuestas a preguntas y estado de intento.
+ * @purpose_en Manages the schema and model for exam attempts in the ABDQuiz application, including user details, exam configuration, question responses, and attempt status.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:dh93xz
+ * @lastUpdated 2026-06-23T19:52:21.793Z
+ */
+
 import mongoose, { Schema, Document } from 'mongoose';
 import { type QuizQuestionSnapshot } from '@/types/quiz';
 

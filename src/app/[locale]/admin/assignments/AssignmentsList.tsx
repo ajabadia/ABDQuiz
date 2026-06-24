@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona y renderiza una lista de tareas de examen, incluyendo funciones de filtrado, publicación, archivado y eliminación.
+ * @purpose_en Manages and renders a list of exam assignments, including filtering, publishing, archiving, and deleting functionalities.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:12,sig:57si26
+ * @lastUpdated 2026-06-23T16:48:22.356Z
+ */
+
 import { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';

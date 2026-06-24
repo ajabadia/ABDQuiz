@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona mock functions y fijuras para acciones relacionadas con el quiz en la aplicación ABDQuiz.
+ * @purpose_en Manages mock functions and fixtures for quiz-related actions in the ABDQuiz application.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:12,imports:1,sig:1khsp9i
+ * @lastUpdated 2026-06-23T16:47:15.625Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock function refs (declared outside vi.mock for hoisting) ──

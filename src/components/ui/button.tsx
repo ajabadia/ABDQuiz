@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el renderizado de un componente botón personalizable con variantes y tamaños.
+ * @purpose_en Manages the rendering of a customizable button component with various variants and sizes.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:0,imports:4,sig:1bdux45
+ * @lastUpdated 2026-06-23T20:04:07.047Z
+ */
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"

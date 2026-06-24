@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona un conjunto de botones de radio para resolver conflictos en el panel administrativo, permitiendo a los usuarios elegir entre mantener ambas opciones o saltar la segunda.
+ * @purpose_en Renders a set of radio buttons for conflict resolution in the admin portal, allowing users to choose between keeping both options or skipping the second one.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:1r4babg
+ * @lastUpdated 2026-06-23T17:41:16.830Z
+ */
+
 import { useTranslations } from 'next-intl';
 
 interface ConflictResolutionRadiosProps {

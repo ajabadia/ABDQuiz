@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona operaciones de calificación para intentos de exámenes en la aplicación ABDQuiz, incluyendo la recuperación de intentos para calificar y la calificación manual de intentos individuales.
+ * @purpose_en Manages grading operations for exam attempts in the ABDQuiz application, including fetching attempts for grading and manually grading individual attempts.
+ * @refactorable true (contains multiple functions with distinct responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:3,imports:5,sig:5ts3n6
+ * @lastUpdated 2026-06-23T23:07:44.319Z
+ */
+
 'use server';
 
 import { withTenantContext, resolveTargetTenantContext, connectDB, logger, rateLimitMongodb } from '@ajabadia/satellite-sdk';

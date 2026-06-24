@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona un diálogo de carga de contenido con diferentes estados y formas.
+ * @purpose_en Renders an import dialog for managing content ingestion with various states and forms.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:13,sig:1qq00w7
+ * @lastUpdated 2026-06-23T19:48:19.632Z
+ */
+
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { UploadState } from './ingest/UploadState';

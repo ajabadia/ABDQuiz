@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona constantes de calificación y funciones útiles para la interfaz administrativa de ABDQuiz.
+ * @purpose_en Manages grading constants and utility functions for the admin interface of ABDQuiz.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:5,imports:0,sig:1yvaojd
+ * @lastUpdated 2026-06-23T17:40:47.958Z
+ */
+
 export type FilterTab = 'pending_manual_review' | 'manually_graded' | 'auto_graded' | 'all';
 
 export interface FilterTabDef {

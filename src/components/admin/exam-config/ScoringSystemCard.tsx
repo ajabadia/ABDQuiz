@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta para configurar el sistema de puntuación de un examen, incluyendo opciones para modos de puntuación simples, penalizantes y ponderados.
+ * @purpose_en Renders a card for configuring the scoring system of an exam, including options for simple, penalty, and weighted scoring modes.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:6,sig:1b3icbn
+ * @lastUpdated 2026-06-23T17:40:29.425Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';

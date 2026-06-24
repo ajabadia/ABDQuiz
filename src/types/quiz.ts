@@ -1,3 +1,13 @@
+/**
+ * @purpose Proporciona plantillas para interfaces de tipo TypeScript relacionadas con datos de quiz utilizados en la aplicación ABDQuiz.
+ * @purpose_en Defines TypeScript interfaces for quiz-related data structures used in the ABDQuiz application.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:8,imports:2,sig:1gkz9eh
+ * @lastUpdated 2026-06-23T23:24:11.577Z
+ */
+
 import { type IExamAttempt } from "@/models/ExamAttempt";
 import { type IExamConfig } from "@/models/ExamConfig";
 

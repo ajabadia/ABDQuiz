@@ -1,8 +1,24 @@
+/**
+ * @purpose Renderiza el layout raíz para la aplicación ABDQuiz, incluyendo gestión de ubicación y sesión.
+ * @purpose_en Renders the root layout for the ABDQuiz application, including locale and session management.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:2,imports:7,sig:l5mqsl
+ * @lastUpdated 2026-06-23T16:48:02.158Z
+ */
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { getLocale } from "next-intl/server";
-import { getIndustrialSession, BrandingStyles } from "@ajabadia/satellite-sdk";
+import { getIndustrialSession, BrandingStyles, configureLogger } from "@ajabadia/satellite-sdk";
 import { SessionProvider } from "@ajabadia/satellite-sdk/client";
+
+configureLogger({
+  endpoint: process.env.LOGS_SERVICE_URL || 'http://localhost:5003/api/logs',
+  token: process.env.LOGS_SECRET_TOKEN,
+  appId: 'ABDQuiz',
+});
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 

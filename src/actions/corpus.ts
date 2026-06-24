@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona datos corporales mediante acciones de importación para archivos JSON y CSV, recuperando estadísticas del corpus.
+ * @purpose_en Manages corpus data by handling import actions for JSON and CSV files, retrieving corpus statistics.
+ * @refactorable true (contains multiple action functions)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:5,imports:4,sig:geowze
+ * @lastUpdated 2026-06-23T23:07:06.656Z
+ */
+
 'use server';
 
 import { CorpusService } from '@/services/corpus/corpusService';

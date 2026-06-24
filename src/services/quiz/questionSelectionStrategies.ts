@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y selecciona preguntas para quizzes según diversas estrategias como la selección aleatoria, distribución de dificultad y puntuación adaptativa.
+ * @purpose_en Manages and selects questions for quizzes based on various strategies such as random selection, difficulty distribution, and adaptive scoring.
+ * @refactorable true (contains multiple distinct functions with different responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:4,imports:3,sig:1x96h63
+ * @lastUpdated 2026-06-23T19:53:31.558Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import ExamAttempt from '@/models/ExamAttempt';
 import { type IQuestion } from '@/models/Question';

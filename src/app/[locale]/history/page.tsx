@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza un componente AnalyticsDashboard dentro de un contenedor principal.
+ * @purpose_en Renders an AnalyticsDashboard component within a main container.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:8k7a2o
+ * @lastUpdated 2026-06-23T16:50:04.123Z
+ */
+
 import React from 'react';
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 

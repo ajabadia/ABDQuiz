@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente selector dropdown flotante para seleccionar opciones con soporte para navegación por teclado y estilos personalizados.
+ * @purpose_en Renders a floating selector dropdown component for selecting options with support for keyboard navigation and custom styling.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:1n5njbb
+ * @lastUpdated 2026-06-23T17:41:32.529Z
+ */
+
 import { useState, useRef, useEffect, useId } from 'react';
 import { ChevronDown } from 'lucide-react';
 

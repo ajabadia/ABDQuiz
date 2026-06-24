@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona la generación y el estado de retroalimentación de inteligencia artificial para preguntas de prueba.
+ * @purpose_en Manages the generation and state of AI feedback for quiz questions.
+ * @refactorable false
+ * @classification Custom Hook
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:4p9ef4
+ * @lastUpdated 2026-06-23T19:50:43.653Z
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import { generateQuestionFeedbackAction } from '@/actions/feedback';
 

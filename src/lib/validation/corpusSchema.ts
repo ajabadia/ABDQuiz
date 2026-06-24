@@ -1,3 +1,13 @@
+/**
+ * @purpose Valida la estructura y contenido de las preguntas individuales durante la ingestión del corpus para ABDQuiz.
+ * @purpose_en Validates the structure and content of individual questions during corpus ingestion for ABDQuiz.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:3,imports:1,sig:d4qd7d
+ * @lastUpdated 2026-06-23T23:23:06.453Z
+ */
+
 import { z } from 'zod';
 
 /**

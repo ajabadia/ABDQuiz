@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una notificacion emergente que solicita al usuario finalizar un examen o revisar preguntas omitidas.
+ * @purpose_en Renders a dialog prompting the user to either finalize an exam or review omitted questions.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1r3xwpd
+ * @lastUpdated 2026-06-23T19:49:39.486Z
+ */
+
 import {
   Dialog,
   DialogContent,

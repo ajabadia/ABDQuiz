@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una sección que muestra intentos de prueba recientes con detalles como nombre del examen, fecha, puntuación y estado.
+ * @purpose_en Renders a section displaying recent quiz attempts with details such as exam name, date, score, and status.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:6,sig:1yyzl7s
+ * @lastUpdated 2026-06-23T19:49:19.118Z
+ */
+
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';

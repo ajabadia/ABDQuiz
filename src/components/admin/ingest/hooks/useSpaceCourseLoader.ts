@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el carga y estado de espacios y cursos para la ingestión del curso de espacio en la aplicación ABDQuiz.
+ * @purpose_en Manages the loading and state of spaces and courses for space course ingestion in the ABDQuiz application.
+ * @refactorable false
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:1grux98
+ * @lastUpdated 2026-06-23T17:42:09.062Z
+ */
+
 import { useState, useEffect } from 'react';
 import { getActiveSpacesAction, getCoursesBySpaceAction } from '@/actions/hierarchyValidation';
 import type { SpaceOption, CourseOption } from '../types';

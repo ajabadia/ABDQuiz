@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona consultas a bases de datos para datos del corpus, incluyendo importaciones y estadísticas.
+ * @purpose_en Manages database queries for corpus data, including imports and statistics.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:a39po4
+ * @lastUpdated 2026-06-23T19:53:11.162Z
+ */
+
 import { connectDB } from '@ajabadia/satellite-sdk';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';

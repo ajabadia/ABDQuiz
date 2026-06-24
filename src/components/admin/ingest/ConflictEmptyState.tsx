@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente UI para mostrar una notificacion emergente y un boton cuando no hay conflictos de remediacion.
+ * @purpose_en Renders a UI component to display a message and a button when there are no remediation conflicts.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1pihuc0
+ * @lastUpdated 2026-06-23T17:41:06.192Z
+ */
+
 import { ShieldAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

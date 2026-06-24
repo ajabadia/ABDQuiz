@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta para corregir respuestas del estudiante en un quiz, incluyendo campos de entrada para puntos y retroalimentación.
+ * @purpose_en Renders a card for correcting student answers in a quiz, including input fields for points and feedback.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:7,sig:gsf33n
+ * @lastUpdated 2026-06-23T19:48:34.694Z
+ */
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';

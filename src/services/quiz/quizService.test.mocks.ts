@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona funciones de mock para pruebas del servicio de quiz.
+ * @purpose_en Manages mock functions for quiz service tests.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:8,imports:1,sig:srxuyk
+ * @lastUpdated 2026-06-23T19:53:40.509Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Shared mock function references ────────────────────

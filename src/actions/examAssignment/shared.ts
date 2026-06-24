@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el contexto de ejecución para las asignaciones de examen conectando a una base de datos, recuperando una sesión industrial y validando el acceso del inquilino.
+ * @purpose_en Manages the execution context for exam assignments by connecting to a database, retrieving an industrial session, and validating tenant access.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:3,imports:2,sig:bs5zp1
+ * @lastUpdated 2026-06-23T16:27:38.908Z
+ */
+
 import { connectDB, getIndustrialSession, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import type { TenantContext } from '@ajabadia/satellite-sdk';
 

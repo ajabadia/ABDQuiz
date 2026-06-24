@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una forma para el manejo del estado de remediacio en masa.
+ * @purpose_en Renders a form for bulk remediation state management, including fields for module, source, and difficulty level.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:2,sig:wedw4c
+ * @lastUpdated 2026-06-23T17:40:57.622Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { useTranslations } from 'next-intl';
 

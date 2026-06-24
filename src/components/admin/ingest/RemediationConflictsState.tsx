@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una interfaz de usuario para resolver conflictos en preguntas de quiz, permitiendo a los usuarios seleccionar acciones y avanzar por el proceso de resolución de conflictos.
+ * @purpose_en Renders a user interface for resolving conflicts in quiz questions, allowing users to select actions and progress through the conflict resolution process.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:10,sig:14427q0
+ * @lastUpdated 2026-06-23T17:42:38.081Z
+ */
+
 import { useState } from 'react';
 import { GitBranch, ArrowRight, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';

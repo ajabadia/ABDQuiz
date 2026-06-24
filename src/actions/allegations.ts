@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el envío y resolución de acusaciones técnicas dentro de una prueba, asegurando la autorización adecuada y revalidando caminos.
+ * @purpose_en Manages the submission and resolution of technical allegations within a quiz, ensuring proper authorization and revalidating paths.
+ * @refactorable true (contains multiple actions with similar structures)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:4,imports:5,sig:9gkz2t
+ * @lastUpdated 2026-06-23T23:06:56.677Z
+ */
+
 'use server';
 
 import { AllegationService } from '@/services/allegations/allegationService';

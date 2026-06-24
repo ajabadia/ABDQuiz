@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona la lógica de forma para crear y actualizar asignaciones de exámenes en la aplicación ABDQuiz.
+ * @purpose_en Manages the form logic for creating and updating exam assignments in the ABDQuiz application.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:2,imports:7,sig:wrkkje
+ * @lastUpdated 2026-06-23T16:48:33.886Z
+ */
+
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';

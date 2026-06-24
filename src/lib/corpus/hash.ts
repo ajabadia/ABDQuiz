@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona hashes semánticos para preguntas y opciones para asegurar una identificación consistente en diferentes instancias.
+ * @purpose_en Calculates semantic hashes for questions and their options to ensure consistent identification across different instances.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:3,imports:3,sig:1le4zbe
+ * @lastUpdated 2026-06-23T23:22:44.891Z
+ */
+
 import { createHash } from 'crypto';
 import { flattenText } from './normalize';
 import { type IngestQuestion } from '../validation/corpusSchema';

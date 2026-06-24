@@ -1,13 +1,27 @@
+/**
+ * @purpose Renderiza una página para editar una configuración de examen en la aplicación ABDQuiz, incluyendo manejo de formularios y navegación.
+ * @purpose_en Renders a page for editing an exam configuration in the ABDQuiz application, including form handling and navigation.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:14,sig:1jt97w
+ * @lastUpdated 2026-06-24T08:20:50.897Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import ExamConfig from '@/models/ExamConfig';
+import { ExamAuditorService } from '@/services/quiz/ExamAuditorService';
 import { notFound } from 'next/navigation';
 import { connectDB } from '@ajabadia/satellite-sdk';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { AdminPageHeader } from '@ajabadia/styles';
+import ExamAuditSection from '@/components/admin/ExamAuditSection';
+import ExamCourseLink from '@/components/admin/ExamCourseLink';
+import Course from '@/models/Course';
 
 export default async function EditExamPage({
   params,
@@ -24,22 +38,30 @@ export default async function EditExamPage({
   const tenantSuffix = isSuperAdmin ? `?tenantId=${resolvedTenantId}` : '';
 
   // ── Multi-tenant awareness ─────────────────────────────────────────────
-  // ExamConfig uses getTenantModel (Proxy), which only routes queries to the
-  // tenant-specific connection/collection when called inside withTenantContext.
-  // Without it, findById() hits the default (non-prefixed) collection and
-  // returns null, causing a false 404.
   const explicitCtx = await resolveTargetTenantContext(resolvedTenantId);
+  let auditReport: Record<string, unknown> | null = null;
+  let courses: { _id: string; name: string }[] = [];
   const config = await withTenantContext(async () => {
     await connectDB();
-    return await ExamConfig.findById(id).lean();
+    const cfg = await ExamConfig.findById(id).lean();
+    if (cfg) {
+      const report = await ExamAuditorService.auditExamCoverage(resolvedTenantId, id);
+      if (report) auditReport = JSON.parse(JSON.stringify(report));
+      const courseDocs = await Course.find({ tenantId: resolvedTenantId, active: true })
+        .select('name')
+        .sort({ name: 1 })
+        .lean();
+      courses = courseDocs.map((c: any) => ({ _id: c._id.toString(), name: c.name }));
+    }
+    return cfg;
   }, explicitCtx);
 
   if (!config || (config.tenantId !== user.tenantId && !isSuperAdmin)) {
     return notFound();
   }
 
-  // Serializar para el Client Component
   const serializedConfig = JSON.parse(JSON.stringify(config));
+  const courseId = config.courseId?.toString();
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6 md:p-12 selection:bg-primary/30" role="main">
@@ -63,6 +85,20 @@ export default async function EditExamPage({
         />
 
         <ExamConfigForm initialData={serializedConfig} locale={locale} tenantId={resolvedTenantId} />
+
+        <ExamCourseLink
+          examConfigId={id}
+          currentCourseId={courseId}
+          courses={courses}
+        />
+
+        <ExamAuditSection
+          report={auditReport as any}
+          examName={config.name}
+          courseId={courseId}
+          locale={locale}
+          tenantSuffix={isSuperAdmin ? `?tenantId=${resolvedTenantId}` : ''}
+        />
       </div>
     </main>
   );

@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la sincronización de análisis de quiz mediante el procesamiento de intentos de examen, la cálculo del progreso del usuario y la actualización de análisis de curso.
+ * @purpose_en Manages the synchronization of quiz analytics by processing exam attempts, calculating user progress, and updating course analytics.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:6,sig:1uxldoz
+ * @lastUpdated 2026-06-23T19:53:27.397Z
+ */
+
 import Course from '@/models/Course';
 import ExamAttempt from '@/models/ExamAttempt';
 import UserCourseSummary, { IUserCourseSummary } from '@/models/UserCourseSummary';

@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona mock functions y fábricas de documentos para probar el servicio CorpusImporter en ABDQuiz.
+ * @purpose_en Manages mock functions and document factories for testing the CorpusImporter service in ABDQuiz.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:7,imports:1,sig:52c2xa
+ * @lastUpdated 2026-06-23T19:53:04.047Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock function refs ────────────────────────

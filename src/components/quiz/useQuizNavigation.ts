@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona la navegación y actualización del estado de los quizzes.
+ * @purpose_en Manages quiz navigation and state updates.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:5,sig:1u3bbef
+ * @lastUpdated 2026-06-23T19:50:05.881Z
+ */
+
 import { useState, useCallback, type RefObject } from 'react';
 import { submitAnswerAction } from '@/actions/quiz';
 import { toast } from 'sonner';

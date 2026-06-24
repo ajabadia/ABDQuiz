@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona una notificacion emergente que muestra el numero de mensajes no leidos en un chat, actualizando periódicamente y manejando cambios de visibilidad.
+ * @purpose_en Renders a badge that displays the number of unread messages in the chat, updating periodically and handling visibility changes.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:5,sig:ydbl89
+ * @lastUpdated 2026-06-23T19:49:06.795Z
+ */
+
 import { useState, useEffect, useCallback, startTransition } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { getUnreadChatCountAction } from '@/actions/chat';

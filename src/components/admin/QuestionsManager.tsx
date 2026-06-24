@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona y muestra una lista de preguntas con capacidades de filtrado, paginación y edición.
+ * @purpose_en Manages and displays a list of questions with filtering, pagination, and editing capabilities.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:6,sig:1nboejq
+ * @lastUpdated 2026-06-23T19:48:42.540Z
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { getQuestionsAction } from '@/actions/question';

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Proporciona una lista de preguntas sin procesar a partir del contenido de un archivo.
+ * @purpose_en Parses file content into a list of raw questions, handling both JSON and CSV formats.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:4,imports:2,sig:zyyz9c
+ * @lastUpdated 2026-06-23T17:41:44.855Z
+ */
+
 import Papa from 'papaparse';
 import type { RawQuestion, WizardState } from './useIngestWizard';
 

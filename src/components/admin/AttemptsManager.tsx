@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona y renderiza una lista de intentos de quiz, permitiendo a los administradores buscar intentos específicos e invalidarlos.
+ * @purpose_en Manages and renders a list of quiz attempts, allowing administrators to search for specific attempts and invalidate them.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:18w6me6
+ * @lastUpdated 2026-06-23T17:40:00.758Z
+ */
+
 import { useState } from 'react';
 import { Search, AlertCircle, RotateCcw, Check, ShieldAlert } from 'lucide-react';
 import { Card } from '@/components/ui/card';

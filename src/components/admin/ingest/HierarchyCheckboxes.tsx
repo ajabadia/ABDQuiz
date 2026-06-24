@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un conjunto de casillas para seleccionar opciones relacionadas con la nulificación de jerarquía y recordatorio en un contexto de portal administrativo.
+ * @purpose_en Renders a set of checkboxes for selecting options related to hierarchy nullification and remembering in an admin portal context.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:cpq23f
+ * @lastUpdated 2026-06-23T17:41:37.918Z
+ */
+
 import { useTranslations } from 'next-intl';
 
 interface HierarchyCheckboxesProps {

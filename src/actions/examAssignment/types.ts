@@ -1,3 +1,13 @@
+/**
+ * @purpose Proporciona tipos y interfaces de TypeScript para datos relacionados con exámenes.
+ * @purpose_en Defines TypeScript types/interfaces for exam assignments and related data.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:5,imports:1,sig:11ab25m
+ * @lastUpdated 2026-06-23T16:27:42.241Z
+ */
+
 import type { SerializedExamConfig } from '@/types/quiz';
 
 export interface SerializedAuditEntry {

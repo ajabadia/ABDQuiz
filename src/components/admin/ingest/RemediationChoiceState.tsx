@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente para seleccionar opciones de remedios en una consola administrativa, incluyendo la posibilidad de aplicar cambios a todos los elementos, elegirlos interactivamente o ignorarlos.
+ * @purpose_en Renders a component for selecting remediation choices in an admin portal, including options to apply changes to all items, interactively choose items, or ignore them.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1qct970
+ * @lastUpdated 2026-06-23T17:42:29.801Z
+ */
+
 import { AlertTriangle, Sliders, ArrowRight, ShieldAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

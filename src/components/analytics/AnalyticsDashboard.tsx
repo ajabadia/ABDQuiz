@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un panel de análisis que muestra métricas de rendimiento y análisis detallados de intentos de quiz.
+ * @purpose_en Renders an analytics dashboard displaying performance metrics and detailed analysis of quiz attempts.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:0843mj
+ * @lastUpdated 2026-06-23T19:48:52.765Z
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { useTranslations, useLocale } from 'next-intl';

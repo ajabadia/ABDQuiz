@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza una página para tomar pruebas con diversas configuraciones, incluyendo la obtención y visualización de las configuraciones del examen.
+ * @purpose_en Renders a page for taking quizzes with various configurations, including fetching and displaying exam settings.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:17eenkx
+ * @lastUpdated 2026-06-23T16:49:56.139Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { Card } from '@/components/ui/card';
 import { startQuizAction } from '@/actions/quiz';

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Rendra una lista de configuraciones de examenes con opciones para eliminar, copiar y ver detalles.
+ * @purpose_en Renders a list of exam configurations with options to delete, clone, and view details.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:11,sig:al2aa8
+ * @lastUpdated 2026-06-23T17:40:43.819Z
+ */
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';

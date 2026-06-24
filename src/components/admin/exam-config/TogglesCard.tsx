@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta con botones de palomitas para opciones de configuración de exámenes.
+ * @purpose_en Renders a card with toggle switches for various exam configuration options.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:86x33l
+ * @lastUpdated 2026-06-23T17:40:33.855Z
+ */
+
 import { Card } from '@/components/ui/card';
 import { CheckCircle2, ArrowRight, AlertCircle, BarChart3, Sliders } from 'lucide-react';
 

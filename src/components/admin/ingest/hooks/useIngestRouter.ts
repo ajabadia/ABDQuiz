@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el manejo de rutas y estado para la ingestión de preguntas en la interfaz administrativa ABDQuiz.
+ * @purpose_en Manages the routing and state management for question ingestion in the ABDQuiz admin interface.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:1l6c9kq
+ * @lastUpdated 2026-06-23T17:41:53.677Z
+ */
+
 import { useCallback, type Dispatch, type SetStateAction } from 'react';
 import type { RawQuestion, ConflictPair } from '../types';
 import type { WizardState as WizardStateValue } from './useIngestWizard';

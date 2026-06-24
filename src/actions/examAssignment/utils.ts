@@ -1,3 +1,13 @@
+/**
+ * @purpose Serializa un documento `IExamAssignment` a un objeto plano y crea registros de auditoria.
+ * @purpose_en Serializes an `IExamAssignment` document to a plain object and creates audit entries.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:2,imports:1,sig:75hhsb
+ * @lastUpdated 2026-06-23T23:07:27.034Z
+ */
+
 import type { SerializedAuditEntry, SerializedExamAssignment } from './types';
 
 /** Serializa un documento IExamAssignment a objeto plano */

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una notificacion para confirmar el final de un quiz.
+ * @purpose_en Renders a dialog for confirming the completion of a quiz.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1g8ao7e
+ * @lastUpdated 2026-06-23T19:49:36.559Z
+ */
+
 import {
   Dialog,
   DialogContent,

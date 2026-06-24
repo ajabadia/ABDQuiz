@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona la presentación y corrección de preguntas finalizadas, maneja diversas interacciones de los usuarios y actualiza los datos de las preguntas según sea necesario.
+ * @purpose_en Manages the submission and remediation of finalized questions, handling various user interactions and updating question data accordingly.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Custom Hook
+ * @complexity Medium
+ * @fingerprint exports:5,imports:4,sig:ckl1sc
+ * @lastUpdated 2026-06-23T17:42:04.884Z
+ */
+
 import { toast } from 'sonner';
 import { importFinalizedQuestionsAction } from '@/actions/corpus';
 import type { RawQuestion, BulkData } from './useIngestWizard';

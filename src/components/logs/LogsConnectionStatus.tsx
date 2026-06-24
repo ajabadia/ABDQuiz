@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente UI que muestra el estado de conectividad real tiempo del servicio ABDLogs y el conteo de registros desincronizados bufferizados pendientes de retransmisión.
+ * @purpose_en Renders a UI component that displays the real-time connectivity status of the ABDLogs microservice and the count of offline-buffered logs pending retransmission.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:1nut38p
+ * @lastUpdated 2026-06-23T23:21:55.926Z
+ */
+
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { RefreshCw, HardDrive } from 'lucide-react';

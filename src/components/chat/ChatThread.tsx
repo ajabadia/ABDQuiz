@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente de chat thread para mostrar y interactuar con mensajes.
+ * @purpose_en Renders a chat thread component for displaying and interacting with messages in an attempt.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:7,sig:1sdwh59
+ * @lastUpdated 2026-06-23T23:21:50.013Z
+ */
+
 import { useState, useEffect, useRef, useCallback, startTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card } from '@/components/ui/card';

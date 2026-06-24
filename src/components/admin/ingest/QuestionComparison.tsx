@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una tarjeta que muestra detalles de una pregunta para comparación, incluyendo opciones y metadatos.
+ * @purpose_en Renders a card displaying details of a question for comparison, including options and metadata.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1rekyr0
+ * @lastUpdated 2026-06-23T17:42:24.306Z
+ */
+
 import { useTranslations } from 'next-intl';
 import type { RawQuestion, ConflictPair } from './types';
 

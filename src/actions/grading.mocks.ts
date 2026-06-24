@@ -1,3 +1,13 @@
+/**
+ * @purpose Proporciona mock y funciones utilitarias para la evaluación en la aplicación ABDQuiz.
+ * @purpose_en Mocks and utility functions for grading in the ABDQuiz application.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:11,imports:5,sig:3zupnh
+ * @lastUpdated 2026-06-23T16:28:06.331Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────

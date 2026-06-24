@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y resuelve el contexto del inquilino para una solicitud o página basado en sesión y searchParams, asegurando la seguridad al prevenir ataques IDOR.
+ * @purpose_en Manages and resolves the tenant context for a request or page based on session and searchParams, ensuring security by preventing IDOR attacks.
+ * @refactorable false
+ * @classification Helper Utility
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:11jjf7r
+ * @lastUpdated 2026-06-23T23:23:01.928Z
+ */
+
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 
 /**

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una dialogo modal para crear o editar una tarea, incluyendo campos de formulario y botones.
+ * @purpose_en Renders a modal dialog for creating or editing an assignment, including form fields and buttons.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:w9o6ae
+ * @lastUpdated 2026-06-23T19:47:56.177Z
+ */
+
 import { useTranslations } from 'next-intl';
 import { LabeledField } from '@ajabadia/styles';
 import { Button } from '@/components/ui/button';

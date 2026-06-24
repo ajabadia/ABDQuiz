@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona y procesa acciones relacionadas a preguntas en la aplicación ABDQuiz, incluyendo la recuperación de listas de preguntas paginadas y filtradas, la verificación de la rastreabilidad de las preguntas y el almacenamiento de datos de preguntas actualizados.
+ * @purpose_en Manages and processes actions related to questions in the ABDQuiz application, including fetching paginated and filtered question lists, checking question traceability, and saving updated question data.
+ * @refactorable true (contains multiple functions with distinct responsibilities)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:3,imports:6,sig:t2vss3
+ * @lastUpdated 2026-06-23T23:07:57.708Z
+ */
+
 'use server';
 
 import { QuestionService, type QuestionFilters } from '@/services/corpus/QuestionService';

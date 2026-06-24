@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una dialogo modal para mostrar y copiar una plantilla JSON.
+ * @purpose_en Renders a modal dialog for displaying and copying a JSON template.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:3,sig:h1dwqk
+ * @lastUpdated 2026-06-23T19:48:49.645Z
+ */
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { X, Copy, Check } from 'lucide-react';

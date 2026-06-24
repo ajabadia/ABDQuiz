@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona datos mock y funciones para probar el servicio AllegationService en la aplicación ABDQuiz.
+ * @purpose_en Manages mock data and functions for testing the AllegationService in the ABDQuiz application.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:13,imports:1,sig:1q6riyr
+ * @lastUpdated 2026-06-23T19:52:58.110Z
+ */
+
 import { vi } from 'vitest';
 
 // ── Mock Fixtures ─────────────────────────────

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una interfaz paso a paso para la remediación de preguntas interactivas, incluyendo seguimiento del progreso y botones de navegación.
+ * @purpose_en Renders a step-by-step interface for interactive question remediation, including progress tracking and navigation buttons.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:5,sig:1w9fujl
+ * @lastUpdated 2026-06-23T17:42:16.659Z
+ */
+
 import { LabeledField } from '@ajabadia/styles';
 import { ChevronRight, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Gestiona el estado y la interfaz de usuario para resolver conflictos en la corrección de cursos.
+ * @purpose_en Manages the state and UI for resolving conflicts in course remediation.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:9,sig:g5ksvk
+ * @lastUpdated 2026-06-23T17:42:40.914Z
+ */
+
 import { useState } from 'react';
 import { Check, Database, Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';

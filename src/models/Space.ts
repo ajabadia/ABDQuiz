@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona un modelo de Mongoose para acceso lector solo a espacios en la base de datos ABDtenantGobernance, adecuado para validar la membresía y recuperar metadata organizativa.
+ * @purpose_en Defines a Mongoose model for reading-only access to spaces in the ABDtenantGobernance database, suitable for validating membership and retrieving organizational metadata.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:t4vhql
+ * @lastUpdated 2026-06-23T23:23:19.530Z
+ */
+
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 /**

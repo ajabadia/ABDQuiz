@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página de calificación para administradores en la aplicación ABDQuiz, incluyendo un encabezado, componente gerente de calificación y pie de página.
+ * @purpose_en Renders the grading page for administrators in the ABDQuiz application, including a header, grading manager component, and footer.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:8,sig:yml85w
+ * @lastUpdated 2026-06-23T16:49:29.561Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { AdminPageHeader } from '@ajabadia/styles';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';

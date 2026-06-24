@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona mensajes de chat para intentos de exámenes, manejando el envío y marcado de mensajes como leídos.
+ * @purpose_en Manages chat messages for exam attempts, handling sending and marking messages as read.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:5,imports:3,sig:lp8869
+ * @lastUpdated 2026-06-23T23:07:01.873Z
+ */
+
 'use server';
 
 import { withTenantContext, connectDB, getIndustrialSession, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';

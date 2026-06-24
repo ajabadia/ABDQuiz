@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una mapa de navegación para preguntas de quiz, permitiendo a los usuarios saltar entre ellas y indicando el estado actual de la pregunta y respuesta.
+ * @purpose_en Renders a navigation map for quiz questions, allowing users to jump between them and indicating the current question and answer status.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:1,sig:w7pqsy
+ * @lastUpdated 2026-06-23T19:49:51.161Z
+ */
+
 import { cn } from '@/lib/utils';
 
 interface QuestionItem {

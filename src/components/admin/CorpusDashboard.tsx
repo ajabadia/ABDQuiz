@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un panel de control para el manejo de corpora en la aplicación ABDQuiz, mostrando estadísticas y manejando importaciones.
+ * @purpose_en ** Renders a dashboard for corpus management in the ABDQuiz application, displaying statistics and handling imports.
+ * @refactorable ** true (contains too many state variables and UI parts)
+ * @classification ** UI Component
+ * @complexity ** Medium
+ * @fingerprint exports:2,imports:10,sig:nty705
+ * @lastUpdated 2026-06-23T17:40:06.717Z
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';

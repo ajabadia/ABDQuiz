@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una forma para configurar los ajustes del examen, incluyendo información básica, sistema de puntuación, reglas y botones.
+ * @purpose_en Renders a form for configuring exam settings, including basic info, scoring system, rules, and toggles.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:13,sig:cibymc
+ * @lastUpdated 2026-06-23T17:40:39.500Z
+ */
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';

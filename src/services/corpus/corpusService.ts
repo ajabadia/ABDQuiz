@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la ingestión y análisis de datos para la aplicación ABDQuiz.
+ * @purpose_en Orchestrates data ingestion and analysis for the ABDQuiz application.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:1,imports:2,sig:1aanj42
+ * @lastUpdated 2026-06-23T23:23:42.824Z
+ */
+
 import { CorpusImporter } from './CorpusImporter';
 import { CorpusQueries } from './CorpusQueries';
 

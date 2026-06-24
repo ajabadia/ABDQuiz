@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la página administrativa para el manejo de cursos, incluyendo la lista de cursos y opciones para crear nuevos.
+ * @purpose_en Renders the admin page for managing courses, including listing courses and providing options to create new ones.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:10,sig:102p7c3
+ * @lastUpdated 2026-06-23T16:49:06.485Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
 import { resolveTenantContext } from '@/lib/tenant-context';

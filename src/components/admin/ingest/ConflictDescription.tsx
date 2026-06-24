@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un componente UI para describir conflictos no resueltos y progreso del ABDQuiz.
+ * @purpose_en Renders a conflict description UI component for the ABDQuiz application, displaying details about unresolved conflicts and progress.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:4,sig:8nuzhb
+ * @lastUpdated 2026-06-23T17:41:02.020Z
+ */
+
 import { AlertTriangle, Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ProgressBar } from './ProgressBar';

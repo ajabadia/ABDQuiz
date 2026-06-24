@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza una pestaña de comandos con diversas acciones relacionadas a la navegación, administración y configuración dentro de la aplicación ABDQuiz.
+ * @purpose_en Renders a command palette with various actions related to navigation, administration, and settings within the ABDQuiz application.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:5,sig:sd5kex
+ * @lastUpdated 2026-06-23T19:49:23.112Z
+ */
+
 import React from 'react';
 import { useRouter, usePathname } from '@/i18n/routing';
 import { useLocale } from 'next-intl';

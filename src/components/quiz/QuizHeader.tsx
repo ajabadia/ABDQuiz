@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza la sección de encabezado de un quiz, mostrando tiempo restante, progreso y índice actual del pregunta.
+ * @purpose_en Renders the header section of a quiz, displaying time remaining, progress, and current question index.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:4,sig:17cvn5h
+ * @lastUpdated 2026-06-23T19:49:47.054Z
+ */
+
 import { cn } from "@/lib/utils";
 import { Clock, Terminal } from "lucide-react";
 import { Progress } from "@/components/ui/progress";

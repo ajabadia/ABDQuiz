@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona interfaces de tipo TypeScript para diversas estructuras de datos utilizadas en la aplicación ABDQuiz, especialmente para el manejo de espacios, cursos, preguntas y conflictos.
+ * @purpose_en Defines TypeScript interfaces for various data structures used in the ABDQuiz application, particularly for managing spaces, courses, questions, and conflicts.
+ * @refactorable false
+ * @classification Type Definition
+ * @complexity Low
+ * @fingerprint exports:7,imports:0,sig:1ypr4pn
+ * @lastUpdated 2026-06-23T19:48:14.295Z
+ */
+
 export interface SpaceOption {
   _id: string;
   name: string;

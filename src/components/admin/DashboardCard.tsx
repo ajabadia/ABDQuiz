@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza un modulo de control estándar de tech-noir para el panel de administración.
+ * @purpose_en Renders a standardized tech-noir control module card for the admin dashboard.
+ * @refactorable false
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:5,sig:114udti
+ * @lastUpdated 2026-06-23T23:21:22.862Z
+ */
+
 import { ArrowRight, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';

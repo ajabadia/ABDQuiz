@@ -10,7 +10,7 @@ import {
 } from './quizService.test.mocks';
 
 // ── Inline vi.mock calls (hoisted by vitest) ───────────
-vi.mock('@ajabadia/satellite-sdk', () => ({
+vi.mock('@ajabadia/satellite-sdk/db', () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 

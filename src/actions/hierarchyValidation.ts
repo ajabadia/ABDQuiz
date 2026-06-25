@@ -10,8 +10,8 @@
 
 'use server';
 
-import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
-import Space from '@/models/Space';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
+import { SpaceServiceClient } from '@/services/space-client';
 import Course from '@/models/Course';
 import { revalidatePath } from 'next/cache';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
@@ -54,12 +54,8 @@ export interface HierarchyValidationResult {
 export async function getActiveSpacesAction(): Promise<ActionResponse<SpaceOption[]>> {
   try {
     const user = await ensureAdminOrProfessor();
-    await connectDB();
-    const spaces = await Space.find({
-      tenantId: user.tenantId,
-      isActive: true,
-    }).select('name slug type isActive').lean();
-    return { success: true, data: JSON.parse(JSON.stringify(spaces)) as SpaceOption[] };
+    const spaces = await SpaceServiceClient.getActiveSpaces(user.tenantId);
+    return { success: true, data: spaces as SpaceOption[] };
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: message };
@@ -96,7 +92,7 @@ export async function validateHierarchyAction(
     const user = await ensureAdminOrProfessor();
     await connectDB();
 
-    const space = await Space.findOne({ _id: spaceId, tenantId: user.tenantId }).select('name isActive').lean();
+    const space = await SpaceServiceClient.getSpaceById(spaceId, user.tenantId);
 
     if (!space) {
       return {

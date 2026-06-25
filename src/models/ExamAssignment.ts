@@ -9,7 +9,7 @@
  */
 
 import mongoose, { Schema, Document } from 'mongoose';
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 export interface IAuditEntry {
   action: string;

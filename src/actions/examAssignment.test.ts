@@ -3,21 +3,24 @@ import { createAssignmentAction } from './examAssignment';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
-  return {
-    ...actual,
-    connectDB: vi.fn().mockResolvedValue(undefined),
-    getIndustrialSession: vi.fn(),
-    withTenantContext: vi.fn((fn: () => unknown) => fn()),
-    resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
-    logger: {
-      audit: vi.fn().mockResolvedValue(undefined),
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    },
-  };
+vi.mock('@ajabadia/satellite-sdk/db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/db')>();
+  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), withTenantContext: vi.fn((fn: () => unknown) => fn()) };
+});
+
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/auth-middleware')>();
+  return { ...actual, getIndustrialSession: vi.fn() };
+});
+
+vi.mock('@ajabadia/satellite-sdk/utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/utils')>();
+  return { ...actual, resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined) };
+});
+
+vi.mock('@ajabadia/satellite-sdk/logger', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/logger')>();
+  return { ...actual, logger: { ...actual.logger, audit: vi.fn().mockResolvedValue(undefined), info: vi.fn(), error: vi.fn(), warn: vi.fn() } };
 });
 
 vi.mock('@/models/ExamConfig', () => {
@@ -50,13 +53,14 @@ vi.mock('next/cache', () => ({
 
 import * as ExamConfigMod from '@/models/ExamConfig';
 import * as ExamAssignmentMod from '@/models/ExamAssignment';
-import * as SessionMod from '@ajabadia/satellite-sdk';
-import * as ResolverMod from '@ajabadia/satellite-sdk';
+import { getIndustrialSession as _getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { resolveTargetTenantContext as _resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
+
+const getIndustrialSession = _getIndustrialSession as unknown as ReturnType<typeof vi.fn>;
+const resolveTargetTenantContext = _resolveTargetTenantContext as unknown as ReturnType<typeof vi.fn>;
 
 const { mockFindOne } = ExamConfigMod as unknown as { mockFindOne: ReturnType<typeof vi.fn> };
 const { mockCreate } = ExamAssignmentMod as unknown as { mockCreate: ReturnType<typeof vi.fn> };
-const { getIndustrialSession } = SessionMod as unknown as { getIndustrialSession: ReturnType<typeof vi.fn> };
-const { resolveTargetTenantContext } = ResolverMod as unknown as { resolveTargetTenantContext: ReturnType<typeof vi.fn> };
 
 // ── Tests ──────────────────────────────────────────────
 

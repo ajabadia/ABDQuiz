@@ -14,8 +14,10 @@ import { QuestionService, type QuestionFilters } from '@/services/corpus/Questio
 import { revalidatePath } from 'next/cache';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { type IQuestion } from '@/models/Question';
-import { connectDB, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import Question from '@/models/Question';
+import Course from '@/models/Course';
 
 interface ActionResponse<T> {
   success: boolean;
@@ -36,6 +38,12 @@ export async function getQuestionsAction(
     try {
       const user = await ensureAdminOrProfessor();
       const activeTenantId = explicitCtx?.tenantId || user.tenantId;
+
+      if (user.role === 'PROFESSOR') {
+        const profCourses = await Course.find({ tenantId: activeTenantId, professors: user.id, active: true }, { _id: 1 }).lean();
+        filters.courseIds = profCourses.map((c: { _id: unknown }) => String(c._id));
+      }
+
       const result = await QuestionService.getQuestions(activeTenantId, filters);
       return { success: true, data: result };
     } catch (error: unknown) {
@@ -66,6 +74,14 @@ export async function checkQuestionTraceabilityAction(
       if (oldQuestion.tenantId !== activeTenantId && user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
+
+      if (user.role === 'PROFESSOR' && oldQuestion.courseId) {
+        const ownsCourse = await Course.exists({ tenantId: activeTenantId, professors: user.id, _id: oldQuestion.courseId });
+        if (!ownsCourse) {
+          return { success: false, error: 'No tienes permisos para acceder a esta pregunta' };
+        }
+      }
+
       const result = await QuestionService.checkTraceability(questionId);
       return { success: true, data: result };
     } catch (error: unknown) {
@@ -108,6 +124,14 @@ export async function saveQuestionAction(
       if (oldQuestion.tenantId !== activeTenantId && user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
       }
+
+      if (user.role === 'PROFESSOR' && oldQuestion.courseId) {
+        const ownsCourse = await Course.exists({ tenantId: activeTenantId, professors: user.id, _id: oldQuestion.courseId });
+        if (!ownsCourse) {
+          return { success: false, error: 'No tienes permisos para modificar esta pregunta' };
+        }
+      }
+
       const result = await QuestionService.saveQuestion(questionId, updatedData);
       
       // Forzar revalidación de las consolas de simulación y administración

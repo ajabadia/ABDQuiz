@@ -14,7 +14,7 @@ import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/routing';
 import { SmartNavbar, buildSidebarLinks } from '@ajabadia/ecosystem-widgets';
-import { Home, LayoutDashboard, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange } from 'lucide-react';
+import { Home, LayoutDashboard, BookOpen, BarChart2, Terminal, AlertTriangle, CalendarRange, TrendingUp, AlertCircle } from 'lucide-react';
 import { ChatUnreadBadge } from '@/components/chat/ChatUnreadBadge';
 
 interface UserSession {
@@ -63,6 +63,8 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
     { href: '/admin', label: t('adminMenu'), icon: <Terminal className="w-4 h-4" />, requiresAdmin: true },
     { href: '/admin/allegations', label: t('claimsMenu'), icon: <AlertTriangle className="w-4 h-4" />, requiresAdmin: true },
     { href: '/admin/assignments', label: t('assignmentsMenu'), icon: <CalendarRange className="w-4 h-4" />, requiresAdmin: true },
+    { href: '/admin/dashboard', label: locale === 'es' ? 'Facturación' : 'Billing', icon: <TrendingUp className="w-4 h-4" />, requiresAdmin: true },
+    { href: '/admin/incidents', label: locale === 'es' ? 'Incidencias' : 'Incidents', icon: <AlertCircle className="w-4 h-4" />, requiresAdmin: true },
   ] as const;
 
   const links = buildSidebarLinks(allLinks, user?.role, isLoggedIn);

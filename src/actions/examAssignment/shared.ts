@@ -8,8 +8,10 @@
  * @lastUpdated 2026-06-23T16:27:38.908Z
  */
 
-import { connectDB, getIndustrialSession, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
-import type { TenantContext } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
+import type { TenantContext } from '@ajabadia/satellite-sdk/db';
 
 export interface SessionWithTenant {
   user: {

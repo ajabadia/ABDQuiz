@@ -13,7 +13,10 @@
 import { QuizService } from '@/services/quiz/quizService';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext, rateLimitMongodb } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext, rateLimitMongodb } from '@ajabadia/satellite-sdk/utils';
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { AnalyticsSyncService } from '@/services/quiz/analyticsSyncService';
@@ -98,6 +101,7 @@ export async function submitAnswerAction(formData: {
   status: 'correcta' | 'incorrecta' | 'no_respondida' | 'no_respondida_por_tiempo';
   attemptToken?: string;
   textAnswer?: string;
+  attachmentUrl?: string;
 }) {
   return withTenantContext(async () => {
     // 🚦 Rate limit: 60 answer submissions per 60s per IP
@@ -119,7 +123,8 @@ export async function submitAnswerAction(formData: {
         formData.status,
         session.user.id,
         formData.attemptToken,
-        formData.textAnswer
+        formData.textAnswer,
+        formData.attachmentUrl
       );
       
       revalidatePath(`/quiz/${formData.attemptId}`);

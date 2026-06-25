@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T23:23:38.819Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import Allegation, { type IAllegation } from '@/models/Allegation';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';

@@ -27,6 +27,7 @@ import { useQuizHeartbeat } from './useQuizHeartbeat';
 import { useQuizNavigation } from './useQuizNavigation';
 import { useAIFeedback } from '@/hooks/useAIFeedback';
 import { formatTime } from '@/lib/format';
+import { IncidentChatDrawer } from './IncidentChatDrawer';
 
 interface QuizInterfaceProps {
   initialAttempt: SerializedExamAttempt;
@@ -42,11 +43,14 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
     setAnswers,
     textAnswers,
     setTextAnswers,
+    attachmentUrls,
+    setAttachmentUrls,
     selectedOption,
     setSelectedOption,
     showFeedback,
     setShowFeedback,
     handleTextChange,
+    handleAttachmentUpload,
   } = useQuizQuestionState(initialAttempt, currentIndex);
 
   const { aiFeedbackMap, aiFeedbackLoading } = useAIFeedback(showFeedback, currentIndex, initialAttempt._id);
@@ -83,6 +87,7 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
     currentIndex,
     answers,
     textAnswers,
+    attachmentUrls,
     selectedOption,
     isSubmitting,
     setCurrentIndex,
@@ -147,6 +152,9 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
           onSelect={handleOptionSelect}
           aiFeedback={aiFeedbackMap[currentIndex]}
           aiFeedbackLoading={aiFeedbackLoading[currentIndex]}
+          attemptId={initialAttempt._id}
+          questionId={currentQuestion.questionId}
+          onAttachmentUpload={handleAttachmentUpload}
         />
       </main>
 
@@ -182,6 +190,8 @@ export default function QuizInterface({ initialAttempt }: QuizInterfaceProps) {
         onFinalize={() => { setShowOmittedConfirm(false); setShowFinishConfirm(true); }}
         onReview={startOmittedReview}
       />
+
+      <IncidentChatDrawer attemptId={initialAttempt._id} tenantId={initialAttempt.tenantId} />
     </div>
   );
 }

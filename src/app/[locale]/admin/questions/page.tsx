@@ -10,7 +10,7 @@
 
 import { getTranslations } from 'next-intl/server';
 import QuestionsManager from '@/components/admin/QuestionsManager';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { ArrowLeft, FolderOpen, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';

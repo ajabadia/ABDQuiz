@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
-  return {
-    ...actual,
-    connectDB: vi.fn().mockResolvedValue(undefined),
-    getIndustrialSession: vi.fn(),
-    withTenantContext: vi.fn((fn: () => unknown) => fn()),
-  };
+vi.mock('@ajabadia/satellite-sdk/db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/db')>();
+  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), withTenantContext: vi.fn((fn: () => unknown) => fn()) };
+});
+
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/auth-middleware')>();
+  return { ...actual, getIndustrialSession: vi.fn() };
 });
 
 vi.mock('@/models/ExamAttempt', () => {
@@ -38,13 +38,11 @@ vi.mock('@/services/ai/clientFactory', () => {
 
 // ── Import mock refs ───────────────────────────────────
 
-import * as ResolverMod from '@ajabadia/satellite-sdk';
+import { getIndustrialSession as _getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+const getIndustrialSession = _getIndustrialSession as unknown as ReturnType<typeof vi.fn>;
 import * as ExamAttemptMod from '@/models/ExamAttempt';
 import * as ClientFactoryMod from '@/services/ai/clientFactory';
 
-export const { getIndustrialSession } = ResolverMod as unknown as {
-  getIndustrialSession: ReturnType<typeof vi.fn>;
-};
 export const { mockFindById } = ExamAttemptMod as unknown as {
   mockFindById: ReturnType<typeof vi.fn>;
 };

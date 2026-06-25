@@ -10,7 +10,10 @@
 
 'use server';
 
-import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import Course, { type ICourseObjective } from '@/models/Course';
 import { revalidatePath } from 'next/cache';
 

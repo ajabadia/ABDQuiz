@@ -3,7 +3,7 @@ import { AllegationService } from './allegationService';
 import mongoose from 'mongoose';
 
 // ── Mocks (hoisted by vitest) ───────────────
-vi.mock('@ajabadia/satellite-sdk', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('@ajabadia/satellite-sdk/db', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 
 vi.mock('@/models/Allegation', () => {
   const mockCreate = vi.fn();

@@ -8,13 +8,13 @@
  * @lastUpdated 2026-06-23T23:21:19.053Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose
 import { notFound } from 'next/navigation';
 import QuizInterface from '@/components/quiz/QuizInterface';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
 
 interface QuizPageProps {
   params: Promise<{ id: string; locale: string }>;

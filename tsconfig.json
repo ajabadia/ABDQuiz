@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@ajabadia/satellite-sdk/contracts": [
+        "../ABDSatelliteSDK/src/contracts.ts"
       ]
     },
     "ignoreDeprecations": "6.0"

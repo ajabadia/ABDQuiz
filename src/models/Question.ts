@@ -12,7 +12,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IQuestion extends Document {
   tenantId: string;
-  type: 'multiple_choice' | 'open_text';
+  type: 'multiple_choice' | 'open_text' | 'development';
   module: string;
   source: string;
   questionText: string;
@@ -39,7 +39,7 @@ export interface IQuestion extends Document {
 
 const QuestionSchema = new Schema<IQuestion>({
   tenantId: { type: String, required: true, index: true },
-  type: { type: String, enum: ['multiple_choice', 'open_text'], default: 'multiple_choice', index: true },
+  type: { type: String, enum: ['multiple_choice', 'open_text', 'development'], default: 'multiple_choice', index: true },
   module: { type: String, required: true, index: true },
   source: { type: String, required: true },
   questionText: { type: String, required: true },
@@ -75,7 +75,7 @@ QuestionSchema.index(
   { unique: true, partialFilterExpression: { active: true } }
 );
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const Question: Model<IQuestion> = getTenantModel<IQuestion>('Question', QuestionSchema);
 

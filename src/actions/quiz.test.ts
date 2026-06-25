@@ -4,17 +4,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('@/models/Course', () => ({ default: { findOne: vi.fn().mockResolvedValue({ _id: 'course-1', name: 'Test Course', learningPath: ['cfg-1'] }) } }));
 vi.mock('@/models/UserCourseSummary', () => ({ default: { findOneAndUpdate: vi.fn().mockResolvedValue({}) } }));
 vi.mock('@/models/CourseAnalytics', () => ({ default: { findOneAndUpdate: vi.fn().mockResolvedValue({}) } }));
-vi.mock('@ajabadia/satellite-sdk', () => ({
+vi.mock('@ajabadia/satellite-sdk/db', () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
-  getIndustrialSession: vi.fn(),
   withTenantContext: vi.fn((fn: () => unknown) => fn()),
+}));
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', () => ({
+  getIndustrialSession: vi.fn(),
+}));
+vi.mock('@ajabadia/satellite-sdk/utils', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
   rateLimitMongodb: {
     getClientIpAsync: vi.fn().mockResolvedValue('127.0.0.1'),
     check: vi.fn().mockResolvedValue(true),
   },
-  logger: { audit: vi.fn().mockResolvedValue(null) },
 }));
+vi.mock('@ajabadia/satellite-sdk/logger', () => ({ logger: { audit: vi.fn().mockResolvedValue(null) } }));
 vi.mock('@/lib/auth/ensureQuizAccess', () => ({ ensureAdminOrProfessor: vi.fn() }));
 vi.mock('@/services/quiz/quizService', () => ({ QuizService: { finishExam: vi.fn() } }));
 vi.mock('@/models/ExamAttempt', () => {
@@ -26,16 +30,18 @@ vi.mock('@/models/ExamAttempt', () => {
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 
-import * as SessionMod from '@ajabadia/satellite-sdk';
+import { getIndustrialSession as _getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { logger as mockLogger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext as _resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
+
+const getIndustrialSession = _getIndustrialSession as unknown as ReturnType<typeof vi.fn>;
+const resolveTargetTenantContext = _resolveTargetTenantContext as unknown as ReturnType<typeof vi.fn>;
 import * as QuizAccessMod from '@/lib/auth/ensureQuizAccess';
 import * as QuizServiceMod from '@/services/quiz/quizService';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
 import * as CacheMod from 'next/cache';
 
-const { getIndustrialSession } = SessionMod as unknown as any;
-const { logger: mockLogger } = SessionMod as unknown as any;
 const { ensureAdminOrProfessor } = QuizAccessMod as unknown as any;
-const { resolveTargetTenantContext } = SessionMod as unknown as any;
 const { QuizService } = QuizServiceMod as unknown as any;
 const { mockFindById, mockDoc } = ExamAttemptMod as unknown as any;
 const { revalidatePath } = CacheMod as unknown as any;

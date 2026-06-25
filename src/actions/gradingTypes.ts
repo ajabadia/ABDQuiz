@@ -42,11 +42,12 @@ export interface QuestionGradingData {
 export interface AttemptDetailQuestion {
   questionIndex: number;
   questionText: string;
-  type: 'multiple_choice' | 'open_text';
+  type: 'multiple_choice' | 'open_text' | 'development';
   options: string[];
   correctOptionIndex: number;
   selectedOptionIndex?: number | null;
   manualTextAnswer?: string;
+  attachmentUrl?: string;
   manualPointsAwarded?: number;
   feedback?: string;
   isCorrect: boolean;
@@ -90,7 +91,7 @@ export function extractOpenTextPreview(raw: Record<string, unknown>): OpenTextPr
     const snapshot = q.questionSnapshot as Record<string, unknown> | undefined;
     if (!snapshot) continue;
     const type = snapshot.type as string | undefined;
-    if (type !== 'open_text') continue;
+    if (type !== 'open_text' && type !== 'development') continue;
     const answer = q.manualTextAnswer as string | undefined;
     if (!answer || !answer.trim()) continue;
 
@@ -166,11 +167,12 @@ export function buildAttemptDetail(raw: Record<string, unknown>): AttemptDetail 
       return {
         questionIndex: index,
         questionText: (snapshot?.questionText as string) || '',
-        type: (snapshot?.type as 'multiple_choice' | 'open_text') || 'multiple_choice',
+        type: (snapshot?.type as 'multiple_choice' | 'open_text' | 'development') || 'multiple_choice',
         options: (snapshot?.options as string[]) || [],
         correctOptionIndex: (snapshot?.correctOptionIndex as number) ?? 0,
         selectedOptionIndex: q.selectedOptionIndex as number | null | undefined,
         manualTextAnswer: q.manualTextAnswer as string | undefined,
+        attachmentUrl: q.attachmentUrl as string | undefined,
         manualPointsAwarded: q.manualPointsAwarded as number | undefined,
         feedback: q.feedback as string | undefined,
         isCorrect: q.isCorrect as boolean,

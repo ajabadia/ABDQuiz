@@ -20,7 +20,7 @@ export interface QuizQuestionSnapshot {
   correctOptionIndex: number;
   difficulty?: 'easy' | 'medium' | 'hard';
   isCancelled?: boolean;
-  type?: 'multiple_choice' | 'open_text';
+  type?: 'multiple_choice' | 'open_text' | 'development';
   /** §12.A — Adjuntos */
   attachments?: { url: string; name: string; type: string; size: number }[];
 }

@@ -8,8 +8,8 @@
  * @lastUpdated 2026-06-23T16:48:06.966Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { AllegationService } from '@/services/allegations/allegationService';
 import { AllegationsClientTerminal } from '@/components/admin/AllegationsClientTerminal';

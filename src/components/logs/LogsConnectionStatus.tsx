@@ -13,7 +13,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { RefreshCw, HardDrive } from 'lucide-react';
-import { logger } from '@ajabadia/satellite-sdk';
+import { logger } from '@ajabadia/satellite-sdk/logger';
 
 type ConnectionStatus = 'unknown' | 'connected' | 'disconnected';
 

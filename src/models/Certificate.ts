@@ -9,7 +9,7 @@
  */
 
 import { Schema, Document } from 'mongoose';
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 export interface ICertificate extends Document {
   tenantId: string;

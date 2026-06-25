@@ -10,16 +10,16 @@
 
 'use server';
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import ExamAttempt from '@/models/ExamAttempt';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import {
   type ModuleAnalytics,
   type DifficultyAnalytics,
   type AttemptSummary,
   type AnalyticsPayload
 } from '@/types/quiz';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk/db';
 
 const getPct = (correct: number, total: number) => (total > 0 ? Math.round((correct / total) * 100) : 0);
 

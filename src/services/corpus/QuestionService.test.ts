@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { QuestionService } from './QuestionService';
 
-vi.mock('@ajabadia/satellite-sdk', () => ({
+vi.mock('@ajabadia/satellite-sdk/db', () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 

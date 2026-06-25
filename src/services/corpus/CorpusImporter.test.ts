@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CorpusImporter } from './CorpusImporter';
 
 // ── Mocks (hoisted by vitest) ───────────────
-vi.mock('@ajabadia/satellite-sdk', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('@ajabadia/satellite-sdk/db', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 
 vi.mock('mongoose', () => ({
   default: { startSession: vi.fn().mockRejectedValue(new Error('Standalone')) },

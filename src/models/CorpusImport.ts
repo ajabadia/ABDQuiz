@@ -45,7 +45,7 @@ const CorpusImportSchema = new Schema<ICorpusImport>({
   timestamps: true
 });
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const CorpusImport: Model<ICorpusImport> = getTenantModel<ICorpusImport>('CorpusImport', CorpusImportSchema);
 

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { InsufficientPrivilegesError as InsufficientPrivilegesErrorType } from '@ajabadia/satellite-sdk';
+import type { InsufficientPrivilegesError as InsufficientPrivilegesErrorType } from '@ajabadia/satellite-sdk/auth-middleware';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', () => {
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', () => {
   class MockInsufficientPrivilegesError extends Error {
     constructor(msg?: string) {
       super(msg ?? 'Acceso denegado');
@@ -23,7 +23,7 @@ vi.mock('@/lib/auth/abac', () => ({
 
 // ── Import deps under test ────────────────────────────
 
-import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk/auth-middleware';
 import { assertAccess } from '@/lib/auth/abac';
 import { ensureAdminOrProfessor } from './ensureQuizAccess';
 

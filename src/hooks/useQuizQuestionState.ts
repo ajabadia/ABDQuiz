@@ -35,6 +35,8 @@ export function useQuizQuestionState(
     return initial;
   });
 
+  const [attachmentUrls, setAttachmentUrls] = useState<Record<number, string>>({});
+
   const [selectedOption, setSelectedOption] = useState<number | null>(() =>
     initialAttempt.questions[0]?.selectedOptionIndex !== undefined
       ? initialAttempt.questions[0].selectedOptionIndex
@@ -47,15 +49,22 @@ export function useQuizQuestionState(
     setTextAnswers(prev => ({ ...prev, [currentIndex]: text }));
   }, [currentIndex]);
 
+  const handleAttachmentUpload = useCallback((url: string) => {
+    setAttachmentUrls(prev => ({ ...prev, [currentIndex]: url }));
+  }, [currentIndex]);
+
   return {
     answers,
     setAnswers,
     textAnswers,
     setTextAnswers,
+    attachmentUrls,
+    setAttachmentUrls,
     selectedOption,
     setSelectedOption,
     showFeedback,
     setShowFeedback,
     handleTextChange,
+    handleAttachmentUpload,
   };
 }

@@ -1,9 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────
-vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
-  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), getIndustrialSession: vi.fn(), withTenantContext: vi.fn((fn: () => unknown) => fn()), resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined), logger: { audit: vi.fn().mockResolvedValue(undefined), info: vi.fn(), error: vi.fn(), warn: vi.fn() } };
+vi.mock('@ajabadia/satellite-sdk/db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/db')>();
+  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), withTenantContext: vi.fn((fn: () => unknown) => fn()) };
+});
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/auth-middleware')>();
+  return { ...actual, getIndustrialSession: vi.fn() };
+});
+vi.mock('@ajabadia/satellite-sdk/utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/utils')>();
+  return { ...actual, resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined) };
+});
+vi.mock('@ajabadia/satellite-sdk/logger', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/logger')>();
+  return { ...actual, logger: { ...actual.logger, audit: vi.fn().mockResolvedValue(undefined), info: vi.fn(), error: vi.fn(), warn: vi.fn() } };
 });
 vi.mock('@/models/ExamConfig', () => {
   const m = { mockFindById: vi.fn(), mockFindByIdAndUpdate: vi.fn(), mockCreate: vi.fn() };
@@ -13,11 +25,13 @@ vi.mock('@/models/ExamConfig', () => {
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 
 import * as ConfigMod from '@/models/ExamConfig';
-import * as SessionMod from '@ajabadia/satellite-sdk';
+import { getIndustrialSession as _getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { resolveTargetTenantContext as _resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
+
+const getIndustrialSession = _getIndustrialSession as unknown as ReturnType<typeof vi.fn>;
+const resolveTargetTenantContext = _resolveTargetTenantContext as unknown as ReturnType<typeof vi.fn>;
 
 const { mockFindById, mockFindByIdAndUpdate, mockCreate } = ConfigMod as unknown as any;
-const { getIndustrialSession } = SessionMod as unknown as any;
-const { resolveTargetTenantContext } = SessionMod as unknown as any;
 
 function makeDoc(overrides: Record<string, unknown> = {}) {
   return { _id: 'cfg-1', tenantId: 'tenant-1', name: 'Test Config', active: true, createdBy: 'admin-1', toObject() { return { ...this }; }, ...overrides };

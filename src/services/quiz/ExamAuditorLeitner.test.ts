@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import mongoose from 'mongoose';
 
 // Mock satellite-sdk database connection and define variables inside factory
-vi.mock('@ajabadia/satellite-sdk', () => {
+vi.mock('@ajabadia/satellite-sdk/db', () => {
   const qFind = vi.fn();
   const ecFindOne = vi.fn();
   const cFindOne = vi.fn();

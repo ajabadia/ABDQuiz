@@ -33,7 +33,7 @@ const UserLeitnerStateSchema = new Schema<IUserLeitnerState>({
 // Índice compuesto único para evitar duplicidad de estado por usuario y pregunta
 UserLeitnerStateSchema.index({ userId: 1, questionId: 1 }, { unique: true });
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const UserLeitnerState: Model<IUserLeitnerState> = getTenantModel<IUserLeitnerState>('UserLeitnerState', UserLeitnerStateSchema);
 

@@ -2,15 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk')>();
-  return {
-    ...actual,
-    connectDB: vi.fn().mockResolvedValue(undefined),
-    getIndustrialSession: vi.fn(),
-    withTenantContext: vi.fn((fn: () => unknown) => fn()),
-    resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
-  };
+vi.mock('@ajabadia/satellite-sdk/db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/db')>();
+  return { ...actual, connectDB: vi.fn().mockResolvedValue(undefined), withTenantContext: vi.fn((fn: () => unknown) => fn()) };
+});
+
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/auth-middleware')>();
+  return { ...actual, getIndustrialSession: vi.fn() };
+});
+
+vi.mock('@ajabadia/satellite-sdk/utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@ajabadia/satellite-sdk/utils')>();
+  return { ...actual, resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined) };
 });
 
 vi.mock('@/lib/auth/ensureQuizAccess', () => ({
@@ -32,17 +36,15 @@ vi.mock('@/models/ExamAttempt', () => {
 // ── Import mock refs ───────────────────────────────────
 
 import * as SessionMod from '@/lib/auth/ensureQuizAccess';
-import * as ResolverMod from '@ajabadia/satellite-sdk';
+import { resolveTargetTenantContext as _resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
+import { getIndustrialSession as _getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
+
+const getIndustrialSession = _getIndustrialSession as unknown as ReturnType<typeof vi.fn>;
+const resolveTargetTenantContext = _resolveTargetTenantContext as unknown as ReturnType<typeof vi.fn>;
 
 export const { ensureAdminOrProfessor } = SessionMod as unknown as {
   ensureAdminOrProfessor: ReturnType<typeof vi.fn>;
-};
-export const { resolveTargetTenantContext } = ResolverMod as unknown as {
-  resolveTargetTenantContext: ReturnType<typeof vi.fn>;
-};
-export const { getIndustrialSession } = ResolverMod as unknown as {
-  getIndustrialSession: ReturnType<typeof vi.fn>;
 };
 export const { mockFindById } = ExamAttemptMod as unknown as {
   mockFindById: ReturnType<typeof vi.fn>;

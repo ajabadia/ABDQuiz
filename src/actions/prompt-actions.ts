@@ -10,7 +10,10 @@
 
 'use server';
 
-import { connectDB, ensureIndustrialAccess, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import PromptTemplate, { type IPromptTemplate } from '@/models/PromptTemplate';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { revalidatePath } from 'next/cache';

@@ -9,7 +9,7 @@
  */
 
 import { getTranslations } from 'next-intl/server';
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
 import { getStudentDashboardAction } from '@/actions/dashboard';
 import { getStudentCourseProgressAction } from '@/actions/course-progress';
 import { redirect } from 'next/navigation';

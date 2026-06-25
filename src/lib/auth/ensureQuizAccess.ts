@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T23:22:34.281Z
  */
 
-import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk/auth-middleware';
 import { assertAccess } from './abac';
 
 /**

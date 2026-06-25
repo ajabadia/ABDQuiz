@@ -8,7 +8,8 @@
  * @lastUpdated 2026-06-24T10:55:39.002Z
  */
 
-import { connectDB, logger } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
 import PromptTemplate from '@/models/PromptTemplate';
 
 export interface ResolvedPrompt {

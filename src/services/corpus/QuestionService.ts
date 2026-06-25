@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T23:23:52.323Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import Question, { type IQuestion } from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';
 import { generateQuestionHash } from '@/lib/corpus/hash';
@@ -20,6 +20,7 @@ export interface QuestionFilters {
   difficulty?: 'easy' | 'medium' | 'hard';
   active?: boolean;
   search?: string;
+  courseIds?: string[];
 }
 
 export class QuestionService {
@@ -48,6 +49,10 @@ export class QuestionService {
 
     if (filters.search) {
       query.questionText = { $regex: filters.search, $options: 'i' };
+    }
+
+    if (filters.courseIds && filters.courseIds.length > 0) {
+      query.courseId = { $in: filters.courseIds };
     }
 
     const [questions, total] = await Promise.all([

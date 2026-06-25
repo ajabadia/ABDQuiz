@@ -18,7 +18,7 @@ import { QuizCommandPalette } from "@/components/layout/QuizCommandPalette";
 import { TenantSelector } from "@/components/ui/TenantSelector";
 import { BrandingStyles } from "@ajabadia/satellite-sdk";
 
-import { getIndustrialSession } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
 import { resolveTenantBranding } from "@ajabadia/satellite-sdk";
 
 export default async function LocaleLayout({

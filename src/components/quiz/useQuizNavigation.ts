@@ -21,6 +21,7 @@ interface UseQuizNavigationParams {
   currentIndex: number;
   answers: (number | null)[];
   textAnswers: Record<number, string>;
+  attachmentUrls?: Record<number, string>;
   selectedOption: number | null;
   isSubmitting: boolean;
   // Setters
@@ -41,6 +42,7 @@ export function useQuizNavigation({
   currentIndex,
   answers,
   textAnswers,
+  attachmentUrls = {},
   selectedOption,
   isSubmitting,
   setCurrentIndex,
@@ -56,8 +58,10 @@ export function useQuizNavigation({
   const t = useTranslations('quiz');
   const [isReviewingOmitted, setIsReviewingOmitted] = useState(false);
 
+  const isTextType = (type: string | undefined) => type === 'open_text' || type === 'development';
+
   const currentQuestion = initialAttempt.questions[currentIndex];
-  const isOpenText = currentQuestion?.questionSnapshot.type === 'open_text';
+  const isOpenText = isTextType(currentQuestion?.questionSnapshot.type);
   const textAnswer = textAnswers[currentIndex] ?? '';
 
   const getQuestionStatus = useCallback(
@@ -79,7 +83,7 @@ export function useQuizNavigation({
     (ans: (number | null)[], txt: Record<number, string>) => {
       return ans.some((a, idx) => {
         const q = initialAttempt.questions[idx];
-        if (q.questionSnapshot.type === 'open_text') {
+        if (isTextType(q.questionSnapshot.type)) {
           return (txt[idx] ?? '').trim().length === 0;
         }
         return a === null;
@@ -104,6 +108,7 @@ export function useQuizNavigation({
           status,
           attemptToken: initialAttempt.attemptToken,
           textAnswer: isOpenText ? textAnswer : undefined,
+          attachmentUrl: attachmentUrls[currentIndex],
         });
 
         setAnswers(prev => {
@@ -113,7 +118,7 @@ export function useQuizNavigation({
         });
 
         const targetQ = initialAttempt.questions[targetIndex];
-        const targetIsOpenText = targetQ.questionSnapshot.type === 'open_text';
+        const targetIsOpenText = isTextType(targetQ.questionSnapshot.type);
         setCurrentIndex(targetIndex);
         setSelectedOption(targetIsOpenText ? null : answers[targetIndex]);
         setShowFeedback(false);
@@ -124,7 +129,7 @@ export function useQuizNavigation({
         setIsSubmitting(false);
       }
     },
-    [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, answers, isSubmitting, getQuestionStatus, setAnswers, setCurrentIndex, setSelectedOption, setIsSubmitting, setShowFeedback, resetTimerRef],
+    [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, answers, isSubmitting, getQuestionStatus, attachmentUrls, setAnswers, setCurrentIndex, setSelectedOption, setIsSubmitting, setShowFeedback, resetTimerRef],
   );
 
   const advanceToNext = useCallback(
@@ -133,7 +138,7 @@ export function useQuizNavigation({
         const remainingOmitted = updatedAnswers
           .map((ans, idx) => {
             const q = initialAttempt.questions[idx];
-            if (q.questionSnapshot.type === 'open_text') {
+            if (isTextType(q.questionSnapshot.type)) {
               return (textAnswers[idx] ?? '').trim().length === 0 ? idx : null;
             }
             return ans === null ? idx : null;
@@ -142,9 +147,9 @@ export function useQuizNavigation({
 
         if (remainingOmitted.length > 0) {
           const nextOmitted = remainingOmitted.find(idx => idx > currentIndex) ?? remainingOmitted[0];
-          const nextIsOpenText = initialAttempt.questions[nextOmitted].questionSnapshot.type === 'open_text';
+          const nextIsTextType = isTextType(initialAttempt.questions[nextOmitted].questionSnapshot.type);
           setCurrentIndex(nextOmitted);
-          setSelectedOption(nextIsOpenText ? null : updatedAnswers[nextOmitted]);
+          setSelectedOption(nextIsTextType ? null : updatedAnswers[nextOmitted]);
           setShowFeedback(false);
           resetTimerRef.current?.();
         } else {
@@ -154,9 +159,9 @@ export function useQuizNavigation({
       } else {
         if (currentIndex < initialAttempt.questions.length - 1) {
           const nextIdx = currentIndex + 1;
-          const nextIsOpenText = initialAttempt.questions[nextIdx].questionSnapshot.type === 'open_text';
+          const nextIsTextType = isTextType(initialAttempt.questions[nextIdx].questionSnapshot.type);
           setCurrentIndex(nextIdx);
-          setSelectedOption(nextIsOpenText ? null : updatedAnswers[nextIdx]);
+          setSelectedOption(nextIsTextType ? null : updatedAnswers[nextIdx]);
           setShowFeedback(false);
           resetTimerRef.current?.();
         } else {
@@ -186,6 +191,7 @@ export function useQuizNavigation({
           status,
           attemptToken: initialAttempt.attemptToken,
           textAnswer: isOpenText ? textAnswer : undefined,
+          attachmentUrl: attachmentUrls[currentIndex],
         });
 
         setAnswers(prev => {
@@ -200,7 +206,7 @@ export function useQuizNavigation({
         setIsSubmitting(false);
       }
     },
-    [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, getQuestionStatus, advanceToNext, setIsSubmitting, setAnswers, t],
+    [currentIndex, selectedOption, textAnswer, isOpenText, initialAttempt, getQuestionStatus, advanceToNext, attachmentUrls, setIsSubmitting, setAnswers, t],
   );
 
   const handlePrevious = useCallback(async () => {
@@ -253,7 +259,7 @@ export function useQuizNavigation({
 
     const firstOmittedIdx = answers.findIndex((ans, idx) => {
       const q = initialAttempt.questions[idx];
-      if (q.questionSnapshot.type === 'open_text') {
+      if (isTextType(q.questionSnapshot.type)) {
         return (textAnswers[idx] ?? '').trim().length === 0;
       }
       return ans === null;

@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T19:53:34.991Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import Question from '@/models/Question';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig';

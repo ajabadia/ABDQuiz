@@ -13,7 +13,7 @@ import { AdminPageHeader } from '@ajabadia/styles';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import CorpusDashboard from '@/components/admin/CorpusDashboard';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 

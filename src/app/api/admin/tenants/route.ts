@@ -10,7 +10,7 @@
 
 import { NextResponse } from 'next/server';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { getGlobalModel } from '@ajabadia/satellite-sdk';
+import { getGlobalModel } from '@ajabadia/satellite-sdk/db';
 import mongoose from 'mongoose';
 
 export const revalidate = 0; // Evitar el cacheado estático de la API

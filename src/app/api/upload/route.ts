@@ -11,7 +11,7 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-import { rateLimitMongodb } from '@ajabadia/satellite-sdk';
+import { rateLimitMongodb } from '@ajabadia/satellite-sdk/utils';
 
 // ── Allowed MIME types ─────────────────────────────────
 const ALLOWED_TYPES = [

@@ -121,7 +121,7 @@ const ExamConfigSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const ExamConfig: Model<IExamConfig> = getTenantModel<IExamConfig>('ExamConfig', ExamConfigSchema);
 

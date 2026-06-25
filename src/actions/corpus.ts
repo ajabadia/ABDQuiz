@@ -13,7 +13,7 @@
 import { CorpusService } from '@/services/corpus/corpusService';
 import { revalidatePath } from 'next/cache';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 
 interface ActionResponse<T> {
   success: boolean;

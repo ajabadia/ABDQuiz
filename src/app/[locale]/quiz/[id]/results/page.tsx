@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T16:50:22.530Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import ExamAttempt from '@/models/ExamAttempt';
 import ExamConfig from '@/models/ExamConfig'; // Importamos para registrar el modelo en Mongoose
 import { notFound } from 'next/navigation';
@@ -21,7 +21,7 @@ import { type QuizAttemptQuestion } from '@/types/quiz';
 import { getTranslations } from 'next-intl/server';
 import { AuditDetail } from '@/components/quiz/AuditDetail';
 import { ChatThread } from '@/components/chat/ChatThread';
-import { withTenantContext } from '@ajabadia/satellite-sdk';
+import { withTenantContext } from '@ajabadia/satellite-sdk/db';
 
 interface ResultsPageProps {
   params: Promise<{ id: string; locale: string }>;

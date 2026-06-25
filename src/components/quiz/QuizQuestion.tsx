@@ -13,7 +13,9 @@
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { Paperclip, FileText, Image, FileAudio, FileVideo, ExternalLink, Sparkles, Loader2 } from 'lucide-react';
+import { Paperclip, FileText, Image, FileAudio, FileVideo, ExternalLink, Sparkles, Loader2, Upload, Check } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { uploadAttachmentAction } from '@/actions/uploadAttachment';
 
 interface Attachment {
   url: string;
@@ -28,7 +30,7 @@ interface QuestionSnapshot {
   correctOptionIndex: number;
   module: string;
   source: string;
-  type?: 'multiple_choice' | 'open_text';
+  type?: 'multiple_choice' | 'open_text' | 'development';
   /** §12.A — Adjuntos */
   attachments?: Attachment[];
 }
@@ -43,6 +45,9 @@ interface QuizQuestionProps {
   isSubmitting: boolean;
   aiFeedback?: string;
   aiFeedbackLoading?: boolean;
+  attemptId?: string;
+  questionId?: string;
+  onAttachmentUpload?: (url: string) => void;
 }
 
 export default function QuizQuestion({
@@ -54,10 +59,18 @@ export default function QuizQuestion({
   showFeedback,
   isSubmitting,
   aiFeedback,
-  aiFeedbackLoading = false
+  aiFeedbackLoading = false,
+  attemptId,
+  questionId,
+  onAttachmentUpload,
 }: QuizQuestionProps) {
   const t = useTranslations('quiz');
-  const isOpenText = qs.type === 'open_text';
+  const isOpenText = qs.type === 'open_text' || qs.type === 'development';
+  const isDevelopment = qs.type === 'development';
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState('');
+  const [uploadError, setUploadError] = useState('');
   // Refresh comment to trigger Turbopack re-sync of translation bundles
 
   /** §12.A — Render attachment icon based on MIME type */
@@ -117,28 +130,91 @@ export default function QuizQuestion({
       </div>
 
       {isOpenText ? (
-        /* ── Open Text: textarea ── */
-        <div className="flex flex-col gap-3 w-full" role="group" aria-label="Respuesta de desarrollo">
-          <label className="text-[9px] uppercase tracking-[0.2em] font-mono text-muted-foreground font-bold">
-            {t('yourAnswer') || 'Tu respuesta'}
-          </label>
-          <textarea
-            value={textAnswer}
-            onChange={(e) => onTextChange?.(e.target.value)}
-            disabled={isSubmitting || showFeedback}
-            placeholder={t('openTextPlaceholder') || 'Escribe tu respuesta aquí...'}
-            rows={8}
-            className={cn(
-              "w-full bg-card border p-5 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/40",
-              "outline-none resize-y transition-all duration-150",
-              "border-white/10 hover:border-white/20 focus:border-primary/50",
-              (isSubmitting || showFeedback) && "cursor-default opacity-70"
+        <div className="flex flex-col gap-3 w-full">
+          <div role="group" aria-label="Respuesta de desarrollo">
+            <label className="text-[9px] uppercase tracking-[0.2em] font-mono text-muted-foreground font-bold">
+              {t('yourAnswer') || 'Tu respuesta'}
+            </label>
+            <textarea
+              value={textAnswer}
+              onChange={(e) => onTextChange?.(e.target.value)}
+              disabled={isSubmitting || showFeedback}
+              placeholder={t('openTextPlaceholder') || 'Escribe tu respuesta aquí...'}
+              rows={8}
+              className={cn(
+                "w-full bg-card border p-5 text-sm leading-relaxed text-foreground placeholder:text-muted-foreground/40",
+                "outline-none resize-y transition-all duration-150",
+                "border-white/10 hover:border-white/20 focus:border-primary/50",
+                (isSubmitting || showFeedback) && "cursor-default opacity-70"
+              )}
+            />
+            {textAnswer.length > 0 && (
+              <p className="text-[10px] font-mono text-muted-foreground text-right">
+                {textAnswer.length} {t('characters') || 'caracteres'}
+              </p>
             )}
-          />
-          {textAnswer.length > 0 && (
-            <p className="text-[10px] font-mono text-muted-foreground text-right">
-              {textAnswer.length} {t('characters') || 'caracteres'}
-            </p>
+          </div>
+          {isDevelopment && (
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex items-center justify-between">
+                <label className="text-[9px] uppercase tracking-[0.2em] font-mono text-muted-foreground font-bold">
+                  {t('attachment') || 'Archivo adjunto'}
+                </label>
+                {uploadedUrl && (
+                  <span className="flex items-center gap-1.5 text-[10px] text-green-500 font-mono">
+                    <Check className="w-3 h-3" />
+                    {t('uploaded') || 'Subido'}
+                  </span>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                className="hidden"
+                disabled={isSubmitting || showFeedback || uploading}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !attemptId || !questionId) return;
+                  setUploading(true);
+                  setUploadError('');
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  const result = await uploadAttachmentAction(formData, attemptId, questionId);
+                  if (result.success && result.attachmentUrl) {
+                    setUploadedUrl(result.attachmentUrl);
+                    onAttachmentUpload?.(result.attachmentUrl);
+                  } else {
+                    setUploadError(result.error || 'Error al subir archivo');
+                  }
+                  setUploading(false);
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isSubmitting || showFeedback || uploading}
+                className={cn(
+                  "flex items-center gap-2 border border-dashed border-white/10 bg-card/50 px-4 py-3 text-sm text-muted-foreground transition-all",
+                  "hover:border-primary/30 hover:text-foreground",
+                  (isSubmitting || showFeedback || uploading) && "cursor-default opacity-70"
+                )}
+              >
+                {uploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Upload className="w-4 h-4" />
+                )}
+                {uploading
+                  ? (t('uploading') || 'Subiendo...')
+                  : uploadedUrl
+                    ? (t('changeFile') || 'Cambiar archivo')
+                    : (t('uploadFile') || 'Seleccionar archivo (PDF, JPG, PNG, máx 5 MB)')}
+              </button>
+              {uploadError && (
+                <p className="text-[10px] text-destructive font-mono">{uploadError}</p>
+              )}
+            </div>
           )}
         </div>
       ) : (

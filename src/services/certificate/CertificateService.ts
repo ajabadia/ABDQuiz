@@ -10,7 +10,8 @@
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import crypto from 'crypto';
-import { connectDB, logger } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
 import TenantSigningKey from '@/models/TenantSigningKey';
 
 export interface CertificateData {

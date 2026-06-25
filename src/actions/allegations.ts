@@ -12,7 +12,10 @@
 
 import { AllegationService } from '@/services/allegations/allegationService';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
-import { ensureIndustrialAccess, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
+import { withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import { revalidatePath } from 'next/cache';
 import { type IAllegation } from '@/models/Allegation';
 

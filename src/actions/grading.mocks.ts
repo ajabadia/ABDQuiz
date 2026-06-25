@@ -12,15 +12,24 @@ import { vi } from 'vitest';
 
 // ── Mocks ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', () => ({
+vi.mock('@ajabadia/satellite-sdk/db', () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
-  getIndustrialSession: vi.fn(),
   withTenantContext: vi.fn((fn: () => unknown) => fn()),
+}));
+
+vi.mock('@ajabadia/satellite-sdk/auth-middleware', () => ({
+  getIndustrialSession: vi.fn(),
+}));
+
+vi.mock('@ajabadia/satellite-sdk/utils', () => ({
   resolveTargetTenantContext: vi.fn().mockResolvedValue(undefined),
   rateLimitMongodb: {
     getClientIpAsync: vi.fn().mockResolvedValue('127.0.0.1'),
     check: vi.fn().mockResolvedValue(true),
   },
+}));
+
+vi.mock('@ajabadia/satellite-sdk/logger', () => ({
   logger: {
     audit: vi.fn().mockResolvedValue(undefined),
     info: vi.fn(),
@@ -57,16 +66,14 @@ vi.mock('@/models/ExamAttempt', () => {
 // ── Import mock refs ───────────────────────────────────
 
 import * as SessionMod from '@/lib/auth/ensureQuizAccess';
-import * as ResolverMod from '@ajabadia/satellite-sdk';
+import { resolveTargetTenantContext as _resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import * as ExamAttemptMod from '@/models/ExamAttempt';
 import * as AbacMod from '@/lib/auth/abac';
 
 export const { ensureAdminOrProfessor } = SessionMod as unknown as {
   ensureAdminOrProfessor: ReturnType<typeof vi.fn>;
 };
-export const { resolveTargetTenantContext } = ResolverMod as unknown as {
-  resolveTargetTenantContext: ReturnType<typeof vi.fn>;
-};
+export const resolveTargetTenantContext = _resolveTargetTenantContext as unknown as ReturnType<typeof vi.fn>;
 export const { mockFind, mockFindById } = ExamAttemptMod as unknown as {
   mockFind: ReturnType<typeof vi.fn>;
   mockFindById: ReturnType<typeof vi.fn>;

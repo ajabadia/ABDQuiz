@@ -11,7 +11,7 @@
 import { getTranslations } from 'next-intl/server';
 import { AdminPageHeader } from '@ajabadia/styles';
 import { GlobalFooter } from '@ajabadia/ecosystem-widgets';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import { getAttemptsAction } from '@/actions/quiz';
 import AttemptsManager from '@/components/admin/AttemptsManager';

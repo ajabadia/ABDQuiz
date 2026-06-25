@@ -8,7 +8,8 @@
  * @lastUpdated 2026-06-23T23:22:29.278Z
  */
 
-import { evaluateAccess, InsufficientPrivilegesError } from '@ajabadia/satellite-sdk';
+import { InsufficientPrivilegesError } from '@ajabadia/satellite-sdk/auth-middleware';
+import { evaluateAccess } from '@ajabadia/satellite-sdk/utils';
 
 export interface AssertAccessParams {
   userId: string;

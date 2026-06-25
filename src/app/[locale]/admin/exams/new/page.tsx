@@ -9,7 +9,7 @@
  */
 
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import { ArrowLeft, FolderOpen } from 'lucide-react';

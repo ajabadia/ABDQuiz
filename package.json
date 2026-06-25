@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "migrate": "node scripts/migrate-tenants.mjs",
     "dev": "next dev -p 5020 --webpack",
-    "build": "next build --webpack",
+    "build": "node scripts/migrate-tenants.mjs && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -18,7 +19,7 @@
   "dependencies": {
     "@ajabadia/ecosystem-widgets": "^1.0.10",
     "@ajabadia/i18n": "^1.0.0",
-    "@ajabadia/satellite-sdk": "^1.0.11",
+    "@ajabadia/satellite-sdk": "workspace:*",
     "@ajabadia/styles": "^1.0.15",
     "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-progress": "^1.1.8",

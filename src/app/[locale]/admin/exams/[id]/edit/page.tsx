@@ -9,13 +9,15 @@
  */
 
 import { getTranslations } from 'next-intl/server';
-import { ensureIndustrialAccess, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { ensureIndustrialAccess } from '@ajabadia/satellite-sdk/auth-middleware';
+import { withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import { resolveTenantContext } from '@/lib/tenant-context';
 import ExamConfigForm from '@/components/admin/ExamConfigForm';
 import ExamConfig from '@/models/ExamConfig';
 import { ExamAuditorService } from '@/services/quiz/ExamAuditorService';
 import { notFound } from 'next/navigation';
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import { ArrowLeft, FolderOpen } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { AdminPageHeader } from '@ajabadia/styles';

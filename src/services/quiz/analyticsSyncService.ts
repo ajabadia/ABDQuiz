@@ -12,7 +12,7 @@ import Course from '@/models/Course';
 import ExamAttempt from '@/models/ExamAttempt';
 import UserCourseSummary, { IUserCourseSummary } from '@/models/UserCourseSummary';
 import CourseAnalytics from '@/models/CourseAnalytics';
-import { logger } from '@ajabadia/satellite-sdk';
+import { logger } from '@ajabadia/satellite-sdk/logger';
 import {
   getCourseByExamConfig,
   getUserAttemptsForCourse,

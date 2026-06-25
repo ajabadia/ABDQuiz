@@ -146,6 +146,7 @@ function setupHook(overrides: HookParams = {}) {
     currentIndex: overrides.currentIndex ?? 0,
     answers: answersState.current,
     textAnswers: textAnswersState.current,
+    attachmentUrls: {},
     selectedOption: overrides.selectedOption ?? null,
     isSubmitting: overrides.isSubmitting ?? false,
     setCurrentIndex,

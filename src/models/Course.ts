@@ -22,6 +22,7 @@ export interface ICourse extends Document {
   name: string;
   description?: string;
   tags: string[];
+  professors: string[];
   learningPath: {
     examConfigId: mongoose.Types.ObjectId;
     prerequisites: mongoose.Types.ObjectId[];
@@ -40,6 +41,7 @@ const CourseSchema = new Schema<ICourse>(
     name: { type: String, required: true },
     description: { type: String },
     tags: [String],
+    professors: [{ type: String, index: true }],
     objectives: [{
       module: { type: String, required: true },
       block: { type: String, required: true },
@@ -60,7 +62,7 @@ const CourseSchema = new Schema<ICourse>(
 // Índice compuesto: cursos activos dentro de un mismo espacio
 CourseSchema.index({ spaceId: 1, active: 1 });
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const Course: Model<ICourse> = getTenantModel<ICourse>('Course', CourseSchema);
 

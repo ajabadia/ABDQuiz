@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T19:53:11.162Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';
 import CorpusImportRow from '@/models/CorpusImportRow';

@@ -11,7 +11,9 @@
 'use server';
 
 import crypto from 'crypto';
-import { connectDB, getIndustrialSession, withTenantContext, logger } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
 import Certificate from '@/models/Certificate';
 import Course from '@/models/Course';
 import { CertificateService, type CertificateData } from '@/services/certificate/CertificateService';

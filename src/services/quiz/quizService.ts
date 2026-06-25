@@ -8,7 +8,7 @@
  * @lastUpdated 2026-06-23T23:24:07.219Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import ExamAttempt from '@/models/ExamAttempt';
 import { type IExamAttempt } from '@/models/ExamAttempt';
 import { type IExamConfig } from '@/models/ExamConfig';
@@ -54,7 +54,8 @@ export class QuizService {
     status: QuizAttemptQuestion['status'],
     userId: string,
     attemptToken?: string,
-    textAnswer?: string
+    textAnswer?: string,
+    attachmentUrl?: string
   ): Promise<IExamAttempt> {
     await connectDB();
 
@@ -82,6 +83,9 @@ export class QuizService {
     question.isCorrect = status === 'correcta';
     if (textAnswer !== undefined) {
       question.manualTextAnswer = textAnswer;
+    }
+    if (attachmentUrl !== undefined) {
+      question.attachmentUrl = attachmentUrl;
     }
 
     await attempt.save();

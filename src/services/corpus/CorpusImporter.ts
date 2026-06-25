@@ -8,11 +8,11 @@
  * @lastUpdated 2026-06-23T19:53:07.729Z
  */
 
-import { connectDB } from '@ajabadia/satellite-sdk';
+import { connectDB } from '@ajabadia/satellite-sdk/db';
 import Question from '@/models/Question';
 import CorpusImport from '@/models/CorpusImport';
 import CorpusImportRow from '@/models/CorpusImportRow';
-import { IngestQuestionSchema } from '@/lib/validation/corpusSchema';
+import { IngestQuestionSchema } from '@ajabadia/satellite-sdk/contracts';
 import { generateQuestionHash, calculateSemanticHashes } from '@/lib/corpus/hash';
 import Papa from 'papaparse';
 import mongoose from 'mongoose';

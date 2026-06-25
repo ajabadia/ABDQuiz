@@ -25,8 +25,8 @@ import {
 
 // ── Mocks hoisted (se ejecutan antes que vi.mock) ──────────────
 
-const mockSpaceFind = vi.hoisted(() => vi.fn());
-const mockSpaceFindOne = vi.hoisted(() => vi.fn());
+const mockGetActiveSpaces = vi.hoisted(() => vi.fn());
+const mockGetSpaceById = vi.hoisted(() => vi.fn());
 const mockCourseFind = vi.hoisted(() => vi.fn());
 const mockCourseFindOne = vi.hoisted(() => vi.fn());
 const mockQuestionFindOne = vi.hoisted(() => vi.fn());
@@ -38,7 +38,7 @@ const mockCreateImportRow = vi.hoisted(() => vi.fn());
 //  Mocks globales (requieren hoisting de vitest)
 // ──────────────────────────────────────────────
 
-vi.mock('@ajabadia/satellite-sdk', () => ({
+vi.mock('@ajabadia/satellite-sdk/db', () => ({
   connectDB: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -61,13 +61,12 @@ vi.mock('mongoose', () => {
   };
 });
 
-vi.mock('@/models/Space', () => {
-  class MockSpace {
-    static find = mockSpaceFind;
-    static findOne = mockSpaceFindOne;
-  }
-  return { default: MockSpace };
-});
+vi.mock('@/services/space-client', () => ({
+  SpaceServiceClient: {
+    getActiveSpaces: mockGetActiveSpaces,
+    getSpaceById: mockGetSpaceById,
+  },
+}));
 
 vi.mock('@/models/Course', () => {
   class MockCourse {
@@ -128,11 +127,7 @@ describe('Wizard de Ingestión — Integración (select_context → remediation_
     expect(needsContextCount).toBe(1);
 
     // Step 1: select_context
-    mockSpaceFind.mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        lean: vi.fn().mockResolvedValue([ACTIVE_SPACE]),
-      }),
-    } as any);
+    mockGetActiveSpaces.mockResolvedValue([ACTIVE_SPACE]);
 
     const { getActiveSpacesAction } = await import('@/actions/hierarchyValidation');
     const spacesResult = await getActiveSpacesAction();
@@ -151,9 +146,9 @@ describe('Wizard de Ingestión — Integración (select_context → remediation_
     expect(contextInjected[2].spaceId).toBe('space-active');
 
     // Step 2: remediation_ids
-    mockSpaceFindOne
-      .mockReturnValueOnce(mockFindOneResult(null))
-      .mockReturnValueOnce(mockFindOneResult(ACTIVE_SPACE));
+    mockGetSpaceById
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(ACTIVE_SPACE);
 
     const { validateHierarchyAction } = await import('@/actions/hierarchyValidation');
 
@@ -222,7 +217,7 @@ describe('Wizard de Ingestión — Integración (select_context → remediation_
     const afterSkip = [...questions];
     expect(afterSkip[0].spaceId).toBeUndefined();
 
-    mockSpaceFindOne.mockReturnValueOnce(mockFindOneResult(null));
+    mockGetSpaceById.mockResolvedValueOnce(null);
 
     const { validateHierarchyAction } = await import('@/actions/hierarchyValidation');
     const validation = await validateHierarchyAction('space-bad', undefined);
@@ -261,7 +256,7 @@ describe('Wizard de Ingestión — Integración (select_context → remediation_
       makeQuestion({ spaceId: 'space-bad' }),
     ];
 
-    mockSpaceFindOne.mockReturnValueOnce(mockFindOneResult(null));
+    mockGetSpaceById.mockResolvedValueOnce(null);
 
     const { validateHierarchyAction } = await import('@/actions/hierarchyValidation');
     const validation = await validateHierarchyAction('space-bad', undefined);
@@ -297,7 +292,7 @@ describe('Wizard de Ingestión — Integración (select_context → remediation_
   it('debe permitir anular el courseId y mantener solo el spaceId', async () => {
     const question = makeQuestion({ spaceId: 'space-active', courseId: 'course-inactive' });
 
-    mockSpaceFindOne.mockReturnValueOnce(mockFindOneResult(ACTIVE_SPACE));
+    mockGetSpaceById.mockResolvedValueOnce(ACTIVE_SPACE);
     mockCourseFindOne.mockReturnValueOnce(mockFindOneResult(null));
 
     const { validateHierarchyAction } = await import('@/actions/hierarchyValidation');

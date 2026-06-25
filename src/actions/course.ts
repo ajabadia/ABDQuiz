@@ -10,7 +10,10 @@
 
 'use server';
 
-import { connectDB, getIndustrialSession, logger, withTenantContext, resolveTargetTenantContext } from '@ajabadia/satellite-sdk';
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { connectDB, withTenantContext } from '@ajabadia/satellite-sdk/db';
+import { logger } from '@ajabadia/satellite-sdk/logger';
+import { resolveTargetTenantContext } from '@ajabadia/satellite-sdk/utils';
 import Course from '@/models/Course';
 import { revalidatePath } from 'next/cache';
 
@@ -40,6 +43,9 @@ export async function listCoursesAction(spaceId?: string, tenantIdParam?: string
       const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
 
       const query: Record<string, unknown> = { tenantId: activeTenantId, active: true };
+      if (session.user.role === 'PROFESSOR') {
+        query.professors = session.user.id;
+      }
       if (spaceId) query.spaceId = spaceId;
 
       const docs = await Course.find(query)
@@ -164,6 +170,10 @@ export async function updateCourseAction(
         return { success: false, error: 'Acceso no autorizado' };
       }
 
+      if (session.user.role === 'PROFESSOR' && !course.professors.includes(session.user.id)) {
+        return { success: false, error: 'No tienes permisos para modificar este curso' };
+      }
+
       const updateData: Record<string, unknown> = {};
       if (data.spaceId) updateData.spaceId = data.spaceId;
       if (data.name !== undefined) {
@@ -230,6 +240,10 @@ export async function toggleCourseActiveAction(id: string, tenantIdParam?: strin
         return { success: false, error: 'Acceso no autorizado' };
       }
 
+      if (session.user.role === 'PROFESSOR' && !course.professors.includes(session.user.id)) {
+        return { success: false, error: 'No tienes permisos para modificar este curso' };
+      }
+
       const newActive = !course.active;
       const previousState = course.toObject() as unknown as Record<string, unknown>;
       await Course.findByIdAndUpdate(id, { $set: { active: newActive } });
@@ -284,6 +298,10 @@ export async function deleteCourseAction(id: string, tenantIdParam?: string) {
       const activeTenantId = explicitCtx?.tenantId || session.user.tenantId;
       if (course.tenantId !== activeTenantId && session.user.role !== 'SUPER_ADMIN') {
         return { success: false, error: 'Acceso no autorizado' };
+      }
+
+      if (session.user.role === 'PROFESSOR' && !course.professors.includes(session.user.id)) {
+        return { success: false, error: 'No tienes permisos para eliminar este curso' };
       }
 
       const previousState = course.toObject() as unknown as Record<string, unknown>;

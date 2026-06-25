@@ -22,6 +22,7 @@ import {
   ChevronDown,
   MessageSquare,
   FileText,
+  ExternalLink,
 } from 'lucide-react';
 import type { AttemptDetailQuestion } from '@/actions/gradingTypes';
 
@@ -43,7 +44,7 @@ export function QuestionCorrectionCard({
   const t = useTranslations('grading');
   const [expanded, setExpanded] = useState(true);
 
-  const isOpenText = question.type === 'open_text';
+  const isOpenText = question.type === 'open_text' || question.type === 'development';
 
   // For open_text: show manualTextAnswer; for multiple_choice: show the selected option text
   const studentAnswerText = isOpenText
@@ -108,7 +109,7 @@ export function QuestionCorrectionCard({
             </p>
           </div>
 
-          {/* Open text: show student's written answer */}
+          {/* Open text / development: show student's written answer */}
           {isOpenText ? (
             <div>
               <div className="p-3 bg-amber-500/5 border border-amber-500/20">
@@ -126,6 +127,19 @@ export function QuestionCorrectionCard({
                   </p>
                 )}
               </div>
+              {question.attachmentUrl && (
+                <div className="mt-2">
+                  <a
+                    href={question.attachmentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[10px] font-mono text-primary hover:text-primary/80 transition-colors border border-primary/20 px-2.5 py-1.5"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    {t('viewAttachment') || 'Ver adjunto'}
+                  </a>
+                </div>
+              )}
             </div>
           ) : (
             /* Multiple choice: show student answer vs correct answer */

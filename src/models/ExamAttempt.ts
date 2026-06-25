@@ -38,6 +38,7 @@ export interface IExamAttempt extends Document {
     questionSnapshot: QuizQuestionSnapshot;
     selectedOptionIndex?: number | null;
     manualTextAnswer?: string;
+    attachmentUrl?: string;
     manualPointsAwarded?: number;
     feedback?: string;
     aiFeedback?: string;
@@ -98,6 +99,7 @@ const ExamAttemptSchema: Schema = new Schema(
         questionSnapshot: Schema.Types.Mixed,
         selectedOptionIndex: Number,
         manualTextAnswer: String,
+        attachmentUrl: String,
         manualPointsAwarded: Number,
         feedback: String,
         aiFeedback: String,
@@ -118,7 +120,7 @@ const ExamAttemptSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-import { getTenantModel } from '@ajabadia/satellite-sdk';
+import { getTenantModel } from '@ajabadia/satellite-sdk/db';
 
 const ExamAttempt = getTenantModel<IExamAttempt>('ExamAttempt', ExamAttemptSchema);
 

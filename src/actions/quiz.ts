@@ -20,6 +20,7 @@ import { resolveTargetTenantContext, rateLimitMongodb } from '@ajabadia/satellit
 import ExamAttempt from '@/models/ExamAttempt';
 import { ensureAdminOrProfessor } from '@/lib/auth/ensureQuizAccess';
 import { AnalyticsSyncService } from '@/services/quiz/analyticsSyncService';
+import { publishAttemptStarted, publishAttemptCompleted } from '@/services/quiz/quiz-publisher';
 
 import type { SerializedAttempt } from './quizTypes';
 import { sanitizeAttempt } from './quizHelpers';
@@ -68,6 +69,9 @@ export async function startQuizAction(examConfigId: string) {
           examConfigId
         }
       });
+
+      // Fire-and-forget event bus notification
+      publishAttemptStarted(attemptId, activeTenantId, userId, examConfigId);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       await logger.audit({
@@ -198,6 +202,9 @@ export async function finishQuizAction(attemptId: string, attemptToken?: string,
 
       // Decoupled sync for course and user analytics (fire-and-forget)
       AnalyticsSyncService.sync(attemptId, activeTenantId, session.user.id);
+
+      // Fire-and-forget event bus notification
+      publishAttemptCompleted(attemptId, activeTenantId, session.user.id);
       
       await logger.audit({
         tenantId: activeTenantId,

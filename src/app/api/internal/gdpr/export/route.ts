@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona la solicitud POST para exportar datos del usuario en formato GDPR.
+ * @purpose_en Handles the POST request for exporting user data in GDPR format.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:3,sig:1i62udc
+ * @lastUpdated 2026-06-26T06:17:51.962Z
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { GDPRService } from '@/services/gdpr-service';

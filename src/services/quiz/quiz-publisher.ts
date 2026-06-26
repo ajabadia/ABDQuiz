@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona los eventos de intentos de quiz mediante un autobús de eventos.
+ * @purpose_en Manages the publishing of quiz attempt events using an event bus.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Low
+ * @fingerprint exports:2,imports:1,sig:192ltym
+ * @lastUpdated 2026-06-26T06:17:57.390Z
+ */
+
 import { createPublisher, SystemEventType } from '@ajabadia/satellite-sdk/event-bus';
 
 const publisher = createPublisher({ source: 'abdquiz' });

@@ -1,3 +1,13 @@
+/**
+ * @purpose Gestiona el exportación de datos del usuario para cumplir con la normativa GDPR.
+ * @purpose_en Manages the export of user data for GDPR compliance in ABDQuiz.
+ * @refactorable false
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:1,imports:2,sig:g6k9av
+ * @lastUpdated 2026-06-26T06:17:54.880Z
+ */
+
 import { connectDB, getTenantConnection } from '@ajabadia/satellite-sdk/db';
 import JSZip from 'jszip';
 

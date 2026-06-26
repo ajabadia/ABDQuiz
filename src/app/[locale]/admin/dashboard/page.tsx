@@ -1,11 +1,11 @@
 /**
- * @purpose Renderiza la página de dashboard administrativo con indicadores clave de desempeño y datos relevantes.
+ * @purpose Renderiza la página de panel administrativo con indicadores clave de desempeño y datos relevantes.
  * @purpose_en Renders the admin dashboard page with key performance indicators (KPIs) and relevant data.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:11,sig:1jn4kms
- * @lastUpdated 2026-06-25T09:19:02.498Z
+ * @fingerprint exports:1,imports:12,sig:zmvhrw
+ * @lastUpdated 2026-06-26T10:02:10.202Z
  */
 
 import { getTranslations } from 'next-intl/server';

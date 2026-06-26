@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona configuraciones de exámenes para inquilinos, incluyendo la recuperación, creación y clonación de configuraciones.
+ * @purpose Gestiona configuraciones de exámenes para los inquilinos, incluyendo la recuperación, creación y clonación de configuraciones.
  * @purpose_en Manages exam configurations for tenants, including fetching, creating, and cloning configurations.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:5,imports:6,sig:1pyhdcn
- * @lastUpdated 2026-06-24T10:32:20.782Z
+ * @fingerprint exports:5,imports:9,sig:1atgmji
+ * @lastUpdated 2026-06-26T10:01:20.386Z
  */
 
 'use server';

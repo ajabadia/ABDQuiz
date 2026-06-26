@@ -1,11 +1,11 @@
 /**
- * @purpose Valida las permisiones del usuario según las reglas de Control de Acceso Base (ABAC) utilizando el motor Guardian Engine.
+ * @purpose Valida las permisiones del usuario según las reglas de acceso basado en control de acceso (ABAC) utilizando el motor Guardian Engine.
  * @purpose_en Validates user permissions based on Access-Based Access Control (ABAC) rules using the Guardian Engine.
  * @refactorable false
  * @classification Helper Utility
  * @complexity Low
- * @fingerprint exports:2,imports:1,sig:xe7cw6
- * @lastUpdated 2026-06-23T23:22:29.278Z
+ * @fingerprint exports:2,imports:2,sig:7vduyb
+ * @lastUpdated 2026-06-26T10:02:57.585Z
  */
 
 import { InsufficientPrivilegesError } from '@ajabadia/satellite-sdk/auth-middleware';

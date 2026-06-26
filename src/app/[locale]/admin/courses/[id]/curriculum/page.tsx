@@ -1,11 +1,11 @@
 /**
  * @purpose Renders a página para gestionar el currículum de un curso, incluyendo mostrar y editar objetivos.
  * @purpose_en Renders a page for managing the curriculum of a course, including displaying and editing objectives.
- * @refactorable false
+ * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:11,sig:1oqdx74
- * @lastUpdated 2026-06-24T08:18:12.337Z
+ * @fingerprint exports:1,imports:13,sig:13hmuyy
+ * @lastUpdated 2026-06-26T10:02:06.266Z
  */
 
 import { getTranslations } from 'next-intl/server';

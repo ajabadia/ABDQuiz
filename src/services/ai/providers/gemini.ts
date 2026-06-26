@@ -1,11 +1,11 @@
 /**
- * @purpose Proporciona retroalimentación educativa a los estudiantes basada en sus respuestas a preguntas utilizando el modelo AI Gemini y plantillas configurables.
+ * @purpose Proporciona retroalimentación educativa a los estudiantes basada en sus respuestas a preguntas utilizando Gemini AI y plantillas de instrucciones personalizables.
  * @purpose_en Generates educational feedback for students based on their answers to questions using Gemini AI and configurable prompt templates.
  * @refactorable false
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:1,imports:5,sig:6dm8zt
- * @lastUpdated 2026-06-24T11:30:00.000Z
+ * @fingerprint exports:1,imports:3,sig:144hlp0
+ * @lastUpdated 2026-06-26T10:03:20.935Z
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';

@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona un esquema de Mongoose y modelo para la entidad Curso en la aplicación ABDQuiz, incluyendo campos para tenantId, spaceId, nombre, descripción, etiquetas, ruta de aprendizaje, estado activo, creado por, creado el, actualizado el.
+ * @purpose Gestiona un esquema de mongoose y modelo para la entidad Course en la aplicación ABDQuiz, incluyendo campos para tenantId, spaceId, nombre, descripción, etiquetas, ruta de aprendizaje, estado activo, creado por, creado el, y actualizado.
  * @purpose_en Defines a Mongoose schema and model for the Course entity in the ABDQuiz application, including fields for tenantId, spaceId, name, description, tags, learningPath, active status, createdBy, createdAt, and updatedAt.
  * @refactorable false
  * @classification Type Definition
  * @complexity Low
- * @fingerprint exports:2,imports:2,sig:1aj5xah
- * @lastUpdated 2026-06-24T08:20:58.608Z
+ * @fingerprint exports:2,imports:2,sig:tix1gg
+ * @lastUpdated 2026-06-26T10:03:04.718Z
  */
 
 import mongoose, { Schema, Document, Model } from 'mongoose';

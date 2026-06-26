@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona el recuperado y el renderizado de plantillas de instrucciones con valores por defecto en caso de inaccesibilidad de la base de datos.
+ * @purpose Gestiona el recuperado y el renderizado de plantillas de instrucciones con valores por defecto en caso de inaccesibilidad del banco de datos.
  * @purpose_en Manages retrieval and rendering of prompt templates with fallback defaults if the database is unavailable.
  * @refactorable false
  * @classification Business Service
  * @complexity Low
- * @fingerprint exports:4,imports:2,sig:n5b3ge
- * @lastUpdated 2026-06-24T10:55:39.002Z
+ * @fingerprint exports:4,imports:3,sig:1yk5xnd
+ * @lastUpdated 2026-06-26T10:03:17.962Z
  */
 
 import { connectDB } from '@ajabadia/satellite-sdk/db';

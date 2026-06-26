@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona la creación y caché de un proveedor de inteligencia artificial basado en variables ambientales disponibles y contexto de tenant.
+ * @purpose Gestiona la creación y caché de un proveedor de inteligencia artificial según variables ambientales disponibles y contexto del inquilino.
  * @purpose_en Manages the creation and caching of an AI provider based on available environment variables and tenant context.
  * @refactorable false
  * @classification Business Service
  * @complexity Low
- * @fingerprint exports:2,imports:2,sig:b2czf5
- * @lastUpdated 2026-06-24T11:30:00.000Z
+ * @fingerprint exports:1,imports:2,sig:1pl3x90
+ * @lastUpdated 2026-06-26T10:03:15.128Z
  */
 
 import type { AIProvider } from './types';

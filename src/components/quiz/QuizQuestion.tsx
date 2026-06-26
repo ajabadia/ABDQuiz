@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * @purpose Gestiona una pregunta de quiz con opciones y maneja las interacciones del usuario, incluyendo seleccionar una respuesta o proporcionar texto de entrada.
+ * @purpose Gestiona una pregunta de quiz con opciones y maneja las interacciones del usuario, incluyendo seleccionar una respuesta o ingresar texto.
  * @purpose_en Renders a quiz question with options and handles user interactions, including selecting an answer or providing text input.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:4,sig:ftqqae
- * @lastUpdated 2026-06-23T23:22:01.440Z
+ * @fingerprint exports:1,imports:6,sig:10wpqdh
+ * @lastUpdated 2026-06-26T10:02:46.003Z
  */
 
 import { Badge } from '@/components/ui/badge';

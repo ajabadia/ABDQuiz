@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona y recupera el progreso del estudiante a nivel objetivo curricular para cada curso.
+ * @purpose Gestiona y recupera el progreso estudiantil a nivel objetivo del currículum para cada curso.
  * @purpose_en Manages and retrieves student progress at the curriculum objective level for each course.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:4,imports:5,sig:uhgk1j
- * @lastUpdated 2026-06-24T10:54:44.539Z
+ * @fingerprint exports:4,imports:8,sig:13jm89q
+ * @lastUpdated 2026-06-26T10:00:46.556Z
  */
 
 'use server';

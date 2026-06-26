@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona el recuperar y agrupar datos para la consola del estudiante, incluyendo exámenes disponibles, intentos recientes, total intentos, intentos completados y puntuación media.
+ * @purpose Gestiona el recuperado y la agregación de datos para la consola del estudiante, incluyendo exámenes disponibles, intentos recientes, total de intentos, intentos completados y puntuación media.
  * @purpose_en Manages the retrieval and aggregation of data for the student's dashboard, including available exams, recent attempts, total attempts, completed attempts, and average score.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:3,imports:5,sig:1nbm30t
- * @lastUpdated 2026-06-24T10:32:04.911Z
+ * @fingerprint exports:3,imports:8,sig:1f6dtck
+ * @lastUpdated 2026-06-26T10:01:01.822Z
  */
 
 'use server';

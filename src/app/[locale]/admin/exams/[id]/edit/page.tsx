@@ -1,11 +1,11 @@
 /**
- * @purpose Renderiza una página para editar una configuración de examen en la aplicación ABDQuiz, incluyendo manejo de formularios y navegación.
+ * @purpose Renderiza una página para editar la configuración de un examen en la aplicación ABDQuiz, incluyendo manejo de formularios y navegación.
  * @purpose_en Renders a page for editing an exam configuration in the ABDQuiz application, including form handling and navigation.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:14,sig:1jt97w
- * @lastUpdated 2026-06-24T08:20:50.897Z
+ * @fingerprint exports:1,imports:16,sig:qzbdnq
+ * @lastUpdated 2026-06-26T10:02:15.256Z
  */
 
 import { getTranslations } from 'next-intl/server';

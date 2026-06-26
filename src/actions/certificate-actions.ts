@@ -1,11 +1,11 @@
 /**
  * @purpose Gestiona la generación y recuperación de certificados para cursos dentro de un inquilino.
- * @purpose_en ** Manages the generation and retrieval of certificates for courses within a tenant.
- * @refactorable ** true (contains business logic and async operations)
- * @classification ** Business Service
- * @complexity ** Medium
- * @fingerprint exports:4,imports:7,sig:16gg9h1
- * @lastUpdated 2026-06-24T12:54:21.748Z
+ * @purpose_en Manages the generation and retrieval of certificates for courses within a tenant.
+ * @refactorable true (contains business logic and async operations)
+ * @classification Business Service
+ * @complexity Medium
+ * @fingerprint exports:4,imports:9,sig:h4vtin
+ * @lastUpdated 2026-06-26T10:00:38.250Z
  */
 
 'use server';

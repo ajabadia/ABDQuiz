@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona un esquema de Mongoose y modelo para la entidad Pregunta en la aplicación ABDQuiz, incluyendo campos para detalles de pregunta, metadatos y archivos adjuntos.
+ * @purpose Gestiona un esquema de mongoose y modelo para la entidad Pregunta en la aplicación ABDQuiz, incluyendo campos para detalles de pregunta, metadatos y archivos adjuntos.
  * @purpose_en Defines a Mongoose schema and model for the Question entity in the ABDQuiz application, including fields for question details, metadata, and attachments.
  * @refactorable false
  * @classification Type Definition
  * @complexity Low
- * @fingerprint exports:1,imports:2,sig:1jlzjan
- * @lastUpdated 2026-06-23T23:23:12.858Z
+ * @fingerprint exports:1,imports:2,sig:141f44l
+ * @lastUpdated 2026-06-26T10:20:30.375Z
  */
 
 import mongoose, { Schema, Document, Model } from 'mongoose';

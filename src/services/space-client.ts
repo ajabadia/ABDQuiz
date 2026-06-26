@@ -4,8 +4,8 @@
  * @refactorable false
  * @classification Business Service
  * @complexity Low
- * @fingerprint exports:1,imports:1,sig:ibngj6
- * @lastUpdated 2026-06-25T09:20:18.710Z
+ * @fingerprint exports:1,imports:1,sig:8xip5d
+ * @lastUpdated 2026-06-26T10:03:33.560Z
  */
 
 /**

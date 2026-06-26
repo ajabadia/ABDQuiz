@@ -6,8 +6,8 @@
  * @refactorable false
  * @classification Custom Hook
  * @complexity Medium
- * @fingerprint exports:1,imports:2,sig:140bikh
- * @lastUpdated 2026-06-23T23:22:12.757Z
+ * @fingerprint exports:1,imports:2,sig:1yb7jaq
+ * @lastUpdated 2026-06-26T10:02:53.284Z
  */
 
 import { useState, useCallback } from 'react';

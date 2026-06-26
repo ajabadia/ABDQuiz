@@ -4,8 +4,8 @@
  * @refactorable false
  * @classification Type Definition
  * @complexity Low
- * @fingerprint exports:8,imports:2,sig:1gkz9eh
- * @lastUpdated 2026-06-23T23:24:11.577Z
+ * @fingerprint exports:8,imports:2,sig:1he8vyk
+ * @lastUpdated 2026-06-26T10:03:35.952Z
  */
 
 import { type IExamAttempt } from "@/models/ExamAttempt";

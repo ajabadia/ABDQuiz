@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona roles de prueba dentro de un inquilino.
- * @purpose_en Handles API requests for assigning and managing quiz roles within a tenant.
+ * @purpose Gestiona solicitudes de API para asignar y gestionar roles de quiz dentro de un inquilino.
+ * @purpose_en Manages API requests for assigning and managing quiz roles within a tenant.
  * @refactorable true (contains business logic and database operations)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:4,imports:3,sig:151h98
- * @lastUpdated 2026-06-25T09:18:55.916Z
+ * @fingerprint exports:4,imports:3,sig:kcx6kd
+ * @lastUpdated 2026-06-26T10:02:02.315Z
  */
 
 import { NextRequest, NextResponse } from 'next/server';

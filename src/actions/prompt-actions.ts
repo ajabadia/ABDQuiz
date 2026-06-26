@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona plantillas de prompt LLM con operaciones CRUD, validación de placeholder, versionamiento inmutable y registro de auditoria.
+ * @purpose Gestiona plantillas de LLM con operaciones CRUD, validación de placeholder, versionamiento inmutable y registro de auditoria.
  * @purpose_en Manages LLM prompt templates with CRUD operations, placeholder validation, immutable versioning, and audit logging.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:5,imports:4,sig:178lq0n
- * @lastUpdated 2026-06-24T10:54:51.055Z
+ * @fingerprint exports:5,imports:8,sig:1xvped6
+ * @lastUpdated 2026-06-26T10:01:48.264Z
  */
 
 'use server';

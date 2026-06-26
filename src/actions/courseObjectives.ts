@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona el recuperar y actualizar los objetivos del curso para un curso específico en el proyecto ABDSuite.
+ * @purpose Gestiona el recuperar y actualizar los objetivos del curso para un curso determinado en el proyecto ABDSuite.
  * @purpose_en Manages the retrieval and updating of course objectives for a given course in the ABDSuite project.
- * @refactorable false
+ * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:2,imports:3,sig:1b6j0pp
- * @lastUpdated 2026-06-24T10:31:57.690Z
+ * @fingerprint exports:2,imports:6,sig:15ro49w
+ * @lastUpdated 2026-06-26T10:00:54.765Z
  */
 
 'use server';

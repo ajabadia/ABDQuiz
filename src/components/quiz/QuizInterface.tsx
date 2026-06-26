@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * @purpose Gestiona y renderiza la interfaz de usuario para un quiz, incluyendo la presentación de preguntas, navegación, retroalimentación y envío.
- * @purpose_en Renders and manages the user interface for a quiz, including question display, navigation, feedback, and submission.
+ * @purpose Gestiona y renderiza la interfaz del usuario para un quiz, incluyendo la presentación de preguntas, navegación, retroalimentación y envío.
+ * @purpose_en Manages and renders the user interface for a quiz, including question display, navigation, feedback, and submission.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:17,sig:1h4pvbb
- * @lastUpdated 2026-06-23T20:04:03.117Z
+ * @fingerprint exports:1,imports:18,sig:h48cza
+ * @lastUpdated 2026-06-26T10:02:41.264Z
  */
 
 import { useState, useRef } from 'react';

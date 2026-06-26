@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona y resuelve las acusaciones técnicas dentro de un quiz, asegurando una autorización adecuada y validando caminos.
+ * @purpose Gestiona la presentación y resolución de acusaciones técnicas dentro de una prueba, asegurando la autorización adecuada y validando caminos.
  * @purpose_en Manages the submission and resolution of technical allegations within a quiz, ensuring proper authorization and revalidating paths.
  * @refactorable true (contains multiple actions with similar structures)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:4,imports:5,sig:3h0qiw
- * @lastUpdated 2026-06-24T10:31:47.919Z
+ * @fingerprint exports:4,imports:8,sig:ghcn9r
+ * @lastUpdated 2026-06-26T10:00:34.831Z
  */
 
 'use server';

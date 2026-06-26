@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona y procesa datos de calificaciones para intentos de prueba, incluyendo la extracción de previsualizaciones de texto abierto y el cálculo de puntos básicos según la dificultad.
+ * @purpose Gestiona y procesa datos de calificaciones para intentos de prueba, incluyendo extraer previsualizaciones de texto abierto y calcular puntos base según dificultad.
  * @purpose_en Manages and processes grading data for quiz attempts, including extracting open text previews and calculating base points based on difficulty.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:9,imports:0,sig:fwm804
- * @lastUpdated 2026-06-23T19:47:53.061Z
+ * @fingerprint exports:9,imports:0,sig:1s7v18n
+ * @lastUpdated 2026-06-26T10:01:39.413Z
  */
 
 export interface OpenTextPreviewItem {

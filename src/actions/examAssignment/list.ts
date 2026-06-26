@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona el recuperar y serializar las asignaciones de examenes activas para un inquilino, aplicando filtros opcionales.
+ * @purpose Gestiona el recuperar y serializar asignaciones de examenes activas para un inquilino, aplicando filtros opcionales.
  * @purpose_en Manages the retrieval and serialization of active exam assignments for a tenant, applying optional filters.
  * @refactorable true (contains multiple functions with distinct responsibilities)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:2,imports:5,sig:u9q0ma
- * @lastUpdated 2026-06-24T10:32:15.213Z
+ * @fingerprint exports:2,imports:8,sig:13wrwcp
+ * @lastUpdated 2026-06-26T10:01:10.637Z
  */
 
 'use server';

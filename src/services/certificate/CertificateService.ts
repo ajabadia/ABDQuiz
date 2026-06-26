@@ -1,11 +1,11 @@
 /**
- * @purpose Gestiona la generación y firma de certificados para usuarios que completan cursos.
+ * @purpose Gestiona el proceso de generación y firma de certificados para usuarios que completan cursos.
  * @purpose_en Manages the generation and signing of certificates for users completing courses.
  * @refactorable true (contains too many state variables and UI parts)
  * @classification Business Service
  * @complexity Medium
- * @fingerprint exports:2,imports:4,sig:1krgd0m
- * @lastUpdated 2026-06-24T12:53:08.079Z
+ * @fingerprint exports:2,imports:5,sig:1d88iyb
+ * @lastUpdated 2026-06-26T10:03:25.409Z
  */
 
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';

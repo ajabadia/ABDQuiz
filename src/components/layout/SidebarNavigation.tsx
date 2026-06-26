@@ -6,8 +6,8 @@
  * @refactorable true (contains too many state variables and UI parts)
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:6,sig:1fbfo7g
- * @lastUpdated 2026-06-23T19:49:25.976Z
+ * @fingerprint exports:1,imports:6,sig:14yzup2
+ * @lastUpdated 2026-06-26T10:02:35.846Z
  */
 
 import React from 'react';
@@ -70,7 +70,7 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
   const links = buildSidebarLinks(allLinks, user?.role, isLoggedIn);
 
   const handleLogout = () => {
-    window.location.href = '/api/auth/logout';
+    window.location.href = '/api/abd-auth/logout';
   };
 
   // Add tenantId query param to all nav links

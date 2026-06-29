@@ -20,7 +20,7 @@
     "@ajabadia/ecosystem-widgets": "workspace:^",
     "@ajabadia/i18n": "workspace:^",
     "@ajabadia/satellite-sdk": "^1.0.81",
-    "@ajabadia/styles": "^1.0.15",
+    "@ajabadia/styles": "workspace:^",
     "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-progress": "^1.1.8",
     "@types/papaparse": "^5.5.2",

@@ -3,23 +3,20 @@
  * @purpose_en Renders the layout for a locale-specific page in ABDQuiz, including navigation, branding, and UI components.
  * @refactorable false
  * @classification UI Component
- * @complexity Medium
- * @fingerprint exports:1,imports:11,sig:177ugp3
- * @lastUpdated 2026-06-23T19:47:59.661Z
+ * @complexity Low
+ * @fingerprint exports:1,imports:7,sig:9ab8cp
+ * @lastUpdated 2026-06-29T00:00:00.000Z
  */
 
-import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Toaster } from "sonner";
-import NextTopLoader from "nextjs-toploader";
+import { BrandingStyles } from "@ajabadia/satellite-sdk";
+import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
+import { resolveTenantBranding } from "@ajabadia/satellite-sdk";
+import { AppShellLayout } from "@ajabadia/ecosystem-widgets";
 import { SidebarNavigation } from "@/components/layout/SidebarNavigation";
 import { SystemSettings } from "@/components/ui/SystemSettings";
 import { QuizCommandPalette } from "@/components/layout/QuizCommandPalette";
 import { TenantSelector } from "@/components/ui/TenantSelector";
-import { BrandingStyles } from "@ajabadia/satellite-sdk";
-
-import { getIndustrialSession } from '@ajabadia/satellite-sdk/auth-middleware';
-import { resolveTenantBranding } from "@ajabadia/satellite-sdk";
 
 export default async function LocaleLayout({
   children,
@@ -34,32 +31,22 @@ export default async function LocaleLayout({
   const branding = await resolveTenantBranding();
 
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
-      <BrandingStyles />
-      <NextTopLoader
-        color="hsl(var(--primary))"
-        height={2}
-        showSpinner={false}
-        zIndex={45}
-        speed={200}
-      />
-      <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 transition-colors duration-300">
+    <AppShellLayout
+      locale={locale}
+      messages={messages}
+      brandingStyles={<BrandingStyles />}
+      sidebarNavigation={
         <SidebarNavigation
           session={session}
           logoUrl={branding?.logoUrl}
           tenantSelectorSlot={session.authenticated ? <TenantSelector sessionUser={session.user} /> : undefined}
           settingsSlot={<SystemSettings isAuthenticated={session.authenticated} />}
         />
-        <QuizCommandPalette />
-
-        {children}
-        <Toaster
-          position="top-right"
-          richColors
-          closeButton
-        />
-      </div>
-    </NextIntlClientProvider>
+      }
+      commandPalette={<QuizCommandPalette />}
+    >
+      {children}
+    </AppShellLayout>
   );
 }
 

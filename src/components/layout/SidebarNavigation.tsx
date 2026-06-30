@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * @purpose Renderiza un menú de navegación lateral para la aplicación ABDQuiz, incluyendo enlaces a diversas páginas y renderizado condicional basado en autenticación del usuario y rol.
+ * @purpose_en Renders a sidebar navigation menu for the ABDQuiz application, including links to various pages and conditional rendering based on user authentication and role.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Medium
+ * @fingerprint exports:1,imports:5,sig:1y8atgd
+ * @lastUpdated 2026-06-29T22:24:19.720Z
+ */
+
 import React from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { AppSidebarNavigation, type AppSidebarLink } from '@ajabadia/ecosystem-widgets';
@@ -63,7 +73,7 @@ export function SidebarNavigation({ session, logoUrl, tenantSelectorSlot, settin
       session={session}
       logoUrl={logoUrl || null}
       links={allLinks}
-      brandName={t('appTitle')}
+      brandName={t('appTitle') || 'ABD Suite'}
       appBadge="QUIZ"
       transformHref={tenantId ? transformHref : undefined}
       tenantSelectorSlot={tenantSelectorSlot}

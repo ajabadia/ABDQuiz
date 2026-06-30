@@ -32,7 +32,7 @@ export function StorageProviderBadge() {
         <HardDrive className="w-4 h-4 text-muted-foreground" />
         <span className="text-[9px] font-mono font-black text-muted-foreground uppercase">ALMACENAMIENTO_ACTIVO</span>
       </div>
-      <div className="text-lg font-mono font-black text-[#2dd4bf] uppercase">{provider}</div>
+      <div className="text-lg font-mono font-black text-primary uppercase">{provider}</div>
     </div>
   );
 }

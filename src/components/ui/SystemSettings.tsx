@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * @purpose Gestiona un componente de configuración del sistema que permite a los usuarios cambiar la ubicación, el tema y el estado de autenticación.
+ * @purpose Gestiona un componente de configuración del sistema que permite a los usuarios cambiar el idioma, el tema y el estado de autenticación.
  * @purpose_en Renders a system settings component that allows users to change locale, theme, and authentication status.
  * @refactorable false
  * @classification UI Component
  * @complexity Medium
- * @fingerprint exports:1,imports:4,sig:f2lh5s
- * @lastUpdated 2026-06-23T19:50:36.495Z
+ * @fingerprint exports:1,imports:5,sig:6o1oii
+ * @lastUpdated 2026-06-30T05:49:42.468Z
  */
 
 import { useTheme } from 'next-themes';

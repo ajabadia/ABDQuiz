@@ -1,11 +1,11 @@
 /**
- * @purpose Renderiza el layout para una página específica del local en ABDQuiz, incluyendo navegación, marca y componentes de interfaz.
+ * @purpose Renderiza el layout para una página localizada específica en ABDQuiz, incluyendo navegación, marca y componentes de interfaz.
  * @purpose_en Renders the layout for a locale-specific page in ABDQuiz, including navigation, branding, and UI components.
  * @refactorable false
  * @classification UI Component
  * @complexity Low
- * @fingerprint exports:1,imports:7,sig:9ab8cp
- * @lastUpdated 2026-06-29T00:00:00.000Z
+ * @fingerprint exports:1,imports:9,sig:v1xuaw
+ * @lastUpdated 2026-06-30T05:49:39.210Z
  */
 
 import { getMessages } from "next-intl/server";

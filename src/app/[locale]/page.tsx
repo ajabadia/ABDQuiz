@@ -1,3 +1,13 @@
+/**
+ * @purpose Renderiza la página principal del aplicativo ABDQuiz, incluyendo un encabezado heroico, botón de inicio de sesión y características de sistema.
+ * @purpose_en Renders the home page of the ABDQuiz application, including a hero header, login button, and system capabilities features.
+ * @refactorable true (contains too many state variables and UI parts)
+ * @classification UI Component
+ * @complexity Low
+ * @fingerprint exports:1,imports:6,sig:1d7jahn
+ * @lastUpdated 2026-06-30T10:58:32.799Z
+ */
+
 import { getTranslations } from 'next-intl/server';
 import { BrainCircuit, Timer, FileCode2 } from 'lucide-react';
 import { HeroHeader, LandingPageLayout, SubtleLoginButton } from '@ajabadia/styles';

@@ -46,6 +46,7 @@
     "devDependencies":  {
                             "vitest":  "4.1.9",
                             "eslint":  "10.6.0",
+    "@eslint/compat":  "catalog:",
                             "jose":  "6.2.3",
                             "eslint-config-next":  "16.2.9",
                             "@testing-library/jest-dom":  "^6.9.1",
